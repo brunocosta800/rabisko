@@ -1,12 +1,15 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Simulacao } from "../screens/Simulacao";
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { AuthRoutes } from './auth.routes';
+import { AppRoutes } from './app.routes';
+import { useAuthStore } from '../store/authStore';
 
-const Stack = createNativeStackNavigator();
+export function Router() {
+  const { isAuthenticated } = useAuthStore();
 
-export function Routes() {
-    return (
-        <Stack.Navigator initialRouteName="Simulacao">
-            <Stack.Screen name="Simulacao" component={Simulacao} />
-        </Stack.Navigator>
-    );
+  return (
+    <NavigationContainer>
+      {isAuthenticated ? <AppRoutes /> : <AuthRoutes />}
+    </NavigationContainer>
+  );
 }
