@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Vitor\\\\Documents\\\\FECAP\\\\TCC\\\\rabisko\" -Recurse -Force | ForEach-Object { $_.FullName } | Sort-Object)"
+    ]
+  }
+}

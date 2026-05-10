@@ -1,6 +1,6 @@
-package com.rabisko.mvp.controller;
+package com.rabisko.mvp.shared.example.controller;
 
-import com.rabisko.mvp.service.HelloWorldService;
+import com.rabisko.mvp.shared.example.service.HelloWorldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

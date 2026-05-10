@@ -1,4 +1,4 @@
-package com.rabisko.mvp.service;
+package com.rabisko.mvp.shared.example.service;
 
 import org.springframework.stereotype.Service;
 
