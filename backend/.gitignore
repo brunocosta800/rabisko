@@ -1,0 +1,27 @@
+# Compilados e Build
+target/
+build/
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+
+# Configurações de IDE (VS Code, IntelliJ, Eclipse)
+.vscode/
+.idea/
+*.iml
+.settings/
+.project
+.classpath
+.factorypath
+
+# Sistema e Temporários
+.DS_Store
+thumbs.db
+
+# Arquivos de ambiente (onde você guarda senhas de banco)
+application-local.properties
+.env
