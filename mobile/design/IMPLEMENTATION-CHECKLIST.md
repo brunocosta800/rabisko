@@ -10,7 +10,7 @@ Status: `[ ]` a fazer · `[~]` em andamento · `[x]` feito.
 
 ## F — Fundação (design system)
 
-- [~] **F1. Padrão de bordas arredondadas — anchor = seletor de perfil do Cadastro (RoleSwitch).**
+- [x] **F1. Padrão de bordas arredondadas — anchor = seletor de perfil do Cadastro (RoleSwitch).**
   Curvatura canônica do design: **container externo = 12px, botão interno = 8px** (12 − 4 de padding). Toda outra borda escala disso:
 
   | token | valor | uso |
@@ -25,15 +25,15 @@ Status: `[ ]` a fazer · `[~]` em andamento · `[x]` feito.
 
   - [x] Escala em `tailwind.config.js` → `theme.extend.borderRadius` (`r-xs`…`r-pill`) → classes `rounded-r-xs` … `rounded-r-pill`.
   - [x] Espelhar em `src/theme/index.ts` → `radius` (`xs:8 … pill:9999`).
-  - [ ] **Banir hardcode**: trocar todo `rounded-[24px]`/`rounded-[32px]`/`rounded-[40px]`/`rounded-2xl`/`rounded-3xl`/`rounded-full` por um token. Em especial: botões primários deixam de ser pílula → `rounded-r-md`; inputs `rounded-r-md`; cards `rounded-r-lg`; banners/hero `rounded-r-xl`. (P1)
+  - [x] **Banir hardcode**: trocou todo `rounded-[..]`/`rounded-2xl`/`rounded-3xl`/`rounded-xl`/`rounded-full` (e os `borderRadius:` inline de `SearchScreen.web.tsx`) pelos tokens `rounded-r-*`. Mapeamento aplicado: botões/inputs/icon-chips/time-slots/markers → `r-md`; cards → `r-lg`; portfólio → `r-xl`; sheets (Register form, Profile header, ArtistProfile content sheet) → `r-2xl` (com `rounded-t-r-2xl`/`rounded-b-r-2xl`); chips/pills/avatares-redondos/radio → `r-pill`. Exceções legítimas (inline geométrico em px) preservadas: `Stepper.tsx:38` (28×28 círculo → 14) e `app.routes.tsx:45` (indicador de aba 3px → 2). Lint limpo (0 erros).
   - [x] Comentário/regra no `tailwind.config.js` e nota no `CLAUDE.md`.
 
-- [~] **F2. Cores — tokens reais (substituir a ramp `primary` rosada).**
+- [x] **F2. Cores — tokens reais (substituir a ramp `primary` rosada).**
   - [x] Tokens `rbk` em `tailwind.config.js`: `background #F8F9FA`, `surface #EAE0D5`, `surface-2 #F2EBE0`, `ink #000`, `ink-soft #1A1A1A`, `paper #FFF`, `hairline #D9D9D9`, `plum #602C66`, `plum-deep #4A2150`, `plum-tint #EFE6F0`, `fg-2 #404040`, `fg-3 #6B6B6B`, `on-ink #FFF`, `success #1F7A4D`, `warning #B5752A`, `error #B33A3A`.
   - [x] Espelhar em `src/theme/index.ts`.
-  - [ ] Migrar usos: trocar `primary-100/200/...`, `#eaddd7`, `#bfa094` etc. pelos tokens. **plum é a única cor de seleção/ativação.** (P1)
-  - [ ] Caçar `bg-green-100`/`bg-yellow-100`/`red-500` usados como estado (Bookings, Settings) → plum / ink-invertido / `error`. (P1)
-  - [ ] Remover a ramp `primary` (e `card`/`text`/`muted`) depois de migrar. (P1)
+  - [x] Migrou usos: `bg-primary-100`/`bg-[#eaddd7]` → `bg-surface`; `bg-primary-100/30` e `/50` → `bg-surface-2`; `bg-[#f8f9fa]` → `bg-background`; `border-primary-100` → `border-hairline`; `text-primary-500` → `text-ink`; `#666`/`#999`/`#ccc`/`#bfa094` inline → `#6B6B6B`/`#D9D9D9`/`#602C66`. PaymentScreen MethodTile e BookingScreen time-slot selecionados agora usam **plum**; o `react-native-calendars` (legacy) recebeu `selectedColor: '#602C66'` e `todayTextColor: '#000000'` (encerra antes do CalendarMini substituir).
+  - [x] Status pills `bg-green-100`/`bg-yellow-100` (BookingsScreen) → Confirmado = `bg-plum` + `text-on-ink`; Pendente = `bg-surface border border-ink` + `text-ink`. Sign-out (SettingsScreen) `bg-red-50`/`bg-red-500`/`text-red-500` → `bg-error/10`/`bg-error`/`text-error`. Switch track ativo `#000` → plum `#602C66`.
+  - [x] Removeu do `tailwind.config.js` os keys `primary` (ramp), `secondary`, `card`, `text`, `muted`; do `src/theme/index.ts` removeu `colors.primary`, `colors.secondary`, `colors.gray`, `colors.white`, `colors.black`, e o bloco `borderRadius` legado. `npx expo lint` e `npx tsc --noEmit` limpos (0 erros).
 
 - [~] **F3. Tipografia.**
   - [x] `@expo-google-fonts/bebas-neue` + `@expo-google-fonts/inter` + `@expo-google-fonts/dm-sans` instalados; `useFonts` no `App.tsx` carregando Bebas 400, Inter 300/400/400i/500/600/700/800, DM Sans 400/700; `expo-splash-screen` segura até carregar.
@@ -62,37 +62,37 @@ Status: `[ ]` a fazer · `[~]` em andamento · `[x]` feito.
 - [~] **F9. Papéis (Cliente/Artista/Estúdio).**
   - [x] `RoleSwitch` (`src/components/common/RoleSwitch.tsx`) — container `rounded-r-md` 12px com `p-1` (4px), 3 botões `rounded-r-xs` 8px, selecionado = `bg-ink` + texto branco, com ícones (User/Brush/Store). **Este é o anchor do F1.**
   - [x] `role: 'cliente' | 'artista' | 'estudio'` + `setRole` no `authStore` (persistido).
-  - [ ] Wiring: Login/Cadastro renderizam o `RoleSwitch`, copy muda por papel, artista/estúdio → Dashboard. (P1)
+  - [~] Wiring: Login + Cadastro feitos (P1) — ambos renderizam `RoleSwitch` + copy/CTA por papel. Falta a divisão de `AppRoutes` por papel (artista/estúdio → Dashboard, P2 #13).
 
 ---
 
 ## P1 — Corrigir as telas que já existem
 
-### Login (`src/screens/Auth/LoginScreen.tsx`)
-- [ ] `Header` com back chevron (→ Landing).
-- [ ] Inserir `RoleSwitch`; trocar a copy fixa de artista pela copy por papel ("Encontre artistas, agende sessões e acompanhe sua cicatrização." para cliente).
-- [ ] Título em Bebas `t-display-lg` (32px), não `text-[44px] font-black`.
-- [ ] "Esqueceu a Senha?" → cor **plum**, `700 12px`.
-- [ ] Botão "Entrar" ancorado no rodapé (`margin-top:auto`), forma `rounded-r-md`, label Inter 700/20 (não uppercase 24px).
-- [ ] Artista/estúdio → Dashboard; cliente → Home.
+### Login (`src/screens/Auth/LoginScreen.tsx`) — `[x]`
+- [x] `Header onBack={() => navigation.goBack()}` no topo — volta pra Landing (que agora é o initial route do `AuthRoutes`).
+- [x] `RoleSwitch` (de `src/components/common/RoleSwitch.tsx`, controlado por `useAuthStore().role`/`setRole`) + copy por papel via `SUBTITLE_BY_ROLE` (cliente/artista/estudio).
+- [x] Título "BEM-VINDO" em `font-display text-[32px]` — Bebas, sem `text-[44px] font-black uppercase tracking-tighter`.
+- [x] "Esqueceu a Senha?" → `font-body-bold text-[12px] text-plum`, `hitSlop={8}` para área de toque.
+- [x] Botão "Entrar" ancorado no rodapé via `<View className="flex-1" />` spacer; forma/label do `Button` (já `rounded-r-md` + Inter 700/20 desde F6).
+- [~] Cliente → Home (default do `AppRoutes`). Artista/estúdio → Dashboard ainda não existe (P2 #13); para já, `setRole` guarda o papel no store e todos os papéis caem em Home; quando o Dashboard for criado, a divisão do `AppRoutes` por papel resolve o roteamento real.
 
-### Cadastro (`src/screens/Auth/RegisterScreen.tsx`)
-- [ ] `Header` + back.
-- [ ] Inserir `RoleSwitch`; título/CTA/copy por papel ("Criar conta" / "Sou artista" / "Sou estúdio").
-- [ ] Campos cliente = só **Nome completo / E-mail / Senha**. Remover a linha Nascimento+CPF e o "Confirmar Senha".
-- [ ] Condicionais: artista → `@ Instagram` + pills "Estilo principal"; estúdio → `CNPJ` + `Endereço completo`.
-- [ ] Remover o bloco "Localização / Horários de Atendimento" hardcodado.
-- [ ] Adicionar a nota com ícone `info` ("Ao continuar você concorda com os Termos...").
-- [ ] CTA → home (cliente) / dashboard (artista/estúdio); "Já tem conta? Entrar" → Login.
+### Cadastro (`src/screens/Auth/RegisterScreen.tsx`) — `[~]`
+- [x] `Header` + back chevron → `navigation.goBack()` (volta pra Login, que é o initial route do AuthRoutes).
+- [x] `RoleSwitch` controlado por `useAuthStore().role`/`setRole`; `SUBTITLE_BY_ROLE` muda a copy de descrição; `CTA_BY_ROLE` muda o botão ("Criar conta" / "Sou artista" / "Sou estúdio").
+- [x] Campos comuns a todos os papéis: **Nome completo / E-mail / Senha**. Removidos: Nascimento+CPF, "Confirmar Senha".
+- [x] Condicionais por papel: artista → `@ Instagram` + 8 pills `PrefChip` multi-select de "Estilo principal" (`TATTOO_STYLES`); estúdio → `CNPJ` + `Endereço completo`.
+- [x] Bloco "Localização / Horários de Atendimento" hardcodado removido.
+- [x] Nota de Termos: ícone `Info` + texto `font-body 12/16 text-fg-3` com "Termos de Uso" e "Política de Privacidade" em `text-plum`.
+- [~] CTA roteia via `setUser` (mock) — todos os papéis caem em Home enquanto Dashboard (P2 #13) não existir, igual à Login. "Já tem conta? Entrar" → `navigation.navigate('Login')`.
 
-### Home (`src/screens/App/HomeScreen.tsx`)
-- [ ] Linha de saudação ("OLÁ, MARIA" + localização) + botão de notificação (sino + bolinha plum).
-- [ ] Headline editorial em 3 linhas: "ARTISTAS" / *"perto de"* (plum, itálico, Inter, minúsculo) / "VOCÊ", Bebas 64px, alinhado à esquerda.
-- [ ] Search bar → `Field`, `rounded-r-md`, sem sombra, placeholder "Artistas, estúdios, estilos...", trailing = filtro.
-- [ ] Chips: `["Perto","Estilo","Preço","Disponível"]` com ícones, "Perto" ativo (ink) — remover "Dinheiro" (bug) e o uppercase pesado.
-- [ ] Remover a const `CATEGORIES` morta; tirar o sabor "serviços em geral" (Barbearia/Estética/Massagem).
-- [ ] Seções faltando: "Por estilo" (faixa de tiles 96×128), "Flash do dia" (pill "Hoje" plum, cards 168px), "Em destaque / BOOST" (hero 16:11), "Favoritos" (rail com coração), "Perto de você" = grade 2-col de `ArtistCard`, card-dica "NOVIDADE → ABRIR" (entrada do Simulador).
-- [ ] Substituir os cards pretos `rounded-[32px]` ad-hoc pelo `ArtistCard` real (`r-lg`, rodapé "ver mais...").
+### Home (`src/screens/App/HomeScreen.tsx`) — `[x]`
+- [x] Linha de saudação "OLÁ, {firstName}" (lê do `useAuthStore().user`, fallback "VOCÊ") + localização "São Paulo, SP" com ícone `MapPin` + botão `Bell` com bolinha plum (overlay 2.5×2.5 com borda do background pra parecer flutuando).
+- [x] Headline editorial em 3 linhas, alinhada à esquerda: "ARTISTAS" `font-display text-[64px]` / "perto de" `font-body-italic text-[28px] text-plum lowercase` / "VOCÊ" `font-display text-[64px]`.
+- [x] Search bar via `Input` (Field) com `icon=Search` + `trailingIcon=SlidersHorizontal`, placeholder "Artistas, estúdios, estilos...".
+- [x] Filter chips `[Perto, Estilo, Preço, Disponível]` via `FilterChip` com ícones (`Compass`/`Palette`/`Tag`/`CalendarCheck`), "Perto" default ativo. "Dinheiro" e o uppercase pesado removidos.
+- [x] Const `CATEGORIES` morta removida (junto com sabor "serviços em geral"); imports não-usados também.
+- [x] Todas as seções: "Por estilo" (rail de `StyleTile` 96×128), "Flash do dia" (com `StatusPill` "HOJE" tone plum + rail de `FlashCard` 168×168), "Em destaque" (hero 16:11 com badge BOOST), "Favoritos" (rail de `FavoriteTile` redondo 72px com coração plum no canto), "Perto de você" (grid 2-col de `ArtistCard` real com FadeInDown stagger), card-dica "NOVIDADE → ABRIR" (entrada planejada do Simulador, fundo `bg-plum-tint`, ícone `Sparkles` em círculo plum).
+- [x] Cards pretos `rounded-[32px]` ad-hoc substituídos pelo `ArtistCard` (`r-lg`, footer "ver mais..."), com `onPress` navegando pra `EstablishmentProfile`.
 
 ### Artist Profile (`src/screens/App/EstablishmentProfileScreen.tsx`)
 - [ ] Alinhar a intenção ao design (perfil de artista centrado-no-chat). Trocar o layout banner pelo centralizado: foto redonda 120px → pill da 1ª tag → nota+estrela → nome em DM Sans `t-h1`.
@@ -106,7 +106,7 @@ Status: `[ ]` a fazer · `[~]` em andamento · `[x]` feito.
 ### Booking (`src/screens/App/BookingScreen.tsx`)
 - [ ] `Stepper` (passo 1).
 - [ ] Mini-linha do artista (foto 46px + nome + tags) — passar o artista via params.
-- [ ] Trocar `react-native-calendars` pelo `CalendarMini`: dia selecionado = bolinha plum, hoje = sublinhado (não `#bfa094`).
+- [ ] Trocar `react-native-calendars` pelo `CalendarMini`: dia selecionado = bolinha plum, hoje = sublinhado. (F2 já neutralizou as cores legadas: `selectedColor` agora é plum, `todayTextColor` é ink — a troca de componente segue como P1.)
 - [ ] Header "RESERVA" Bebas; remover headings "Selecione a Data/Horário" → só "Horário" DM Sans h3 + linha "{dia} Out · {hora}".
 - [ ] Slots = 6 (10/12/14/16/18/20), 3/linha, `rounded-r-md`, selecionado = ink, não-selecionado = cream sem borda, pré-selecionar 14:00.
 - [ ] Remover o card "Resumo da Reserva".
@@ -139,7 +139,7 @@ Status: `[ ]` a fazer · `[~]` em andamento · `[x]` feito.
 
 ## P2 — Telas faltando do catálogo (criar)
 
-- [ ] **Landing (01)** — bloco-logo polvo `rounded-r-2xl` (fundo ink), "RABISKO" Bebas 64px, tagline "Transforme sua vida com um Rabisko.", "Entrar" → Login, "Criar conta" → Cadastro. Sem nav. Rota inicial do `AuthRoutes`.
+- [x] **Landing (01)** — `src/screens/Auth/LandingScreen.tsx`. Vertical+horizontal centered: bloco-logo 132×132 `rounded-r-2xl bg-ink` (placeholder "R" em Bebas 80px branco — TODO: trocar pela imagem `logo-bisko-mark.png` quando o asset chegar no repo), "RABISKO" `font-display text-[64px]` com tracking +1.3, tagline `font-body 14 text-fg-2` (max 280, centered), CTA primary "Entrar" → Login, link "Novo por aqui? Criar conta" → Register. Adicionado como `Screen` em `auth.routes.tsx` com `initialRouteName="Landing"`; Login agora tem `Header onBack={navigation.goBack}` voltando pra cá.
 - [ ] **Confirmed (06b)** — tela cheia sem nav, `Stepper` passo 3, check plum grande + 2 anéis expandindo + pop com mola, "Reserva Confirmada" Bebas, copy de 24h, card-resumo (foto + nome + "Ter 14 Out · 14:00 · R$ 220,00" + `StatusPill` "Pago" plum), botões "Abrir Chat com {nome}" + "Voltar para Home".
 - [~] **Chat (08)** — `ChatScreen.tsx` (lista de conversas estática + empty-state + FAB) já feita e ligada na aba do bottom nav (F7). Falta: dados/estado reais e a tela de thread/mensagens com anexos de imagem (`ChatV2`).
 - [ ] **Session Detail (09b)** — detalhe de uma sessão: dados completos, "Abrir chat" / "Check-in".

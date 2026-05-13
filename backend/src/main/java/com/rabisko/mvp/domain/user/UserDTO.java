@@ -2,23 +2,30 @@ package com.rabisko.mvp.domain.user;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.UUID;
 
+/*
+ * Realinhamento ao schema do Supabase:
+ *  - userId: Long -> UUID (acompanha o PK de User).
+ *  - dataNasc: Date -> LocalDate (coluna `date` no Postgres).
+ *  - Adicionado telefone (opcional, como no schema).
+ *  - Removidos dataCriacao / dataModificacao / status do DTO de
+ *    cadastro: esses valores são definidos pelo servidor —
+ *    @CreationTimestamp/@UpdateTimestamp setam os timestamps e
+ *    UserService força status=true. Receber esses campos do cliente
+ *    só abriria espaço para spoofing.
+ */
 @Getter
 @Setter
 public class UserDTO {
-    @Id
-    private String userId;
+    private UUID userId;
     private String nome;
     private String email;
     private String senha;
-    private Date dataNasc;
+    private String telefone;
+    private LocalDate dataNasc;
     private String cpf;
     private UserRole role;
-    private LocalDateTime dataCriacao;
-    private LocalDateTime dataModificacao;
-    private boolean status;
 }

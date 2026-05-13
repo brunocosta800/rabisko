@@ -11,8 +11,8 @@
  *
  * COLORS — use the semantic tokens below (`bg-surface`, `text-ink`, `bg-plum`, …).
  *   plum (#602C66) is the ONLY color allowed to indicate selection / activation — never
- *   green/red/blue for that. The `primary` ramp + `card`/`text`/`muted` are DEPRECATED,
- *   kept only until existing screens are migrated (P1 in the checklist).
+ *   green/red/blue for that. (The old `primary` cream ramp + `card`/`text`/`muted`/
+ *   `secondary` keys were removed after migration — see F2 in the checklist.)
  */
 
 // Type families — must match the keys passed to useFonts() in App.tsx.
@@ -62,24 +62,6 @@ const colors = {
   success: '#1F7A4D',
   warning: '#B5752A',
   error: '#B33A3A',
-
-  // ── DEPRECATED — migrate to the tokens above (see IMPLEMENTATION-CHECKLIST.md P1) ──
-  primary: {
-    50: '#fdf8f6',
-    100: '#f2e8e5',
-    200: '#eaddd7',
-    300: '#e0cec7',
-    400: '#d2bab0',
-    500: '#bfa094',
-    600: '#a18072',
-    700: '#846358',
-    800: '#43302b',
-    900: '#211816',
-  },
-  secondary: '#000000',
-  card: '#f2e8e5',
-  text: '#000000',
-  muted: '#6c757d',
 };
 
 module.exports = {

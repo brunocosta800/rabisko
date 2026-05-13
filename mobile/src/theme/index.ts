@@ -7,8 +7,8 @@
  *
  * `radius` is the single source of truth for border radii — anchor = the Cadastro RoleSwitch
  * (12px outer container / 8px inner button). plum (#602C66) is the ONLY selection/activation
- * color. The legacy `colors.primary` / `colors.gray` / `borderRadius` keys are DEPRECATED
- * (see design/IMPLEMENTATION-CHECKLIST.md P1).
+ * color. (The legacy `colors.primary`/`colors.gray`/`colors.white`/`colors.black` and the
+ * separate `borderRadius` block were removed after F2 — see the checklist.)
  */
 export const theme = {
   colors: {
@@ -33,23 +33,6 @@ export const theme = {
     success: '#1F7A4D',
     warning: '#B5752A',
     error: '#B33A3A',
-    white: '#FFFFFF',
-    black: '#000000',
-
-    // ── DEPRECATED — migrate to the tokens above ──
-    primary: '#bfa094',
-    secondary: '#000000',
-    gray: {
-      100: '#f8f9fa',
-      200: '#e9ecef',
-      300: '#dee2e6',
-      400: '#ced4da',
-      500: '#adb5bd',
-      600: '#6c757d',
-      700: '#495057',
-      800: '#343a40',
-      900: '#212529',
-    },
   },
 
   /** 8-point spacing scale (matches Tailwind defaults: space-4 === p-4 === 16px). */
@@ -91,14 +74,5 @@ export const theme = {
     xl: 22,
     '2xl': 28,
     pill: 9999,
-  },
-
-  /** DEPRECATED — use `radius` instead. */
-  borderRadius: {
-    sm: 4,
-    md: 8,
-    lg: 16,
-    xl: 24,
-    full: 9999,
   },
 } as const;

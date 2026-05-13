@@ -1,108 +1,329 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
-import { Search, SlidersHorizontal, Star } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  Bell,
+  MapPin,
+  Search,
+  SlidersHorizontal,
+  Compass,
+  Palette,
+  Tag,
+  CalendarCheck,
+  Heart,
+  Sparkles,
+  ChevronRight,
+} from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+
 import { HomeStackParamList } from '../../routes/home.stack';
+import { useAuthStore } from '../../store/authStore';
+import { Input } from '../../components/common/Input';
+import { FilterChip, StatusPill } from '../../components/common/Chip';
+import { ArtistCard } from '../../components/common/ArtistCard';
 
-const CATEGORIES = ['Tatuagem', 'Barbearia', 'Estética', 'Piercing', 'Massagem'];
+/* ---------- Mock data (P1 Home — replace with real API once `/services/api` is wired) ---------- */
 
-const ESTABLISHMENTS = [
+const FILTERS = [
+  { id: 'perto', label: 'Perto', icon: Compass },
+  { id: 'estilo', label: 'Estilo', icon: Palette },
+  { id: 'preco', label: 'Preço', icon: Tag },
+  { id: 'disponivel', label: 'Disponível', icon: CalendarCheck },
+] as const;
+
+const STYLE_TILES = [
+  { id: 'realismo', label: 'Realismo', photo: 'https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?q=80&w=200&auto=format&fit=crop' },
+  { id: 'minimalista', label: 'Minimalista', photo: 'https://images.unsplash.com/photo-1542856391-010fb87dcfed?q=80&w=200&auto=format&fit=crop' },
+  { id: 'aquarela', label: 'Aquarela', photo: 'https://images.unsplash.com/photo-1568515045052-f9a854d70bfd?q=80&w=200&auto=format&fit=crop' },
+  { id: 'blackwork', label: 'Blackwork', photo: 'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=200&auto=format&fit=crop' },
+  { id: 'old', label: 'Old School', photo: 'https://images.unsplash.com/photo-1590246814883-57c511e7afde?q=80&w=200&auto=format&fit=crop' },
+];
+
+const FLASH_TODAY = [
+  { id: 'f1', title: 'Lobo geométrico', price: 'R$ 280', photo: 'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=400&auto=format&fit=crop' },
+  { id: 'f2', title: 'Borboleta minimal', price: 'R$ 180', photo: 'https://images.unsplash.com/photo-1542856391-010fb87dcfed?q=80&w=400&auto=format&fit=crop' },
+  { id: 'f3', title: 'Cobra tradicional', price: 'R$ 320', photo: 'https://images.unsplash.com/photo-1590246814883-57c511e7afde?q=80&w=400&auto=format&fit=crop' },
+];
+
+const FEATURED = {
+  id: '1',
+  name: 'João Santos',
+  tagline: 'Realismo · Premiado',
+  rating: 4.9,
+  photo: 'https://images.unsplash.com/photo-1598133894008-61f7fdb8cc3a?q=80&w=800&auto=format&fit=crop',
+};
+
+const FAVORITES = [
+  { id: 'fav1', name: 'Marina', photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop' },
+  { id: 'fav2', name: 'Estúdio Fênix', photo: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=200&auto=format&fit=crop' },
+  { id: 'fav3', name: 'Pedro', photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop' },
+];
+
+const NEAR_YOU = [
   {
     id: '1',
     name: 'João Santos',
     rating: 4.9,
-    category: 'Tatuagem',
-    avatar: 'https://images.unsplash.com/photo-1598133894008-61f7fdb8cc3a?q=80&w=200&h=200&auto=format&fit=crop',
+    tags: ['Realismo', 'Minimalista'],
+    photo: 'https://images.unsplash.com/photo-1598133894008-61f7fdb8cc3a?q=80&w=400&auto=format&fit=crop',
   },
   {
     id: '2',
     name: 'Estúdio Fênix',
     rating: 4.8,
-    category: 'Barbearia',
-    avatar: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=200&h=200&auto=format&fit=crop',
+    tags: ['Old School'],
+    photo: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=400&auto=format&fit=crop',
   },
 ];
 
-import Animated, { FadeInDown } from 'react-native-reanimated';
+/* ---------- Small leaf components ---------- */
+
+function SectionHeader({ title, action }: { title: string; action?: string }) {
+  return (
+    <View className="flex-row items-end justify-between px-6 mb-3 mt-8">
+      <Text className="font-aux-bold text-[20px] text-ink">{title}</Text>
+      {action && (
+        <TouchableOpacity hitSlop={8}>
+          <Text className="font-body-semibold text-[12px] text-fg-2">{action}</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+}
+
+function StyleTile({ label, photo }: { label: string; photo: string }) {
+  return (
+    <TouchableOpacity activeOpacity={0.85} className="mr-3" style={{ width: 96 }}>
+      <View className="rounded-r-lg overflow-hidden bg-surface" style={{ width: 96, height: 128 }}>
+        <Image source={{ uri: photo }} className="w-full h-full" />
+      </View>
+      <Text className="font-body-medium text-[12px] text-ink mt-2 text-center">{label}</Text>
+    </TouchableOpacity>
+  );
+}
+
+function FlashCard({ title, price, photo }: { title: string; price: string; photo: string }) {
+  return (
+    <TouchableOpacity activeOpacity={0.9} className="mr-3" style={{ width: 168 }}>
+      <View className="rounded-r-lg overflow-hidden bg-surface" style={{ width: 168, height: 168 }}>
+        <Image source={{ uri: photo }} className="w-full h-full" />
+      </View>
+      <Text className="font-body-semibold text-[14px] text-ink mt-2" numberOfLines={1}>
+        {title}
+      </Text>
+      <Text className="font-body text-[12px] text-fg-2">{price}</Text>
+    </TouchableOpacity>
+  );
+}
+
+function FavoriteTile({ name, photo }: { name: string; photo: string }) {
+  return (
+    <TouchableOpacity activeOpacity={0.85} className="mr-3 items-center" style={{ width: 72 }}>
+      <View className="relative">
+        <View className="rounded-r-pill overflow-hidden bg-surface" style={{ width: 72, height: 72 }}>
+          <Image source={{ uri: photo }} className="w-full h-full" />
+        </View>
+        <View className="absolute -top-1 -right-1 w-6 h-6 rounded-r-pill bg-paper items-center justify-center">
+          <Heart size={12} color="#602C66" fill="#602C66" />
+        </View>
+      </View>
+      <Text className="font-body text-[12px] text-ink mt-2 text-center" numberOfLines={1}>
+        {name}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
+/* ---------- Screen ---------- */
 
 export function HomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+  const insets = useSafeAreaInsets();
+  const user = useAuthStore((s) => s.user);
+  const [activeFilter, setActiveFilter] = useState<string>('perto');
+
+  // First name only for the greeting; falls back to "VOCÊ" if no user.
+  const firstName = (user?.name?.split(' ')[0] ?? 'VOCÊ').toUpperCase();
 
   return (
-    <View style={{ flex: 1 }} className="flex-1 bg-[#f8f9fa] pt-16">
-      <View className="px-8 mb-6">
-        <Text className="text-[48px] font-black text-black uppercase leading-[44px] tracking-tighter mb-8 text-center">
-          Busque seu artista
-        </Text>
-
-        <View className="flex-row items-center bg-[#eaddd7] rounded-[24px] px-6 py-5 mb-8 shadow-sm">
-          <View className="mr-3">
-            <Search size={24} color="#000" strokeWidth={3} />
+    <View className="flex-1 bg-background">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingTop: insets.top + 16,
+          paddingBottom: insets.bottom + 96, // leave room for the bottom tab bar
+        }}
+      >
+        {/* Greeting row */}
+        <View className="flex-row items-start justify-between px-6 mb-5">
+          <View className="flex-1">
+            <Text className="font-body-semibold text-[12px] text-fg-3 tracking-[1.5px]">
+              OLÁ, {firstName}
+            </Text>
+            <View className="flex-row items-center mt-1">
+              <MapPin size={12} color="#6B6B6B" style={{ marginRight: 4 }} />
+              <Text className="font-body text-[12px] text-fg-2">São Paulo, SP</Text>
+            </View>
           </View>
-          <TextInput
-            placeholder="Artistas, estúdios..."
-            placeholderTextColor="rgba(0,0,0,0.4)"
-            className="flex-1 text-black text-lg font-bold"
-          />
-          <TouchableOpacity>
-            <SlidersHorizontal size={24} color="#000" strokeWidth={3} />
+          <TouchableOpacity
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="Notificações"
+            className="relative"
+          >
+            <Bell size={24} color="#000000" />
+            <View className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-r-pill bg-plum border border-background" />
           </TouchableOpacity>
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row mb-6">
-          {['Preço', 'Estilo', 'Dinheiro', 'Avaliação'].map((filter, index) => (
-            <TouchableOpacity 
-              key={filter}
-              className="bg-[#eaddd7] px-6 py-3 rounded-full mr-3 flex-row items-center shadow-sm"
-            >
-              <Text className="font-black text-black text-[12px] uppercase tracking-widest">{filter}</Text>
-            </TouchableOpacity>
+        {/* Editorial headline — 3 lines */}
+        <View className="px-6 mb-6">
+          <Text className="font-display text-[64px] leading-[60px] text-ink">ARTISTAS</Text>
+          <Text className="font-body-italic text-[28px] leading-[32px] text-plum lowercase ml-1">
+            perto de
+          </Text>
+          <Text className="font-display text-[64px] leading-[60px] text-ink">VOCÊ</Text>
+        </View>
+
+        {/* Search field */}
+        <View className="px-6">
+          <Input
+            placeholder="Artistas, estúdios, estilos..."
+            icon={Search}
+            trailingIcon={SlidersHorizontal}
+            autoCapitalize="none"
+          />
+        </View>
+
+        {/* Filter chips */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 24, gap: 8, paddingVertical: 4 }}
+          className="-mt-1"
+        >
+          {FILTERS.map((f) => (
+            <FilterChip
+              key={f.id}
+              label={f.label}
+              icon={f.icon}
+              active={activeFilter === f.id}
+              onPress={() => setActiveFilter(f.id)}
+            />
           ))}
         </ScrollView>
-      </View>
 
-      <ScrollView className="px-8" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
-        {ESTABLISHMENTS.map((item, index) => (
-          <Animated.View 
-            key={item.id}
-            entering={FadeInDown.delay(index * 100).duration(600).springify()}
+        {/* Por estilo */}
+        <SectionHeader title="Por estilo" action="Ver tudo" />
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 24 }}
+        >
+          {STYLE_TILES.map((s) => (
+            <StyleTile key={s.id} label={s.label} photo={s.photo} />
+          ))}
+        </ScrollView>
+
+        {/* Flash do dia */}
+        <View className="flex-row items-end justify-between px-6 mb-3 mt-8">
+          <View className="flex-row items-center">
+            <Text className="font-aux-bold text-[20px] text-ink mr-2">Flash do dia</Text>
+            <StatusPill label="HOJE" tone="plum" />
+          </View>
+          <TouchableOpacity hitSlop={8}>
+            <Text className="font-body-semibold text-[12px] text-fg-2">Ver tudo</Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 24 }}
+        >
+          {FLASH_TODAY.map((f) => (
+            <FlashCard key={f.id} title={f.title} price={f.price} photo={f.photo} />
+          ))}
+        </ScrollView>
+
+        {/* Em destaque (BOOST hero) */}
+        <SectionHeader title="Em destaque" />
+        <Animated.View entering={FadeInDown.duration(400).springify()} className="px-6">
+          <TouchableOpacity
+            activeOpacity={0.92}
+            onPress={() => navigation.navigate('EstablishmentProfile', { id: FEATURED.id })}
+            className="rounded-r-xl overflow-hidden bg-ink"
+            style={{ aspectRatio: 16 / 11 }}
           >
-            <TouchableOpacity 
-              className="bg-black rounded-[32px] mb-8 overflow-hidden shadow-xl"
-              activeOpacity={0.9}
-              onPress={() => navigation.navigate('EstablishmentProfile', { id: item.id })}
+            <Image source={{ uri: FEATURED.photo }} className="w-full h-full opacity-80" />
+            <View className="absolute inset-0 p-5 justify-between">
+              <View className="self-start">
+                <StatusPill label="BOOST" tone="plum" />
+              </View>
+              <View>
+                <Text className="font-display text-[32px] text-on-ink leading-[34px]">
+                  {FEATURED.name.toUpperCase()}
+                </Text>
+                <Text className="font-body text-[14px] text-on-ink mt-1">{FEATURED.tagline}</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        </Animated.View>
+
+        {/* Favoritos */}
+        <SectionHeader title="Favoritos" action="Ver tudo" />
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 24 }}
+        >
+          {FAVORITES.map((fav) => (
+            <FavoriteTile key={fav.id} name={fav.name} photo={fav.photo} />
+          ))}
+        </ScrollView>
+
+        {/* Card-dica: NOVIDADE → Simulador */}
+        <View className="px-6 mt-8">
+          <TouchableOpacity
+            activeOpacity={0.9}
+            className="flex-row items-center bg-plum-tint rounded-r-lg p-5"
+          >
+            <View className="w-12 h-12 rounded-r-pill bg-plum items-center justify-center mr-4">
+              <Sparkles size={20} color="#FFFFFF" />
+            </View>
+            <View className="flex-1">
+              <Text className="font-body-bold text-[11px] text-plum tracking-[1.5px]">NOVIDADE</Text>
+              <Text className="font-body-semibold text-[15px] text-ink mt-0.5">
+                Veja como a tatuagem fica em você
+              </Text>
+            </View>
+            <View className="flex-row items-center">
+              <Text className="font-body-bold text-[12px] text-plum mr-1">ABRIR</Text>
+              <ChevronRight size={16} color="#602C66" />
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* Perto de você (2-col grid of ArtistCard) */}
+        <SectionHeader title="Perto de você" />
+        <View className="px-6 flex-row flex-wrap" style={{ gap: 12 }}>
+          {NEAR_YOU.map((a, i) => (
+            <Animated.View
+              key={a.id}
+              entering={FadeInDown.delay(i * 60).duration(400).springify()}
+              style={{ width: '47.5%' }}
             >
-              <View className="p-8 relative">
-                <View className="flex-row items-center">
-                  <Image 
-                    source={{ uri: item.avatar }} 
-                    className="w-20 h-20 rounded-full border-2 border-[#eaddd7]"
-                  />
-                  <View className="ml-5 flex-1">
-                    <Text className="text-white font-black text-2xl uppercase tracking-tighter">{item.name}</Text>
-                    <View className="flex-row mt-3">
-                      {['Realismo', 'Minimalista'].map((tag) => (
-                        <View key={tag} className="bg-white/10 rounded-full px-3 py-1 mr-2 border border-white/20">
-                          <Text className="text-white text-[10px] font-bold uppercase tracking-widest">{tag}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                </View>
-                
-                <View className="absolute top-8 right-8 flex-row items-center bg-white/10 px-3 py-1.5 rounded-full border border-white/10">
-                  <Text className="text-white font-black text-lg mr-1">{item.rating}</Text>
-                  <Star size={16} color="#fff" fill="#fff" />
-                </View>
-              </View>
-              
-              <View className="bg-[#eaddd7] py-4 items-center">
-                <Text className="text-black font-black text-[13px] uppercase tracking-[3px]">ver perfil completo</Text>
-              </View>
-            </TouchableOpacity>
-          </Animated.View>
-        ))}
+              <ArtistCard
+                name={a.name}
+                rating={a.rating}
+                tags={a.tags}
+                photo={a.photo}
+                onPress={() => navigation.navigate('EstablishmentProfile', { id: a.id })}
+              />
+            </Animated.View>
+          ))}
+        </View>
       </ScrollView>
     </View>
   );

@@ -37,24 +37,24 @@ export function BookingScreen() {
 
       <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
         <Text className="text-black font-bold text-xl mb-4 mt-4">Selecione a Data</Text>
-        <View className="bg-primary-100 rounded-3xl overflow-hidden mb-8">
+        <View className="bg-surface rounded-r-lg overflow-hidden mb-8">
           <RNCalendar
             onDayPress={(day: any) => setSelectedDate(day.dateString)}
             markedDates={{
-              [selectedDate]: { selected: true, selectedColor: '#000' }
+              [selectedDate]: { selected: true, selectedColor: '#602C66' }
             }}
             theme={{
               backgroundColor: 'transparent',
               calendarBackground: 'transparent',
-              textSectionTitleColor: '#000',
-              selectedDayBackgroundColor: '#000',
-              selectedDayTextColor: '#ffffff',
-              todayTextColor: '#bfa094',
-              dayTextColor: '#000',
-              textDisabledColor: '#ccc',
-              arrowColor: '#000',
-              monthTextColor: '#000',
-              indicatorColor: '#000',
+              textSectionTitleColor: '#000000',
+              selectedDayBackgroundColor: '#602C66',
+              selectedDayTextColor: '#FFFFFF',
+              todayTextColor: '#000000',
+              dayTextColor: '#000000',
+              textDisabledColor: '#D9D9D9',
+              arrowColor: '#000000',
+              monthTextColor: '#000000',
+              indicatorColor: '#000000',
               textDayFontWeight: '500',
               textMonthFontWeight: 'bold',
               textDayHeaderFontWeight: 'bold',
@@ -71,17 +71,17 @@ export function BookingScreen() {
             <TouchableOpacity
               key={time}
               onPress={() => setSelectedTime(time)}
-              className={`w-[30%] m-[1.5%] py-4 rounded-2xl items-center border ${selectedTime === time ? 'bg-black border-black' : 'bg-white border-primary-100'
+              className={`w-[30%] m-[1.5%] py-4 rounded-r-md items-center border ${selectedTime === time ? 'bg-plum border-plum' : 'bg-paper border-hairline'
                 }`}
             >
-              <Text className={`font-bold ${selectedTime === time ? 'text-white' : 'text-black'}`}>
+              <Text className={`font-bold ${selectedTime === time ? 'text-on-ink' : 'text-ink'}`}>
                 {time}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <View className="bg-primary-100/50 p-6 rounded-3xl mb-10">
+        <View className="bg-surface-2 p-6 rounded-r-lg mb-10">
           <View className="flex-row items-center mb-4">
             <View className="mr-2">
               <Clock size={20} color="#000" />

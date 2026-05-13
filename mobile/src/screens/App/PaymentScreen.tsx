@@ -24,7 +24,7 @@ export function PaymentScreen() {
       </View>
 
       <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-        <View className="bg-black p-8 rounded-[40px] mt-6 mb-10">
+        <View className="bg-black p-8 rounded-r-lg mt-6 mb-10">
           <Text className="text-white/60 text-sm mb-1">Total a pagar</Text>
           <Text className="text-white text-4xl font-bold">R$ 250,00</Text>
           
@@ -48,18 +48,18 @@ export function PaymentScreen() {
               <TouchableOpacity
                 key={method.id}
                 onPress={() => setSelectedMethod(method.id)}
-                className={`flex-row items-center p-6 rounded-3xl mb-4 border-2 ${
-                  selectedMethod === method.id ? 'border-black bg-primary-100/30' : 'border-primary-100 bg-white'
+                className={`flex-row items-center p-6 rounded-r-md mb-4 border-2 ${
+                  selectedMethod === method.id ? 'border-plum bg-plum-tint' : 'border-hairline bg-paper'
                 }`}
               >
-                <View className="bg-black p-3 rounded-2xl mr-4">
-                  <Icon size={24} stroke="#fff" />
+                <View className="bg-ink p-3 rounded-r-md mr-4">
+                  <Icon size={24} stroke="#FFFFFF" />
                 </View>
-                <Text className="flex-1 text-black font-bold text-lg">{method.name}</Text>
-                <View className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
-                  selectedMethod === method.id ? 'border-black bg-black' : 'border-primary-100'
+                <Text className="flex-1 text-ink font-bold text-lg">{method.name}</Text>
+                <View className={`w-6 h-6 rounded-r-pill border-2 items-center justify-center ${
+                  selectedMethod === method.id ? 'border-plum bg-plum' : 'border-hairline'
                 }`}>
-                  {selectedMethod === method.id && <View className="w-2 h-2 bg-white rounded-full" />}
+                  {selectedMethod === method.id && <View className="w-2 h-2 bg-on-ink rounded-r-pill" />}
                 </View>
               </TouchableOpacity>
             );

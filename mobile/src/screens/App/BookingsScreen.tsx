@@ -32,28 +32,36 @@ export function BookingsScreen() {
 
       <ScrollView className="px-6" showsVerticalScrollIndicator={false}>
         <View className="flex-row space-x-4 mb-8">
-          <TouchableOpacity className="bg-black px-6 py-2 rounded-full">
-            <Text className="text-white font-bold">Ativas</Text>
+          <TouchableOpacity className="bg-ink px-6 py-2 rounded-r-pill">
+            <Text className="text-on-ink font-bold">Ativas</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="bg-primary-100 px-6 py-2 rounded-full">
-            <Text className="text-black font-bold">Histórico</Text>
+          <TouchableOpacity className="bg-surface px-6 py-2 rounded-r-pill">
+            <Text className="text-ink font-bold">Histórico</Text>
           </TouchableOpacity>
         </View>
 
         {BOOKINGS.map((booking) => (
           <TouchableOpacity 
             key={booking.id}
-            className="bg-primary-100/30 border border-primary-100 rounded-[32px] p-6 mb-6 flex-row items-center"
+            className="bg-surface-2 border border-hairline rounded-r-lg p-6 mb-6 flex-row items-center"
           >
-            <Image 
-              source={{ uri: booking.image }} 
-              className="w-16 h-16 rounded-2xl mr-4 bg-gray-200"
+            <Image
+              source={{ uri: booking.image }}
+              className="w-16 h-16 rounded-r-md mr-4 bg-gray-200"
             />
             <View className="flex-1">
               <View className="flex-row justify-between items-center mb-1">
                 <Text className="text-black font-bold text-lg">{booking.establishment}</Text>
-                <View className={`px-3 py-1 rounded-full ${booking.status === 'Confirmado' ? 'bg-green-100' : 'bg-yellow-100'}`}>
-                  <Text className={`text-[10px] font-bold ${booking.status === 'Confirmado' ? 'text-green-700' : 'text-yellow-700'}`}>
+                <View
+                  className={`px-3 py-1 rounded-r-pill ${
+                    booking.status === 'Confirmado' ? 'bg-plum' : 'bg-surface border border-ink'
+                  }`}
+                >
+                  <Text
+                    className={`text-[10px] font-bold ${
+                      booking.status === 'Confirmado' ? 'text-on-ink' : 'text-ink'
+                    }`}
+                  >
                     {booking.status.toUpperCase()}
                   </Text>
                 </View>
@@ -62,13 +70,13 @@ export function BookingsScreen() {
               <View className="flex-row items-center mb-4">
                 <View className="flex-row items-center mr-4">
                   <View className="mr-1">
-                    <Calendar size={12} color="#666" />
+                    <Calendar size={12} color="#6B6B6B" />
                   </View>
                   <Text className="text-gray-500 text-xs">{booking.date}</Text>
                 </View>
                 <View className="flex-row items-center">
                   <View className="mr-1">
-                    <Clock size={12} color="#666" />
+                    <Clock size={12} color="#6B6B6B" />
                   </View>
                   <Text className="text-gray-500 text-xs">{booking.time}</Text>
                 </View>

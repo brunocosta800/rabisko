@@ -51,7 +51,7 @@ export function SettingsScreen() {
         {SETTINGS_GROUPS.map((group) => (
           <View key={group.title} className="mb-10">
             <Text className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-4">{group.title}</Text>
-            <View className="bg-primary-100/30 rounded-[32px] overflow-hidden">
+            <View className="bg-surface-2 rounded-r-lg overflow-hidden">
               {group.items.map((item, index) => {
                 const Icon = item.icon;
                 return (
@@ -60,7 +60,7 @@ export function SettingsScreen() {
                       className="flex-row items-center p-6"
                       activeOpacity={item.type === 'toggle' ? 1 : 0.7}
                     >
-                      <View className="bg-black p-3 rounded-2xl mr-4">
+                      <View className="bg-black p-3 rounded-r-md mr-4">
                         <Icon size={20} stroke="#fff" />
                       </View>
                       <Text className="flex-1 text-black font-bold text-lg">{item.name}</Text>
@@ -69,14 +69,14 @@ export function SettingsScreen() {
                         <Switch 
                           value={item.value ?? false} 
                           onValueChange={(val) => item.onToggle?.(val)}
-                          trackColor={{ false: '#ddd', true: '#000' }}
-                          thumbColor="#fff"
+                          trackColor={{ false: '#D9D9D9', true: '#602C66' }}
+                          thumbColor="#FFFFFF"
                         />
                       ) : (
                         <ChevronRight size={20} stroke="#000" />
                       )}
                     </TouchableOpacity>
-                    {index < group.items.length - 1 && <View className="h-[1px] bg-primary-100 mx-6" />}
+                    {index < group.items.length - 1 && <View className="h-[1px] bg-hairline mx-6" />}
                   </View>
                 );
               })}
@@ -86,12 +86,12 @@ export function SettingsScreen() {
 
         <TouchableOpacity 
           onPress={logout}
-          className="bg-red-50 p-6 rounded-[32px] flex-row items-center mb-20"
+          className="bg-error/10 p-6 rounded-r-lg flex-row items-center mb-20"
         >
-          <View className="bg-red-500 p-3 rounded-2xl mr-4">
-            <LogOut size={20} stroke="#fff" />
+          <View className="bg-error p-3 rounded-r-md mr-4">
+            <LogOut size={20} stroke="#FFFFFF" />
           </View>
-          <Text className="text-red-500 font-bold text-lg">Sair da Conta</Text>
+          <Text className="text-error font-bold text-lg">Sair da Conta</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

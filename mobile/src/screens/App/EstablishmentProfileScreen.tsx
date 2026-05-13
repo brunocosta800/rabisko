@@ -17,7 +17,7 @@ export function EstablishmentProfileScreen() {
             className="w-full h-full"
           />
           <TouchableOpacity 
-            className="absolute top-12 left-6 bg-white/80 p-2 rounded-full"
+            className="absolute top-12 left-6 bg-white/80 p-2 rounded-r-pill"
             onPress={() => navigation.goBack()}
           >
             <ChevronLeft size={24} color="#000" />
@@ -25,18 +25,18 @@ export function EstablishmentProfileScreen() {
         </View>
 
         {/* Content */}
-        <View className="px-6 -mt-10 bg-white rounded-t-[40px] pt-8 pb-32">
+        <View className="px-6 -mt-10 bg-white rounded-t-r-2xl pt-8 pb-32">
           <View className="flex-row justify-between items-start mb-4">
             <View className="flex-1">
               <Text className="text-3xl font-bold text-black uppercase">João Santos</Text>
               <View className="flex-row items-center mt-1">
                 <View className="mr-1">
-                  <MapPin size={14} color="#666" />
+                  <MapPin size={14} color="#6B6B6B" />
                 </View>
                 <Text className="text-gray-500 ml-1">Jardins, São Paulo • 1.2km</Text>
               </View>
             </View>
-            <View className="bg-primary-100 px-4 py-2 rounded-2xl items-center">
+            <View className="bg-surface px-4 py-2 rounded-r-md items-center">
               <View className="flex-row items-center">
                 <Star size={16} color="#000" fill="#000" />
                 <Text className="text-black font-bold ml-1">4.9</Text>
@@ -46,13 +46,13 @@ export function EstablishmentProfileScreen() {
           </View>
 
           <View className="flex-row space-x-3 mb-8">
-            <View className="bg-black px-4 py-2 rounded-full">
+            <View className="bg-black px-4 py-2 rounded-r-pill">
               <Text className="text-white text-xs">Realismo</Text>
             </View>
-            <View className="bg-black px-4 py-2 rounded-full">
+            <View className="bg-black px-4 py-2 rounded-r-pill">
               <Text className="text-white text-xs">Minimalista</Text>
             </View>
-            <View className="bg-primary-100 px-4 py-2 rounded-full flex-row items-center">
+            <View className="bg-surface px-4 py-2 rounded-r-pill flex-row items-center">
               <View className="mr-1">
                 <ShieldCheck size={12} color="#000" />
               </View>
@@ -72,13 +72,13 @@ export function EstablishmentProfileScreen() {
               <Image 
                 key={i}
                 source={{ uri: `https://images.unsplash.com/photo-1590247813693-5541d1c609fd?q=80&w=200&h=200&auto=format&fit=crop&sig=${i}` }} 
-                className="w-40 h-40 rounded-3xl mr-4 bg-gray-200"
+                className="w-40 h-40 rounded-r-xl mr-4 bg-gray-200"
               />
             ))}
           </ScrollView>
 
           <Text className="text-black font-bold text-xl mb-4">Horários</Text>
-          <View className="bg-primary-100/50 p-4 rounded-3xl">
+          <View className="bg-surface-2 p-4 rounded-r-lg">
             <View className="flex-row justify-between mb-2">
               <Text className="text-black">Segunda - Sexta</Text>
               <Text className="text-black font-bold">10:00 - 20:00</Text>
