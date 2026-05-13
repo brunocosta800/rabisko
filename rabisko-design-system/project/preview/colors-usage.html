@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Rabisko · Color usage</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: var(--rbk-bg); }
+  .card { width: 700px; height: 280px; padding: 28px 32px; box-sizing: border-box; display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .ex { background: var(--rbk-surface); border-radius: 16px; padding: 18px 20px; display:flex; flex-direction:column; justify-content:space-between; }
+  .ex h4 { font: var(--t-display-md); letter-spacing:.03em; margin-bottom: 10px; }
+  .row { display:flex; gap: 10px; align-items:center; }
+  .btn-ink { background: var(--rbk-ink); color: var(--rbk-on-ink); padding: 10px 22px; border-radius: var(--r-pill); font: 700 14px/1 var(--font-body); }
+  .btn-cream { background: var(--rbk-bg); color: var(--rbk-ink); padding: 10px 22px; border-radius: var(--r-pill); font: 700 14px/1 var(--font-body); }
+  .pill-plum { background: var(--rbk-plum); color: #fff; padding: 6px 14px; border-radius: var(--r-pill); font: 700 12px/1 var(--font-body); }
+  .note { font: var(--t-body-sm); color: var(--rbk-fg-3); margin-top: 14px; }
+</style></head>
+<body>
+<div class="card">
+  <div class="ex">
+    <h4>INK ON CREAM</h4>
+    <div class="row"><span class="btn-ink">Confirmar Pagamento</span><span class="btn-cream">Cancelar</span></div>
+    <div class="note">Default contrast pair. Black on cream is the system's primary voice.</div>
+  </div>
+  <div class="ex" style="background: var(--rbk-bg);">
+    <h4 style="color: var(--rbk-ink)">PLUM HIGHLIGHT</h4>
+    <div class="row"><span class="pill-plum">Próxima</span><span class="pill-plum" style="background:transparent;color:var(--rbk-plum);border:1px solid var(--rbk-plum)">Selecionado</span></div>
+    <div class="note">Plum appears once per screen — to mark the active tab, selected day, or upcoming booking.</div>
+  </div>
+</div>
+</body></html>

@@ -1,47 +1,33 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, TextInput } from 'react-native';
-import { Mail, ChevronLeft } from 'lucide-react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ChevronLeft } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AuthRoutesParamList } from '../../routes/auth.routes';
+
+import { Input } from '../../components/common/Input';
+import { Button } from '../../components/common/Button';
+import { colors, spacing } from '../../theme';
+import { Mail } from 'lucide-react-native';
 
 export function ForgotPasswordScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<AuthRoutesParamList>>();
+  const navigation = useNavigation();
 
   return (
-    <View className="flex-1 bg-white pt-20">
-      <View className="px-6 pt-12 pb-4 flex-row items-center">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
-          <ChevronLeft size={24} stroke="#000" />
-        </TouchableOpacity>
-        <Text className="text-2xl font-bold text-black uppercase tracking-tighter">Recuperar Senha</Text>
-      </View>
-
-      <View className="px-6 pt-10">
-        <Text className="text-gray-500 mb-8 leading-tight">
-          Insira seu e-mail cadastrado para receber as instruções de recuperação.
-        </Text>
-
-        <View className="bg-primary-100 rounded-2xl px-4 py-4 mb-8 flex-row items-center">
-          <View className="mr-3">
-            <Mail size={20} color="#000" />
-          </View>
-          <TextInput
-            placeholder="seu@email.com"
-            placeholderTextColor="#999"
-            className="flex-1 text-black"
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-        </View>
-      </View>
-
-      <TouchableOpacity
-        className="bg-black rounded-full py-5 mt-12 items-center"
-        onPress={() => navigation.navigate('NewPassword', { email: 'test@example.com' })}
-      >
-        <Text className="text-white font-bold text-lg">Enviar Link</Text>
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.back}>
+        <ChevronLeft size={24} color={colors.ink} />
       </TouchableOpacity>
+      <Text style={styles.title}>Recuperar Senha</Text>
+      <Text style={styles.sub}>Insira seu e-mail para receber as instruções de recuperação.</Text>
+      <Input label="E-mail" placeholder="seu@email.com" icon={Mail} keyboardType="email-address" autoCapitalize="none" />
+      <Button title="Enviar link" full onPress={() => navigation.goBack()} style={styles.btn} />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.bg, padding: spacing[6], paddingTop: spacing[12] },
+  back: { marginBottom: spacing[6] },
+  title: { fontFamily: 'BebasNeue', fontSize: 32, color: colors.ink, marginBottom: spacing[2] },
+  sub: { fontFamily: 'Inter', fontSize: 14, color: colors.fg2, lineHeight: 21, marginBottom: spacing[5] },
+  btn: { marginTop: spacing[8] },
+});

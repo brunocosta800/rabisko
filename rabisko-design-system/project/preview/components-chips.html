@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Rabisko · Chips & tags</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  body { margin: 0; background: var(--rbk-bg); }
+  .card { width: 700px; height: 240px; padding: 28px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; }
+  .label { font-family: var(--font-mono); font-size: 10px; color: var(--rbk-fg-3); letter-spacing: .04em; text-transform: uppercase; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .filter { background: var(--rbk-surface); border-radius: var(--r-pill); padding: 8px 16px; display: inline-flex; align-items: center; gap: 8px; font: var(--t-body); color: var(--rbk-ink); }
+  .pref { background: var(--rbk-ink); color: #fff; border-radius: var(--r-pill); padding: 12px 22px; font: 700 14px/1 var(--font-body); letter-spacing: .03em; text-transform: uppercase; }
+  .status { background: var(--rbk-surface); color: var(--rbk-ink); border-radius: 8px; padding: 6px 14px; border: 1px solid var(--rbk-ink); font: 700 12px/1 var(--font-body); }
+  .badge { background: var(--rbk-plum); color: #fff; border-radius: var(--r-pill); padding: 6px 14px; font: 700 12px/1 var(--font-body); }
+</style></head>
+<body>
+<div class="card">
+  <div>
+    <div class="label">Filter chips (Home)</div>
+    <div class="row" style="margin-top:8px">
+      <span class="filter"><iconify-icon icon="fluent:cursor-16-filled" width="16"></iconify-icon> Prox</span>
+      <span class="filter"><iconify-icon icon="vaadin:palete" width="16"></iconify-icon> Estilo</span>
+      <span class="filter"><iconify-icon icon="mdi:money" width="16"></iconify-icon> Dinheiro</span>
+    </div>
+  </div>
+  <div>
+    <div class="label">Preference chips (Profile)</div>
+    <div class="row" style="margin-top:8px">
+      <span class="pref">Realismo</span><span class="pref">Animais</span><span class="pref">Flores</span><span class="pref">Aquarela</span>
+    </div>
+  </div>
+  <div>
+    <div class="label">Status pills</div>
+    <div class="row" style="margin-top:8px">
+      <span class="status">Confirmado</span><span class="status">Pago</span><span class="badge">Próxima</span>
+    </div>
+  </div>
+</div>
+</body></html>

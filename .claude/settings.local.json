@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Vitor\\\\Documents\\\\FECAP\\\\TCC\\\\rabisko\" -Recurse -Force | ForEach-Object { $_.FullName } | Sort-Object)",
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(curl -s --compressed \"https://api.anthropic.com/v1/design/h/dpqIrz--VW9XtW7zpwRnTg?open_file=README.md\")",
+      "Bash(curl -s \"https://api.anthropic.com/v1/design/h/dpqIrz--VW9XtW7zpwRnTg?open_file=README.md\" -H \"Accept-Encoding: identity\" -H \"Accept: text/plain\")",
+      "Bash(tar -tf \"Rabisko Design System-handoff.tar\")",
+      "Bash(tar -tzf \"Rabisko Design System-handoff.tar.gz\")"
+    ]
+  }
+}

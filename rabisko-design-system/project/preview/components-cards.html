@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Rabisko · Cards</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  body { margin: 0; background: var(--rbk-bg); }
+  .card { width: 700px; height: 320px; padding: 28px 32px; box-sizing: border-box; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+  /* Artist card (black with cream footer) */
+  .artist { border-radius: 16px; overflow: hidden; }
+  .artist-body { background: var(--rbk-ink); color: #fff; padding: 26px 24px; position: relative; }
+  .rating { position: absolute; top: 18px; right: 22px; display: flex; align-items: center; gap: 6px; font: var(--t-body-lg); color: #fff; }
+  .name { font: var(--t-body-lg); font-weight: 500; }
+  .tags { display: flex; gap: 8px; margin-top: 14px; }
+  .tag { border: 1px solid #fff; border-radius: var(--r-pill); padding: 5px 14px; font: 500 12px/1 var(--font-body); }
+  .artist-foot { background: var(--rbk-surface); padding: 12px 24px; text-align: center; font: var(--t-body); color: var(--rbk-ink); }
+  /* Plain cream card */
+  .cream { background: var(--rbk-surface); border-radius: 16px; padding: 24px; }
+  .cream h4 { font: var(--t-h3); margin-bottom: 8px; }
+  .cream p { font: var(--t-body); color: var(--rbk-ink); }
+</style></head>
+<body>
+<div class="card">
+  <div class="artist">
+    <div class="artist-body">
+      <div class="rating">4,9 <iconify-icon icon="ic:round-star" width="20" style="color:#fff"></iconify-icon></div>
+      <div class="name" style="text-align:center; margin-top:14px; font-size:22px">João Santos</div>
+      <div class="tags" style="justify-content:center"><span class="tag">Realismo</span><span class="tag">Minimalista</span></div>
+    </div>
+    <div class="artist-foot">ver mais...</div>
+  </div>
+  <div class="cream">
+    <h4>Sobre</h4>
+    <p>Tatuador profissional, com trabalhos que transitam entre o minimalismo e o traço mais pesado.</p>
+    <p style="margin-top: 14px">@joao.santos</p>
+  </div>
+</div>
+</body></html>

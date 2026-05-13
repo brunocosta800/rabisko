@@ -2,10 +2,13 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export type UserRole = 'cliente' | 'artista' | 'estudio';
+
 interface User {
   id: string;
   name: string;
   email: string;
+  role: UserRole;
   avatar?: string;
 }
 
@@ -29,7 +32,7 @@ export const useAuthStore = create<AuthState>()(
       logout: () => set({ user: null, token: null, isAuthenticated: false }),
     }),
     {
-      name: 'auth-storage',
+      name: 'rbk:auth',
       storage: createJSONStorage(() => AsyncStorage),
     }
   )

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Rabisko · Bottom navigation</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  body { margin: 0; background: var(--rbk-bg); }
+  .card { width: 700px; height: 200px; padding: 24px 32px; box-sizing: border-box; display:flex; flex-direction: column; gap: 18px; }
+  .nav { width: 100%; background: var(--rbk-surface); border-radius: 16px; height: 80px; display:flex; align-items:center; justify-content: space-around; padding: 0 32px; box-sizing: border-box; }
+  iconify-icon { color: var(--rbk-ink); }
+  .active { color: var(--rbk-plum); }
+  .label { font-family: var(--font-mono); font-size: 10px; color: var(--rbk-fg-3); letter-spacing: .04em; text-transform: uppercase; }
+</style></head>
+<body>
+<div class="card">
+  <div class="label">Default — Home active (filled boxicons home)</div>
+  <div class="nav">
+    <iconify-icon icon="boxicons:home-filled" width="48"></iconify-icon>
+    <iconify-icon icon="majesticons:chat" width="48"></iconify-icon>
+    <iconify-icon icon="line-md:calendar" width="48"></iconify-icon>
+    <iconify-icon icon="solar:settings-bold" width="48"></iconify-icon>
+  </div>
+  <div class="label">Chat active — icon tints to plum</div>
+  <div class="nav">
+    <iconify-icon icon="boxicons:home-filled" width="48"></iconify-icon>
+    <iconify-icon icon="majesticons:chat" width="48" class="active" style="color:var(--rbk-plum)"></iconify-icon>
+    <iconify-icon icon="line-md:calendar" width="48"></iconify-icon>
+    <iconify-icon icon="solar:settings-bold" width="48"></iconify-icon>
+  </div>
+</div>
+</body></html>

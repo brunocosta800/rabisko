@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Rabisko · Avatars & ratings</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  body { margin: 0; background: var(--rbk-bg); }
+  .card { width: 700px; height: 260px; padding: 28px 32px; box-sizing: border-box; display: flex; align-items: center; gap: 36px; }
+  .av-stack { display: flex; align-items: end; gap: 16px; }
+  .avatar { background: center/cover no-repeat; border-radius: 50%; }
+  .a-xl { width: 120px; height: 120px; }
+  .a-lg { width: 80px; height: 80px; }
+  .a-md { width: 48px; height: 48px; }
+  .a-sm { width: 30px; height: 30px; }
+  .initial { background: var(--rbk-ink); color: #fff; display:flex; align-items:center; justify-content:center; font: 500 14px/1 var(--font-body); }
+  .rating-row { display: flex; flex-direction: column; gap: 14px; }
+  .stars { display: flex; align-items: center; gap: 8px; }
+  iconify-icon { color: var(--rbk-ink); }
+</style></head>
+<body>
+<div class="card">
+  <div class="av-stack">
+    <div class="avatar a-xl" style="background-image:url('../assets/portrait-artist.png')"></div>
+    <div class="avatar a-lg" style="background-image:url('../assets/portrait-artist.png')"></div>
+    <div class="avatar a-md" style="background-image:url('../assets/portrait-artist.png')"></div>
+    <div class="avatar a-sm initial">AM</div>
+  </div>
+  <div class="rating-row">
+    <div class="stars" style="font: var(--t-body-lg)">4,9 <iconify-icon icon="ic:round-star" width="24"></iconify-icon></div>
+    <div class="stars" style="font: var(--t-body-sm)">
+      <iconify-icon icon="ic:round-star" width="10"></iconify-icon>
+      <iconify-icon icon="ic:round-star" width="10"></iconify-icon>
+      <iconify-icon icon="ic:round-star" width="10"></iconify-icon>
+      <iconify-icon icon="ic:round-star" width="10"></iconify-icon>
+      <iconify-icon icon="ic:round-star" width="10"></iconify-icon>
+    </div>
+  </div>
+</div>
+</body></html>

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Rabisko · Spacing scale</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: var(--rbk-bg); }
+  .card { width: 700px; height: 240px; padding: 28px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; }
+  .row { display: flex; align-items: center; gap: 14px; }
+  .bar { background: var(--rbk-ink); height: 12px; border-radius: 3px; }
+  .label { font-family: var(--font-mono); font-size: 11px; color: var(--rbk-ink); width: 90px; }
+  .val { font-family: var(--font-mono); font-size: 11px; color: var(--rbk-fg-3); }
+</style></head>
+<body>
+<div class="card">
+  <div class="row"><div class="label">space-1</div><div class="bar" style="width:4px"></div><div class="val">4px</div></div>
+  <div class="row"><div class="label">space-2</div><div class="bar" style="width:8px"></div><div class="val">8px</div></div>
+  <div class="row"><div class="label">space-3</div><div class="bar" style="width:12px"></div><div class="val">12px</div></div>
+  <div class="row"><div class="label">space-4</div><div class="bar" style="width:16px"></div><div class="val">16px · gutter</div></div>
+  <div class="row"><div class="label">space-6</div><div class="bar" style="width:24px"></div><div class="val">24px</div></div>
+  <div class="row"><div class="label">space-8</div><div class="bar" style="width:32px"></div><div class="val">32px · screen padding</div></div>
+  <div class="row"><div class="label">space-12</div><div class="bar" style="width:48px"></div><div class="val">48px · nav icon size</div></div>
+  <div class="row"><div class="label">space-16</div><div class="bar" style="width:64px"></div><div class="val">64px · screen top inset</div></div>
+</div>
+</body></html>

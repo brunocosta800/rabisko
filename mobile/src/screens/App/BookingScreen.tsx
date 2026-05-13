@@ -1,105 +1,168 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar as RNCalendar, LocaleConfig } from 'react-native-calendars';
-import { ChevronLeft, Clock } from 'lucide-react-native';
+import { ChevronLeft } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Button } from '../../components/common/Button';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// Configure Calendar for Portuguese
+import { Button } from '../../components/common/Button';
+import { Stepper } from '../../components/common/Stepper';
+import { HomeStackParamList } from '../../routes/home.stack';
+import { colors, spacing, radius } from '../../theme';
+
 LocaleConfig.locales['pt-br'] = {
-  monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-  monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-  dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
-  dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
-  today: 'Hoje'
+  monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+  monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+  dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+  dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
+  today: 'Hoje',
 };
 LocaleConfig.defaultLocale = 'pt-br';
 
-const TIME_SLOTS = [
-  '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'
-];
+const TIME_SLOTS = ['09:00','10:00','11:00','13:00','14:00','15:00','16:00','17:00','18:00'];
 
 export function BookingScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+  const insets = useSafeAreaInsets();
   const [selectedDate, setSelectedDate] = React.useState(format(new Date(), 'yyyy-MM-dd'));
   const [selectedTime, setSelectedTime] = React.useState('');
 
   return (
-    <View className="flex-1 bg-white">
-      <View className="px-6 pt-12 pb-4 flex-row items-center">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
-          <ChevronLeft size={24} color="#000" />
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={8}>
+          <ChevronLeft size={24} color={colors.ink} />
         </TouchableOpacity>
-        <Text className="text-2xl font-bold text-black uppercase tracking-tighter">Reservar Horário</Text>
+        <Text style={styles.title}>Agendar</Text>
+        <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-        <Text className="text-black font-bold text-xl mb-4 mt-4">Selecione a Data</Text>
-        <View className="bg-primary-100 rounded-3xl overflow-hidden mb-8">
+      <Stepper current={1} />
+
+      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+        {/* Calendar */}
+        <Text style={styles.sectionLabel}>Selecione a data</Text>
+        <View style={styles.calendarCard}>
           <RNCalendar
-            onDayPress={(day: any) => setSelectedDate(day.dateString)}
-            markedDates={{
-              [selectedDate]: { selected: true, selectedColor: '#000' }
-            }}
+            onDayPress={(day: { dateString: string }) => setSelectedDate(day.dateString)}
+            markedDates={{ [selectedDate]: { selected: true, selectedColor: colors.plum } }}
             theme={{
               backgroundColor: 'transparent',
               calendarBackground: 'transparent',
-              textSectionTitleColor: '#000',
-              selectedDayBackgroundColor: '#000',
+              textSectionTitleColor: colors.ink,
+              selectedDayBackgroundColor: colors.plum,
               selectedDayTextColor: '#ffffff',
-              todayTextColor: '#bfa094',
-              dayTextColor: '#000',
-              textDisabledColor: '#ccc',
-              arrowColor: '#000',
-              monthTextColor: '#000',
-              indicatorColor: '#000',
+              todayTextColor: colors.plum,
+              dayTextColor: colors.ink,
+              textDisabledColor: colors.hairline,
+              arrowColor: colors.ink,
+              monthTextColor: colors.ink,
+              textDayFontFamily: 'Inter',
+              textMonthFontFamily: 'Inter',
+              textDayHeaderFontFamily: 'Inter',
               textDayFontWeight: '500',
-              textMonthFontWeight: 'bold',
-              textDayHeaderFontWeight: 'bold',
+              textMonthFontWeight: '700',
+              textDayHeaderFontWeight: '700',
               textDayFontSize: 14,
               textMonthFontSize: 16,
-              textDayHeaderFontSize: 12
+              textDayHeaderFontSize: 12,
             }}
           />
         </View>
 
-        <Text className="text-black font-bold text-xl mb-4">Selecione o Horário</Text>
-        <View className="flex-row flex-wrap -mx-2 mb-8">
+        {/* Time slots */}
+        <Text style={styles.sectionLabel}>Selecione o horário</Text>
+        <View style={styles.timesGrid}>
           {TIME_SLOTS.map((time) => (
             <TouchableOpacity
               key={time}
               onPress={() => setSelectedTime(time)}
-              className={`w-[30%] m-[1.5%] py-4 rounded-2xl items-center border ${selectedTime === time ? 'bg-black border-black' : 'bg-white border-primary-100'
-                }`}
+              style={[styles.timeSlot, selectedTime === time && styles.timeSlotActive]}
             >
-              <Text className={`font-bold ${selectedTime === time ? 'text-white' : 'text-black'}`}>
+              <Text style={[styles.timeText, selectedTime === time && styles.timeTextActive]}>
                 {time}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <View className="bg-primary-100/50 p-6 rounded-3xl mb-10">
-          <View className="flex-row items-center mb-4">
-            <View className="mr-2">
-              <Clock size={20} color="#000" />
-            </View>
-            <Text className="font-bold text-black">Resumo da Reserva</Text>
+        {/* Summary */}
+        <View style={styles.summary}>
+          <Text style={styles.summaryTitle}>Resumo</Text>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Data</Text>
+            <Text style={styles.summaryValue}>
+              {format(new Date(selectedDate + 'T12:00:00'), "dd 'de' MMMM", { locale: ptBR })}
+            </Text>
           </View>
-          <Text className="text-gray-600 mb-1">Data: <Text className="text-black font-bold">{format(new Date(selectedDate), "dd 'de' MMMM", { locale: ptBR })}</Text></Text>
-          <Text className="text-gray-600">Horário: <Text className="text-black font-bold">{selectedTime || 'Não selecionado'}</Text></Text>
+          <View style={styles.divider} />
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Horário</Text>
+            <Text style={styles.summaryValue}>{selectedTime || '—'}</Text>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Artista</Text>
+            <Text style={styles.summaryValue}>João Santos</Text>
+          </View>
         </View>
       </ScrollView>
 
-      <View className="p-6 pb-10 bg-white border-t border-gray-100">
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
         <Button
-          title="Continuar para Pagamento"
+          title="Continuar"
+          full
           disabled={!selectedTime}
-          onPress={() => navigation.navigate('Payment' as never)}
+          onPress={() => navigation.navigate('Payment', { artistId: '1' })}
         />
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.bg },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: spacing[6], paddingVertical: spacing[4],
+  },
+  title: { fontFamily: 'BebasNeue', fontSize: 24, color: colors.ink },
+  scroll: { flex: 1, paddingHorizontal: spacing[6] },
+  sectionLabel: {
+    fontFamily: 'Inter', fontSize: 14, fontWeight: '700', color: colors.ink,
+    marginBottom: spacing[3], marginTop: spacing[5],
+  },
+  calendarCard: {
+    backgroundColor: colors.surface, borderRadius: radius.lg,
+    overflow: 'hidden', marginBottom: spacing[2],
+  },
+  timesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  timeSlot: {
+    width: '30%',
+    paddingVertical: 14,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    backgroundColor: colors.paper,
+    borderWidth: 1, borderColor: colors.hairline,
+  },
+  timeSlotActive: { backgroundColor: colors.plum, borderColor: colors.plum },
+  timeText: { fontFamily: 'Inter', fontSize: 14, fontWeight: '600', color: colors.ink },
+  timeTextActive: { color: colors.onInk },
+  summary: {
+    backgroundColor: colors.surface, borderRadius: radius.lg,
+    padding: spacing[4], marginTop: spacing[5], marginBottom: spacing[4],
+  },
+  summaryTitle: { fontFamily: 'Inter', fontSize: 14, fontWeight: '700', color: colors.ink, marginBottom: spacing[3] },
+  summaryRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 2 },
+  summaryLabel: { fontFamily: 'Inter', fontSize: 13, color: colors.fg2 },
+  summaryValue: { fontFamily: 'Inter', fontSize: 13, fontWeight: '600', color: colors.ink },
+  divider: { height: 1, backgroundColor: colors.hairline, marginVertical: spacing[3] },
+  footer: {
+    paddingHorizontal: spacing[6], paddingTop: spacing[4],
+    borderTopWidth: 1, borderTopColor: colors.hairline, backgroundColor: colors.paper,
+  },
+});

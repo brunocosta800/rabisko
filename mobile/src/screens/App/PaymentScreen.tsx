@@ -1,81 +1,137 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { ChevronLeft, CreditCard, QrCode, Smartphone } from 'lucide-react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { ChevronLeft, QrCode, CreditCard, Smartphone } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Button } from '../../components/common/Button';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const PAYMENT_METHODS = [
-  { id: 'pix', name: 'Pix', icon: QrCode },
-  { id: 'card', name: 'Cartão de Crédito', icon: CreditCard },
-  { id: 'apple', name: 'Apple Pay', icon: Smartphone },
+import { Button } from '../../components/common/Button';
+import { Stepper } from '../../components/common/Stepper';
+import { HomeStackParamList } from '../../routes/home.stack';
+import { colors, spacing, radius } from '../../theme';
+
+const METHODS = [
+  { id: 'pix',  label: 'Pix',              Icon: QrCode },
+  { id: 'card', label: 'Cartão de Crédito', Icon: CreditCard },
+  { id: 'mpay', label: 'Apple / Google Pay', Icon: Smartphone },
 ];
 
 export function PaymentScreen() {
-  const navigation = useNavigation();
-  const [selectedMethod, setSelectedMethod] = React.useState('pix');
+  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+  const insets = useSafeAreaInsets();
+  const [method, setMethod] = React.useState('pix');
+
+  const selectedLabel = METHODS.find((m) => m.id === method)?.label ?? '';
 
   return (
-    <View className="flex-1 bg-white">
-      <View className="px-6 pt-12 pb-4 flex-row items-center">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
-          <ChevronLeft size={24} stroke="#000" />
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={8}>
+          <ChevronLeft size={24} color={colors.ink} />
         </TouchableOpacity>
-        <Text className="text-2xl font-bold text-black uppercase tracking-tighter">Pagamento</Text>
+        <Text style={styles.title}>Pagamento</Text>
+        <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-        <View className="bg-black p-8 rounded-[40px] mt-6 mb-10">
-          <Text className="text-white/60 text-sm mb-1">Total a pagar</Text>
-          <Text className="text-white text-4xl font-bold">R$ 250,00</Text>
-          
-          <View className="h-[1px] bg-white/20 my-6" />
-          
-          <View className="flex-row justify-between mb-2">
-            <Text className="text-white/60">Serviço</Text>
-            <Text className="text-white font-medium">Tatuagem Realista</Text>
+      <Stepper current={2} />
+
+      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+        {/* Total card */}
+        <View style={styles.totalCard}>
+          <Text style={styles.totalLabel}>Total a pagar</Text>
+          <Text style={styles.totalValue}>R$ 250,00</Text>
+          <View style={styles.divider} />
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Serviço</Text>
+            <Text style={styles.detailValue}>Tatuagem Realista</Text>
           </View>
-          <View className="flex-row justify-between">
-            <Text className="text-white/60">Profissional</Text>
-            <Text className="text-white font-medium">João Santos</Text>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Profissional</Text>
+            <Text style={styles.detailValue}>João Santos</Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Data</Text>
+            <Text style={styles.detailValue}>15 de Maio · 14:00</Text>
           </View>
         </View>
 
-        <Text className="text-black font-bold text-xl mb-4">Escolha o Método</Text>
-        <View className="space-y-4">
-          {PAYMENT_METHODS.map((method) => {
-            const Icon = method.icon;
-            return (
-              <TouchableOpacity
-                key={method.id}
-                onPress={() => setSelectedMethod(method.id)}
-                className={`flex-row items-center p-6 rounded-3xl mb-4 border-2 ${
-                  selectedMethod === method.id ? 'border-black bg-primary-100/30' : 'border-primary-100 bg-white'
-                }`}
-              >
-                <View className="bg-black p-3 rounded-2xl mr-4">
-                  <Icon size={24} stroke="#fff" />
-                </View>
-                <Text className="flex-1 text-black font-bold text-lg">{method.name}</Text>
-                <View className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
-                  selectedMethod === method.id ? 'border-black bg-black' : 'border-primary-100'
-                }`}>
-                  {selectedMethod === method.id && <View className="w-2 h-2 bg-white rounded-full" />}
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+        {/* Methods */}
+        <Text style={styles.sectionLabel}>Escolha o método</Text>
+        {METHODS.map(({ id, label, Icon }) => (
+          <TouchableOpacity
+            key={id}
+            onPress={() => setMethod(id)}
+            style={[styles.methodCard, method === id && styles.methodCardActive]}
+            activeOpacity={0.85}
+          >
+            <View style={[styles.methodIcon, method === id && styles.methodIconActive]}>
+              <Icon size={22} color={method === id ? colors.onInk : colors.ink} />
+            </View>
+            <Text style={styles.methodLabel}>{label}</Text>
+            <View style={[styles.radio, method === id && styles.radioActive]}>
+              {method === id && <View style={styles.radioDot} />}
+            </View>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
 
-      <View className="p-6 pb-10 bg-white border-t border-gray-100">
-        <Button 
-          title={`Pagar com ${PAYMENT_METHODS.find(m => m.id === selectedMethod)?.name}`}
-          onPress={() => {
-            alert('Pagamento processado com sucesso!');
-            navigation.navigate('HomeList' as never);
-          }}
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
+        <Button
+          title={`Pagar com ${selectedLabel}`}
+          full
+          onPress={() => navigation.navigate('Confirmed')}
         />
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.bg },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: spacing[6], paddingVertical: spacing[4],
+  },
+  title: { fontFamily: 'BebasNeue', fontSize: 24, color: colors.ink },
+  scroll: { flex: 1, paddingHorizontal: spacing[6] },
+  totalCard: {
+    backgroundColor: colors.ink, borderRadius: radius.xl,
+    padding: spacing[5], marginTop: spacing[4],
+  },
+  totalLabel: { fontFamily: 'Inter', fontSize: 12, color: 'rgba(255,255,255,0.6)', marginBottom: 4 },
+  totalValue: { fontFamily: 'Inter', fontSize: 36, fontWeight: '700', color: '#fff' },
+  divider: { height: 1, backgroundColor: 'rgba(255,255,255,0.15)', marginVertical: spacing[4] },
+  detailRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
+  detailLabel: { fontFamily: 'Inter', fontSize: 13, color: 'rgba(255,255,255,0.6)' },
+  detailValue: { fontFamily: 'Inter', fontSize: 13, fontWeight: '600', color: '#fff' },
+  sectionLabel: {
+    fontFamily: 'Inter', fontSize: 14, fontWeight: '700', color: colors.ink,
+    marginTop: spacing[5], marginBottom: spacing[3],
+  },
+  methodCard: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: colors.paper, borderRadius: radius.lg,
+    borderWidth: 1, borderColor: colors.hairline,
+    padding: spacing[4], marginBottom: 12,
+  },
+  methodCardActive: { borderColor: colors.plum, backgroundColor: colors.plumTint },
+  methodIcon: {
+    width: 44, height: 44, borderRadius: radius.md,
+    backgroundColor: colors.surface,
+    alignItems: 'center', justifyContent: 'center', marginRight: 14,
+  },
+  methodIconActive: { backgroundColor: colors.plum },
+  methodLabel: { flex: 1, fontFamily: 'Inter', fontSize: 15, fontWeight: '600', color: colors.ink },
+  radio: {
+    width: 22, height: 22, borderRadius: 11,
+    borderWidth: 2, borderColor: colors.hairline,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  radioActive: { borderColor: colors.plum },
+  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.plum },
+  footer: {
+    paddingHorizontal: spacing[6], paddingTop: spacing[4],
+    borderTopWidth: 1, borderTopColor: colors.hairline, backgroundColor: colors.paper,
+  },
+});

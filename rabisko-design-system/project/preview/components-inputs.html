@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Rabisko · Input fields</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  body { margin: 0; background: var(--rbk-bg); }
+  .card { width: 700px; height: 280px; padding: 28px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; }
+  .field { background: var(--rbk-surface); border-radius: var(--r-pill); padding: 16px 24px; display:flex; align-items:center; gap: 14px; }
+  .field input { flex: 1; background: transparent; border: 0; outline: 0; font: var(--t-body-lg); color: var(--rbk-ink); }
+  .field input::placeholder { color: var(--rbk-ink); opacity: .55; }
+  .label { font: var(--t-body-sm); color: var(--rbk-ink); margin-bottom: 2px; }
+  iconify-icon { color: var(--rbk-ink); }
+</style></head>
+<body>
+<div class="card">
+  <div><div class="label">E-mail</div>
+    <div class="field"><iconify-icon icon="famicons:mail" width="16"></iconify-icon><input placeholder="contato@studio.com"></div>
+  </div>
+  <div><div class="label">Senha</div>
+    <div class="field"><iconify-icon icon="boxicons:lock-filled" width="16"></iconify-icon><input placeholder="***********" type="password"><iconify-icon icon="weui:eyes-off-filled" width="16"></iconify-icon></div>
+  </div>
+  <div>
+    <div class="field"><iconify-icon icon="tabler:search" width="24"></iconify-icon><input placeholder="Artistas, estúdios..."><iconify-icon icon="mdi:filter" width="24"></iconify-icon></div>
+  </div>
+</div>
+</body></html>

@@ -1,62 +1,79 @@
 import React from 'react';
-import { TouchableOpacity, Text, ActivityIndicator, TouchableOpacityProps } from 'react-native';
-import Animated, { 
-  useAnimatedStyle, 
-  useSharedValue, 
-  withSpring,
-  withTiming 
-} from 'react-native-reanimated';
+import { TouchableOpacity, Text, ActivityIndicator, TouchableOpacityProps, StyleSheet } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { colors, radius } from '../../theme';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
   loading?: boolean;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'plum' | 'ghost';
+  full?: boolean;
 }
 
-const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
-export function Button({ title, loading, variant = 'primary', className, ...rest }: ButtonProps) {
+export function Button({ title, loading, variant = 'primary', full, style, ...rest }: ButtonProps) {
   const scale = useSharedValue(1);
-  const opacity = useSharedValue(1);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  }));
+  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
-  const handlePressIn = () => {
-    scale.value = withSpring(0.96);
-    opacity.value = withTiming(0.8);
-  };
+  const onPressIn = () => { scale.value = withSpring(0.97, { damping: 15 }); };
+  const onPressOut = () => { scale.value = withSpring(1, { damping: 15 }); };
 
-  const handlePressOut = () => {
-    scale.value = withSpring(1);
-    opacity.value = withTiming(1);
-  };
+  const bg = {
+    primary:   colors.ink,
+    secondary: 'transparent',
+    plum:      colors.plum,
+    ghost:     'transparent',
+  }[variant];
+
+  const textColor = {
+    primary:   colors.onInk,
+    secondary: colors.ink,
+    plum:      '#FFFFFF',
+    ghost:     colors.ink,
+  }[variant];
 
   return (
-    <AnimatedTouchableOpacity
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
+    <AnimatedTouchable
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
       activeOpacity={1}
-      className={`rounded-full py-6 items-center justify-center flex-row shadow-sm ${
-        variant === 'outline' ? 'bg-transparent border-2 border-black' : 'bg-black'
-      } ${className}`}
       disabled={loading}
-      style={animatedStyle}
+      style={[
+        styles.base,
+        { backgroundColor: bg, width: full ? '100%' : undefined },
+        variant === 'secondary' && styles.bordered,
+        animStyle,
+        style,
+      ]}
       {...rest}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'outline' ? '#000' : '#fff'} />
+        <ActivityIndicator color={textColor} />
       ) : (
-        <Text 
-          className={`font-black text-2xl uppercase tracking-tighter ${
-            variant === 'outline' ? 'text-black' : 'text-white'
-          }`}
-        >
-          {title}
-        </Text>
+        <Text style={[styles.label, { color: textColor }]}>{title}</Text>
       )}
-    </AnimatedTouchableOpacity>
+    </AnimatedTouchable>
   );
 }
+
+const styles = StyleSheet.create({
+  base: {
+    borderRadius: radius.md,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bordered: {
+    borderWidth: 1,
+    borderColor: colors.hairline,
+  },
+  label: {
+    fontFamily: 'Inter',
+    fontSize: 20,
+    fontWeight: '700',
+    lineHeight: 20,
+  },
+});

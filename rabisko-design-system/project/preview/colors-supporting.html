@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Rabisko · Supporting colors</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: var(--rbk-bg); font: var(--t-body); }
+  .card { width: 700px; height: 200px; padding: 24px 32px; box-sizing: border-box; display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  .sw { display:flex; flex-direction:column; gap: 8px; }
+  .chip { height: 90px; border-radius: 12px; border: 1px solid rgba(0,0,0,.06); }
+  .name { font-weight: 600; font-size: 12px; color: var(--rbk-ink); }
+  .hex  { font-family: var(--font-mono); font-size: 10px; color: var(--rbk-fg-3); letter-spacing: .02em; }
+</style></head>
+<body>
+<div class="card">
+  <div class="sw"><div class="chip" style="background:var(--rbk-paper)"></div><div class="name">paper</div><div class="hex">#FFFFFF</div></div>
+  <div class="sw"><div class="chip" style="background:var(--rbk-surface-2)"></div><div class="name">surface-2</div><div class="hex">#F2EBE0</div></div>
+  <div class="sw"><div class="chip" style="background:var(--rbk-plum-deep)"></div><div class="name">plum-deep</div><div class="hex">#4A2150</div></div>
+  <div class="sw"><div class="chip" style="background:var(--rbk-indigo)"></div><div class="name">indigo</div><div class="hex">#2C4466</div></div>
+  <div class="sw"><div class="chip" style="background:var(--rbk-hairline)"></div><div class="name">hairline</div><div class="hex">#D9D9D9</div></div>
+</div>
+</body></html>

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Rabisko · Buttons</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: var(--rbk-bg); }
+  .card { width: 700px; height: 260px; padding: 28px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px; }
+  .row { display: flex; align-items: center; gap: 14px; }
+  .btn-primary { background: var(--rbk-ink); color: var(--rbk-on-ink); padding: 18px 40px; border-radius: var(--r-pill); font: var(--t-button); border: 0; cursor: pointer; }
+  .btn-primary.full { width: 100%; text-align:center; }
+  .btn-secondary { background: var(--rbk-surface); color: var(--rbk-ink); padding: 14px 28px; border-radius: var(--r-pill); font: 700 14px/1 var(--font-body); border: 0; }
+  .btn-text { background: transparent; color: var(--rbk-ink); padding: 14px 4px; font: 700 14px/1 var(--font-body); border: 0; }
+  .btn-small { background: var(--rbk-ink); color: var(--rbk-on-ink); padding: 8px 18px; border-radius: var(--r-pill); font: 500 12px/1 var(--font-body); border: 0; }
+  .label { font-family: var(--font-mono); font-size: 10px; color: var(--rbk-fg-3); width: 120px; letter-spacing: .04em; text-transform: uppercase; }
+</style></head>
+<body>
+<div class="card">
+  <div class="row"><div class="label">Primary</div><button class="btn-primary full">Começar</button></div>
+  <div class="row"><div class="label">Secondary</div><button class="btn-secondary">Cancelar</button><button class="btn-secondary">Ver perfil</button></div>
+  <div class="row"><div class="label">Text</div><button class="btn-text">Ver Todos</button><button class="btn-text" style="color:var(--rbk-plum)">Esqueceu a Senha?</button></div>
+  <div class="row"><div class="label">Compact pill</div><button class="btn-small">Iniciar Conversa</button><button class="btn-small" style="background:var(--rbk-plum)">Próxima</button></div>
+</div>
+</body></html>
