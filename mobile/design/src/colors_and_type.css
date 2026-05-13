@@ -1,0 +1,152 @@
+/* =========================================================================
+   RABISKO — Colors & Type tokens
+   Source: Figma "Untitled.fig" (Rabisko tattoo-booking mobile app)
+   ========================================================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap");
+
+@font-face {
+  font-family: "Bebas Neue";
+  src: url("fonts/BebasNeue-Regular.ttf") format("truetype");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ─── Brand / surface ─────────────────────────────── */
+  --rbk-bg:           #F8F9FA; /* page background (rgb 248,249,250) */
+  --rbk-surface:      #EAE0D5; /* warm cream — primary card / nav surface */
+  --rbk-surface-2:    #F2EBE0; /* lighter cream for nested cards */
+  --rbk-ink:          #000000; /* primary text, primary CTA, icon */
+  --rbk-ink-soft:     #1A1A1A; /* near-black for hovers / pressed */
+  --rbk-paper:        #FFFFFF; /* pure white surface */
+  --rbk-hairline:     #D9D9D9; /* dividers, disabled borders */
+
+  /* ─── Accent ──────────────────────────────────────── */
+  --rbk-plum:         #602C66; /* purple — selected / active states */
+  --rbk-plum-deep:    #4A2150; /* hover for plum */
+  --rbk-plum-tint:    #EFE6F0; /* very light plum bg (selected day halo) */
+
+  --rbk-indigo:       #2C4466; /* dark blue (rare, secondary accent) */
+  --rbk-steel:        #2E3238; /* near-black neutral, very rare */
+
+  /* ─── Semantic ────────────────────────────────────── */
+  --rbk-fg-1:         var(--rbk-ink);          /* primary text */
+  --rbk-fg-2:         #404040;                  /* secondary text */
+  --rbk-fg-3:         #6B6B6B;                  /* muted / timestamp */
+  --rbk-on-ink:       #FFFFFF;                  /* text on black */
+  --rbk-on-surface:   #000000;                  /* text on cream */
+
+  --rbk-success:      #1F7A4D;
+  --rbk-warning:      #B5752A;
+  --rbk-error:        #B33A3A;
+
+  /* ─── Radius scale ────────────────────────────────────
+     SINGLE SOURCE OF TRUTH. Anchored on the Role selector
+     (cadastro) — 12 px outer, 8 px inner. Every other token
+     scales from that beat. NEVER hard-code px radii in
+     components; always reference these vars.
+
+       xs (8)   inner item inside an md container (12 − 4 pad)
+       sm (10)  micro chips / inline tags
+   →   md (12)  DEFAULT — buttons, fields, role-switch, tabs
+       lg (16)  cards, sheets, surface tiles
+       xl (22)  hero cards, large media tiles
+       2xl(28)  modal sheets, logo blocks
+       pill     status pills, round icon buttons, segmented full pill */
+  --rbk-r-xs:   8px;
+  --rbk-r-sm:   10px;
+  --rbk-r-md:   12px;   /* DEFAULT */
+  --rbk-r-lg:   16px;
+  --rbk-r-xl:   22px;
+  --rbk-r-2xl:  28px;
+  --rbk-r-pill: 999px;
+  /* legacy aliases — point at the same scale */
+  --r-sm:   var(--rbk-r-xs);
+  --r-md:   var(--rbk-r-md);
+  --r-lg:   var(--rbk-r-lg);
+  --r-pill: var(--rbk-r-pill);
+  --r-full: var(--rbk-r-pill);
+
+  /* ─── Type families ───────────────────────────────── */
+  --font-display: "Bebas Neue", "Impact", system-ui, sans-serif;
+  --font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-aux:     "DM Sans", "Inter", system-ui, sans-serif;
+  --font-mono:    ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* ─── Type scale (mobile-first; matches Figma) ────── */
+  --t-display-xl: 700 64px/1   var(--font-display); /* RABISKO logo */
+  --t-display-lg: 400 32px/1   var(--font-display); /* screen titles */
+  --t-display-md: 400 20px/1   var(--font-display); /* card eyebrow */
+  --t-display-sm: 400 16px/1   var(--font-display);
+
+  --t-h1:         700 32px/1.1 var(--font-aux);     /* "João Santos" */
+  --t-h2:         700 24px/1.2 var(--font-body);
+  --t-h3:         700 20px/1.2 var(--font-aux);     /* "Sobre" */
+  --t-h4:         600 16px/1.25 var(--font-body);
+
+  --t-body-lg:    400 16px/1.4 var(--font-body);    /* default body */
+  --t-body:       400 14px/1.4 var(--font-body);    /* subtitle */
+  --t-body-sm:    400 12px/1.4 var(--font-body);    /* labels */
+  --t-caption:    300 11px/1.3 var(--font-body);    /* timestamps */
+  --t-micro:      400 10px/1.3 var(--font-body);    /* review body */
+
+  --t-button:     700 20px/1   var(--font-body);    /* primary CTA */
+  --t-button-sm:  500 12px/1   var(--font-body);    /* chip */
+
+  /* ─── Spacing scale (8pt-ish) ─────────────────────── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ─── Shadow / elevation ──────────────────────────── */
+  /* The system uses near-zero elevation; surfaces are flat. */
+  --sh-0: none;
+  --sh-1: 0 1px 2px rgba(0,0,0,.04);
+  --sh-2: 0 6px 18px rgba(0,0,0,.08);
+
+  /* ─── Motion ──────────────────────────────────────── */
+  --ease-out:  cubic-bezier(.2,.7,.2,1);
+  --ease-in:   cubic-bezier(.6,0,.8,.2);
+  --dur-fast:  120ms;
+  --dur-med:   220ms;
+  --dur-slow:  360ms;
+}
+
+/* =========================================================================
+   Semantic resets / element defaults
+   ========================================================================= */
+html, body {
+  background: var(--rbk-bg);
+  color: var(--rbk-fg-1);
+  font: var(--t-body-lg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, .h1 { font: var(--t-display-lg); letter-spacing: .01em; margin: 0; }
+h2, .h2 { font: var(--t-h2); margin: 0; }
+h3, .h3 { font: var(--t-h3); margin: 0; }
+h4, .h4 { font: var(--t-h4); margin: 0; }
+
+.display-xl { font: var(--t-display-xl); letter-spacing: .01em; }
+.display-lg { font: var(--t-display-lg); letter-spacing: .015em; }
+.display-md { font: var(--t-display-md); letter-spacing: .03em; }
+
+.body-lg  { font: var(--t-body-lg); }
+.body     { font: var(--t-body); }
+.body-sm  { font: var(--t-body-sm); }
+.caption  { font: var(--t-caption); color: var(--rbk-fg-3); }
+.micro    { font: var(--t-micro); }
+
+p { margin: 0 0 var(--space-3); }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }

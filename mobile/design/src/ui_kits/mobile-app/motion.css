@@ -1,0 +1,143 @@
+/* =========================================================================
+   RABISKO — Motion
+   Centralized, reusable animation utilities. Built on the design-token
+   easing/duration variables exposed in colors_and_type.css.
+   ========================================================================= */
+
+:root {
+  --ease-spring: cubic-bezier(.2,.9,.25,1.2);   /* slight overshoot, used for sheets / mounts */
+}
+
+/* ────────── Keyframes ────────────────────────────────────────── */
+
+@keyframes rbkFadeUp {
+  0%   { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes rbkFadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes rbkSlideIn {
+  0%   { opacity: 0; transform: translateX(24px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes rbkPop {
+  0%   { transform: scale(.92); opacity: 0; }
+  60%  { transform: scale(1.02); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes rbkSheetUp {
+  0%   { transform: translateY(100%); opacity: .4; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes rbkPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(123,81,122,.55); }
+  60%      { box-shadow: 0 0 0 14px rgba(123,81,122,0); }
+}
+@keyframes rbkCheckPop {
+  0%   { transform: scale(0); opacity: 0; }
+  50%  { transform: scale(1.18); opacity: 1; }
+  75%  { transform: scale(.94); }
+  100% { transform: scale(1); }
+}
+@keyframes rbkRingExpand {
+  0%   { transform: scale(.4); opacity: .6; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes rbkPulseDot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(123,81,122,.55); }
+  60%      { box-shadow: 0 0 0 10px rgba(123,81,122,0); }
+}
+@keyframes rbkShimmer {
+  0%   { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+/* ────────── Page transitions ─────────────────────────────────── */
+
+/* Frame components apply [data-screen] so React can re-key on navigation
+   and this animation plays each time the screen changes. */
+[data-screen-anim] {
+  animation: rbkFadeUp var(--dur-med) var(--ease-out) both;
+}
+
+/* ────────── Staggered children ───────────────────────────────── */
+
+.rbk-stagger > * {
+  animation: rbkFadeUp var(--dur-med) var(--ease-out) both;
+}
+.rbk-stagger > *:nth-child(1) { animation-delay: 30ms;  }
+.rbk-stagger > *:nth-child(2) { animation-delay: 75ms;  }
+.rbk-stagger > *:nth-child(3) { animation-delay: 120ms; }
+.rbk-stagger > *:nth-child(4) { animation-delay: 165ms; }
+.rbk-stagger > *:nth-child(5) { animation-delay: 210ms; }
+.rbk-stagger > *:nth-child(6) { animation-delay: 255ms; }
+.rbk-stagger > *:nth-child(7) { animation-delay: 300ms; }
+.rbk-stagger > *:nth-child(8) { animation-delay: 345ms; }
+
+/* ────────── Interactive transitions ──────────────────────────── */
+
+button,
+[role="button"],
+a {
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    background-color var(--dur-med) var(--ease-out),
+    color var(--dur-med) var(--ease-out),
+    box-shadow var(--dur-med) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out);
+}
+
+/* Press feedback — works on any button without extra markup. */
+button:active:not(:disabled),
+[role="button"]:active {
+  transform: scale(.97);
+}
+
+/* Card lift — apply .rbk-tap to any card-shaped clickable. */
+.rbk-tap {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.rbk-tap:active { transform: scale(.985); }
+
+/* Heart pop — used on the favorite toggle. */
+.rbk-heart-pop {
+  animation: rbkPop 320ms var(--ease-spring) both;
+}
+
+/* Bottom-sheet mount. */
+.rbk-sheet-in {
+  animation: rbkSheetUp 320ms var(--ease-spring) both;
+}
+
+/* Skeleton / shimmer placeholder. */
+.rbk-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--rbk-surface) 0%,
+    rgba(0,0,0,.04) 50%,
+    var(--rbk-surface) 100%
+  );
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  animation: rbkShimmer 1.4s linear infinite;
+}
+
+/* Bottom-nav icon active scale. */
+.rbk-nav-active iconify-icon {
+  transform: scale(1.12);
+  transition: transform var(--dur-med) var(--ease-spring);
+}
+
+/* ────────── Reduced motion ───────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}

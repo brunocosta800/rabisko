@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rabisko · Exportar telas</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<link rel="stylesheet" href="motion.css">
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #1a1a1a; color: #fff; font-family: var(--font-body); min-height: 100vh; }
+  .wrap { display: grid; grid-template-columns: 260px 1fr; gap: 40px; padding: 32px 40px; align-items: start; }
+  .panel { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 32px; }
+  .panel h1 { margin: 0; font: var(--t-display-md); letter-spacing: .04em; color: #fff; }
+  .panel p  { margin: 0; font: 13px/1.5 var(--font-body); color: #aaa; }
+  .btn {
+    background: var(--rbk-plum); color: #fff; border: 0; padding: 14px 18px;
+    border-radius: var(--rbk-r-md); font: 600 14px/1 var(--font-body);
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn[disabled] { opacity: .5; cursor: wait; }
+  .btn.secondary { background: #2a2a2a; }
+  .log { font: 12px/1.5 ui-monospace, monospace; color: #888; max-height: 220px; overflow: auto; background: #0a0a0a; padding: 12px; border-radius: 10px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, 402px); gap: 28px; }
+  .card { display: flex; flex-direction: column; gap: 10px; }
+  .card .label { font: 12px/1 var(--font-body); color: #888; letter-spacing: .04em; }
+  .screenshot {
+    width: 402px; height: 874px; background: var(--rbk-bg);
+    border-radius: 24px; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    position: relative; isolation: isolate;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="panel">
+    <h1>EXPORT</h1>
+    <p>Cada tela é renderizada em 402 × 874 px (2x para Figma). Clique para gerar e baixar um ZIP com todos os PNGs.</p>
+    <button class="btn" id="exportBtn">
+      <iconify-icon icon="material-symbols:download-rounded" width="18"></iconify-icon>
+      Baixar ZIP de PNGs (18 telas)
+    </button>
+    <button class="btn" id="exportHtmlBtn" style="background:#1a1a1a;border:1px solid #444">
+      <iconify-icon icon="material-symbols:code-rounded" width="18"></iconify-icon>
+      Baixar ZIP de HTMLs (18 telas)
+    </button>
+    <button class="btn secondary" id="singleBtn">Baixar PNG de uma tela</button>
+    <div class="log" id="log">Pronto.</div>
+    <p style="font-size:11px; color:#666">Dica: no Figma, importe PNG e use "Place image" para colocar cada tela em uma frame de 402×874.</p>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<script type="text/babel" src="components/Frame.jsx"></script>
+<script type="text/babel" src="components/BottomNav.jsx"></script>
+<script type="text/babel" src="components/Header.jsx"></script>
+<script type="text/babel" src="components/Button.jsx"></script>
+<script type="text/babel" src="components/Field.jsx"></script>
+<script type="text/babel" src="components/Chip.jsx"></script>
+<script type="text/babel" src="components/Favorites.jsx"></script>
+<script type="text/babel" src="components/ArtistCard.jsx"></script>
+<script type="text/babel" src="components/CalendarMini.jsx"></script>
+<script type="text/babel" src="components/Stepper.jsx"></script>
+<script type="text/babel" src="components/Screens.jsx"></script>
+<script type="text/babel" src="components/BiskoAI.jsx"></script>
+<script type="text/babel" src="components/MoreScreens.jsx"></script>
+<script type="text/babel" src="components/SessionFlow.jsx"></script>
+<script type="text/babel" src="components/ChatV2.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+(function () {
+  const SCREENS = [
+    { key: "landing",   label: "01-landing",   C: window.LandingScreen   },
+    { key: "login",     label: "02-login",     C: window.LoginScreen     },
+    { key: "cadastro",  label: "02b-cadastro", C: window.CadastroScreen  },
+    { key: "home",      label: "03-home",      C: window.HomeScreen      },
+    { key: "artist",    label: "04-artist",    C: window.ArtistScreen    },
+    { key: "booking",   label: "05-booking",   C: window.BookingScreen   },
+    { key: "payment",   label: "06-payment",   C: window.PaymentScreen   },
+    { key: "confirmed", label: "06b-confirmed",C: window.ConfirmedScreen },
+    { key: "bisko",     label: "07-simulador", C: window.SimulatorScreen },
+    { key: "chat",      label: "08-chat",      C: window.ChatScreen      },
+    { key: "calendar",  label: "09-calendar",  C: window.CalendarScreen  },
+    { key: "session",   label: "09b-sessao",   C: window.SessionDetailScreen },
+    { key: "checkin",   label: "10-checkin",   C: window.CheckinScreen   },
+    { key: "scanner",   label: "10b-scanner",  C: window.ScannerScreen   },
+    { key: "post",      label: "11-healing",   C: window.PostTattooScreen },
+    { key: "rating",    label: "12-rating",    C: window.RatingScreen    },
+    { key: "dashboard", label: "13-dashboard", C: window.DashboardScreen },
+    { key: "settings",  label: "14-settings",  C: window.SettingsScreen  },
+  ];
+
+  const grid = document.getElementById("grid");
+  const log = document.getElementById("log");
+  const logEl = (msg) => { log.textContent = msg + "\n" + log.textContent; };
+
+  // Render all screens once into the grid.
+  SCREENS.forEach(({ key, label, C }) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<div class="label">${label}</div><div class="screenshot" id="shot-${key}"></div>`;
+    grid.appendChild(card);
+    const host = card.querySelector(`#shot-${key}`);
+    const root = ReactDOM.createRoot(host);
+    if (!C) {
+      host.innerHTML = `<div style="display:grid;place-items:center;height:100%;color:#888;font-family:var(--font-body);font-size:12px">⚠ ${label} component missing</div>`;
+    } else {
+      const go = () => {};
+      root.render(<C go={go} screen={key} ctx={{}} />);
+    }
+  });
+
+  async function capture(key, label) {
+    const host = document.getElementById(`shot-${key}`);
+    const canvas = await html2canvas(host, {
+      backgroundColor: null,
+      scale: 2,
+      width: 402, height: 874,
+      windowWidth: 402, windowHeight: 874,
+      logging: false,
+      useCORS: true,
+      allowTaint: true,
+    });
+    return new Promise((res) => canvas.toBlob(res, "image/png"));
+  }
+
+  document.getElementById("exportBtn").addEventListener("click", async (e) => {
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    logEl("Gerando ZIP…");
+    const zip = new JSZip();
+    for (const s of SCREENS) {
+      try {
+        const blob = await capture(s.key, s.label);
+        zip.file(`${s.label}.png`, blob);
+        logEl(`✓ ${s.label}`);
+      } catch (err) {
+        logEl(`✗ ${s.label} — ${err.message}`);
+      }
+    }
+    const out = await zip.generateAsync({ type: "blob" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(out);
+    a.download = "rabisko-screens.zip";
+    a.click();
+    logEl("ZIP pronto, download disparado.");
+    btn.disabled = false;
+  });
+
+  // ───── HTML export ─────────────────────────────────────────────
+  // Inlines colors_and_type.css + motion.css + Iconify SVGs into each file,
+  // so every screen.html is self-contained and editable.
+  async function fetchText(url) {
+    const r = await fetch(url);
+    return r.text();
+  }
+
+  async function resolveIconifyIcons(host) {
+    // Replace <iconify-icon> with inline <svg> by reading their internal shadow content.
+    const els = host.querySelectorAll("iconify-icon");
+    for (const el of els) {
+      const sr = el.shadowRoot;
+      const svg = sr && sr.querySelector("svg");
+      if (svg) {
+        const w = el.getAttribute("width") || svg.getAttribute("width") || "24";
+        const h = el.getAttribute("height") || svg.getAttribute("height") || w;
+        const clone = svg.cloneNode(true);
+        clone.setAttribute("width", w);
+        clone.setAttribute("height", h);
+        clone.style.display = "inline-block";
+        clone.style.verticalAlign = "middle";
+        // copy over color (currentColor)
+        const style = el.getAttribute("style") || "";
+        if (style) clone.setAttribute("style", style);
+        el.replaceWith(clone);
+      }
+    }
+  }
+
+  async function buildStaticHTML(key, label, colorsCss, motionCss) {
+    // Render screen into a temporary detached host
+    const off = document.createElement("div");
+    off.style.cssText = "position:fixed;left:-9999px;top:0;width:402px;height:874px;background:var(--rbk-bg);overflow:hidden;";
+    document.body.appendChild(off);
+    const S = SCREENS.find((s) => s.key === key);
+    const root = ReactDOM.createRoot(off);
+    root.render(<S.C go={() => {}} screen={key} ctx={{}} />);
+    // Wait for render + iconify hydration
+    await new Promise((r) => setTimeout(r, 800));
+    await resolveIconifyIcons(off);
+    const bodyHtml = off.innerHTML;
+    root.unmount();
+    off.remove();
+
+    return `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Rabisko · ${label}</title>
+<style>
+${colorsCss}
+${motionCss}
+html,body{margin:0;padding:0;background:var(--rbk-bg);}
+body{width:402px;min-height:874px;font-family:var(--font-body);}
+.screen{width:402px;min-height:874px;overflow:hidden;}
+</style>
+</head>
+<body>
+${bodyHtml}
+</body>
+</html>
+`;
+  }
+
+  document.getElementById("exportHtmlBtn").addEventListener("click", async (e) => {
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    logEl("Gerando HTMLs estáticos…");
+    const [colorsCss, motionCss] = await Promise.all([
+      fetchText("../../colors_and_type.css"),
+      fetchText("motion.css"),
+    ]);
+    const zip = new JSZip();
+    for (const s of SCREENS) {
+      try {
+        const html = await buildStaticHTML(s.key, s.label, colorsCss, motionCss);
+        zip.file(`${s.label}.html`, html);
+        logEl(`✓ ${s.label}.html`);
+      } catch (err) {
+        logEl(`✗ ${s.label} — ${err.message}`);
+      }
+    }
+    const out = await zip.generateAsync({ type: "blob" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(out);
+    a.download = "rabisko-screens-html.zip";
+    a.click();
+    logEl("ZIP de HTMLs pronto.");
+    btn.disabled = false;
+  });
+
+  document.getElementById("singleBtn").addEventListener("click", async () => {
+    // Captures first screen in view as a sample
+    logEl("Capturando primeira tela visível…");
+    const blob = await capture("home", "home");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "rabisko-home.png";
+    a.click();
+  });
+})();
+</script>
+
+</body>
+</html>
