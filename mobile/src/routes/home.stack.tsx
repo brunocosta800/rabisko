@@ -5,12 +5,14 @@ import { HomeScreen } from '../screens/App/HomeScreen';
 import { EstablishmentProfileScreen } from '../screens/App/EstablishmentProfileScreen';
 import { BookingScreen } from '../screens/App/BookingScreen';
 import { PaymentScreen } from '../screens/App/PaymentScreen';
+import { ConfirmedScreen } from '../screens/App/ConfirmedScreen';
 
 export type HomeStackParamList = {
   HomeList: undefined;
   EstablishmentProfile: { id: string };
   BookingFlow: { id: string };
   Payment: { bookingId: string };
+  Confirmed: { artistName?: string; dateTime?: string; total?: string } | undefined;
 };
 
 const { Navigator, Screen } = createNativeStackNavigator<HomeStackParamList>();
@@ -22,6 +24,11 @@ export function HomeStack() {
       <Screen name="EstablishmentProfile" component={EstablishmentProfileScreen} />
       <Screen name="BookingFlow" component={BookingScreen} />
       <Screen name="Payment" component={PaymentScreen} />
+      <Screen
+        name="Confirmed"
+        component={ConfirmedScreen}
+        options={{ gestureEnabled: false }}
+      />
     </Navigator>
   );
 }

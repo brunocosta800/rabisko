@@ -94,31 +94,31 @@ Status: `[ ]` a fazer · `[~]` em andamento · `[x]` feito.
 - [x] Todas as seções: "Por estilo" (rail de `StyleTile` 96×128), "Flash do dia" (com `StatusPill` "HOJE" tone plum + rail de `FlashCard` 168×168), "Em destaque" (hero 16:11 com badge BOOST), "Favoritos" (rail de `FavoriteTile` redondo 72px com coração plum no canto), "Perto de você" (grid 2-col de `ArtistCard` real com FadeInDown stagger), card-dica "NOVIDADE → ABRIR" (entrada planejada do Simulador, fundo `bg-plum-tint`, ícone `Sparkles` em círculo plum).
 - [x] Cards pretos `rounded-[32px]` ad-hoc substituídos pelo `ArtistCard` (`r-lg`, footer "ver mais..."), com `onPress` navegando pra `EstablishmentProfile`.
 
-### Artist Profile (`src/screens/App/EstablishmentProfileScreen.tsx`)
-- [ ] Alinhar a intenção ao design (perfil de artista centrado-no-chat). Trocar o layout banner pelo centralizado: foto redonda 120px → pill da 1ª tag → nota+estrela → nome em DM Sans `t-h1`.
-- [ ] Coração flutuante no topo direito.
-- [ ] "Sobre" dentro de um card cream `rounded-r-lg` + linha "@handle"; usar a copy do design.
-- [ ] "Portifólio": 2 imagens quadradas `rounded-r-xl` (22px) + link "Ver Todos".
-- [ ] Adicionar a seção "Avaliações" (card de review: avatar de iniciais, nome, "Há 2 horas", 5 estrelas, texto micro).
-- [ ] Remover a seção "Horários" e o badge "Verificado"; remover a barra inferior com preço.
-- [ ] CTA full-width "Iniciar Conversa" → Chat (não "Reservar Agora" → Booking). *Se o produto precisar de "Reservar" aqui, levar pro DESIGN.md primeiro.*
+### Artist Profile (`src/screens/App/EstablishmentProfileScreen.tsx`) — `[x]`
+- [x] Layout centrado-no-chat: hero `items-center` com foto redonda 120px (`rounded-r-pill`) → `StatusPill` tone `ink` com a 1ª tag ("Realismo") → nota "4,9" + `Star` ink → nome `font-aux-bold text-[32px] leading-[36px]`.
+- [x] Coração no slot direito do `Header` (`right={...}`); estado `favorited` local — `fill={plum}` quando ativo, contorno preto quando inativo. Toggle de favorito local (TODO: persistir).
+- [x] Card "Sobre" `bg-surface rounded-r-lg p-5` com título DM Sans bold, copy `font-body text-fg-2 leading-[20px]`, e `@joão.santos` em `text-fg-3` 13px na última linha.
+- [x] Portfólio: 2 imagens flex-1 com `aspectRatio: 1` e `rounded-r-xl` (22px); header com "Ver Todos" linkado (TODO: navegar para a galeria completa).
+- [x] Seção "Avaliações" nova — `ReviewCard` com avatar de iniciais 36×36 plum-on-ink, nome + "Há X horas" empilhados, fileira de 5 estrelas inks à direita; texto da review em `font-body text-fg-2`.
+- [x] Removidos: seção "Horários", badge "Verificado", barra inferior com "A partir de R$ 250,00".
+- [x] CTA full-width `<Button title="Iniciar Conversa" />` sticky no rodapé (absolute) com `paddingBottom: 24`. Por enquanto é no-op placeholder até a Chat thread (P2) existir como rota destino.
 
-### Booking (`src/screens/App/BookingScreen.tsx`)
-- [ ] `Stepper` (passo 1).
-- [ ] Mini-linha do artista (foto 46px + nome + tags) — passar o artista via params.
-- [ ] Trocar `react-native-calendars` pelo `CalendarMini`: dia selecionado = bolinha plum, hoje = sublinhado. (F2 já neutralizou as cores legadas: `selectedColor` agora é plum, `todayTextColor` é ink — a troca de componente segue como P1.)
-- [ ] Header "RESERVA" Bebas; remover headings "Selecione a Data/Horário" → só "Horário" DM Sans h3 + linha "{dia} Out · {hora}".
-- [ ] Slots = 6 (10/12/14/16/18/20), 3/linha, `rounded-r-md`, selecionado = ink, não-selecionado = cream sem borda, pré-selecionar 14:00.
-- [ ] Remover o card "Resumo da Reserva".
-- [ ] Botão sempre habilitado, "Avançar para Pagamento".
+### Booking (`src/screens/App/BookingScreen.tsx`) — `[x]`
+- [x] `Stepper current={1}` (DATA ativo).
+- [x] Mini-linha do artista no topo: foto redonda 46px + nome `font-body-semibold 15` + tags `font-body 12 text-fg-3` separadas por · . (Artista ainda mockado; tipos do `BookingFlow` já recebem `id`, pronto pra buscar via API quando plumbar.)
+- [x] `CalendarMini` substitui o `react-native-calendars` (também tirou o `LocaleConfig` antigo).
+- [x] `Header title="Reserva"` Bebas centralizado. "Selecione a Data" removido. "Horário" DM Sans h3 + linha "{dia} de {mês} · {hora}" formatada com `date-fns` pt-BR.
+- [x] 6 slots fixos `['10:00','12:00','14:00','16:00','18:00','20:00']`, 3 por linha (width 31.5%), `rounded-r-md`, selecionado = `bg-ink text-on-ink`, não-selecionado = `bg-surface text-ink` (sem borda). 14:00 pré-selecionado.
+- [x] Card "Resumo da Reserva" removido.
+- [x] Botão sempre habilitado, sticky no rodapé, "Avançar para Pagamento" → `navigation.navigate('Payment', { bookingId })`.
 
-### Payment (`src/screens/App/PaymentScreen.tsx`)
-- [ ] `Stepper` (passo 2).
-- [ ] Tile "Projeto escolhido" (imagem do desenho, `rounded-r-lg`).
-- [ ] Trocar o card preto "Total R$ 250" pelo card **cream** com breakdown: Valor R$ 200,00 / Sessões 3x / Taxa da Reserva R$ 20,00 / divisor ink / Valor Total R$ 220,00.
-- [ ] Métodos = 3 `MethodTile` lado a lado (ícone+label empilhados), selecionado = borda 2px plum (sem radio, sem linhas full-width).
-- [ ] Nota "Pagamento criptografado..." com cadeado.
-- [ ] Botão "Confirmar Pagamento" → "Processando…" → tela Confirmed (remover o `alert()`).
+### Payment (`src/screens/App/PaymentScreen.tsx`) — `[x]`
+- [x] `Stepper current={2}` (PAGAMENTO ativo).
+- [x] Tile "Projeto escolhido" — label `font-body 13 text-fg-2` + imagem 16:9 `rounded-r-lg`.
+- [x] Card cream `bg-surface rounded-r-lg p-5` com `BreakdownRow` (label `text-fg-2` à esquerda, valor `text-ink` à direita): Valor R$ 200,00 / Sessões 3x / Taxa da Reserva R$ 20,00 / `h-px bg-ink my-3` / **Valor Total R$ 220,00** (ambos `font-body-bold`). Card preto antigo removido.
+- [x] `MethodTile` lado a lado (3, gap 10) com ícone empilhado sobre label — Pix (`QrCode`), Cartão (`CreditCard`), Apple Pay (`Smartphone`). Selecionado = `border-2 border-plum`; não selecionado = `border-transparent`. Sem radio, sem linhas full-width.
+- [x] Nota `<Lock size={12}>` + "Pagamento criptografado e processado com segurança." em `font-body 12 text-fg-3`.
+- [x] Botão "Confirmar Pagamento" sticky no rodapé → vira "Processando…" com `loading={processing}` por ~700ms → `navigation.navigate('Confirmed', { artistName, dateTime, total })`. `alert()` removido.
 
 ### Bookings → "Sessões" (`src/screens/App/BookingsScreen.tsx`)
 - [ ] Header: overline "MINHA AGENDA" + "Sessões" Bebas.
@@ -140,7 +140,7 @@ Status: `[ ]` a fazer · `[~]` em andamento · `[x]` feito.
 ## P2 — Telas faltando do catálogo (criar)
 
 - [x] **Landing (01)** — `src/screens/Auth/LandingScreen.tsx`. Vertical+horizontal centered: bloco-logo 132×132 `rounded-r-2xl bg-ink` (placeholder "R" em Bebas 80px branco — TODO: trocar pela imagem `logo-bisko-mark.png` quando o asset chegar no repo), "RABISKO" `font-display text-[64px]` com tracking +1.3, tagline `font-body 14 text-fg-2` (max 280, centered), CTA primary "Entrar" → Login, link "Novo por aqui? Criar conta" → Register. Adicionado como `Screen` em `auth.routes.tsx` com `initialRouteName="Landing"`; Login agora tem `Header onBack={navigation.goBack}` voltando pra cá.
-- [ ] **Confirmed (06b)** — tela cheia sem nav, `Stepper` passo 3, check plum grande + 2 anéis expandindo + pop com mola, "Reserva Confirmada" Bebas, copy de 24h, card-resumo (foto + nome + "Ter 14 Out · 14:00 · R$ 220,00" + `StatusPill` "Pago" plum), botões "Abrir Chat com {nome}" + "Voltar para Home".
+- [x] **Confirmed (06b)** — `src/screens/App/ConfirmedScreen.tsx`. Tela cheia, esconde a bottom tab via `parent.setOptions({ tabBarStyle: { display: 'none' } })` no `useEffect` e restaura no cleanup. `Stepper current={3}` (CONCLUÍDO ativo). Hero animado: círculo plum 100px com `Check` 48px branco — escala com `withSpring(1, { damping: 9, stiffness: 140 })` após 120ms; 2 anéis plum (borda 2px) expandindo (`withTiming` 1100ms `Easing.out.cubic`) com stagger 300ms. "RESERVA CONFIRMADA" Bebas 32. Copy 24h em `font-body 14 text-fg-2`. Card-resumo cream com foto 46 redonda + nome + "Ter 14 Out · 14:00 · R$ 220,00" + `StatusPill` "PAGO" tone `plum`. Botões "Abrir Chat com {primeiroNome}" (primary; TODO até Chat thread P2) + "Voltar para Home" (`ghost`) que faz `navigation.popToTop()`. Adicionado como Screen do `HomeStack` com `gestureEnabled: false`.
 - [~] **Chat (08)** — `ChatScreen.tsx` (lista de conversas estática + empty-state + FAB) já feita e ligada na aba do bottom nav (F7). Falta: dados/estado reais e a tela de thread/mensagens com anexos de imagem (`ChatV2`).
 - [ ] **Session Detail (09b)** — detalhe de uma sessão: dados completos, "Abrir chat" / "Check-in".
 - [ ] **Check-in (10)** — QR code do cliente pra apresentar no estúdio.
