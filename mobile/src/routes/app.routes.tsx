@@ -12,6 +12,7 @@ import { HomeStack } from './home.stack';
 import { ChatScreen } from '../screens/App/ChatScreen';
 import { BookingsScreen } from '../screens/App/BookingsScreen';
 import { SettingsScreen } from '../screens/App/SettingsScreen';
+import { SimulationScreen } from '../screens/App/SimulationScreen';
 
 /**
  * Bottom tabs per the design system (DESIGN.md §8.2 — BottomNav): cream surface, 4 tabs
@@ -24,6 +25,7 @@ export type AppRoutesParamList = {
   Chat: undefined;
   Sessoes: undefined;
   Settings: undefined;
+  Simulation: undefined;
 };
 
 const PLUM = '#602C66';
@@ -71,6 +73,11 @@ export function AppRoutes() {
         name="Home"
         component={HomeStack}
         options={{ tabBarIcon: ({ focused }) => <TabBarIcon Icon={Home} focused={focused} /> }}
+      />
+      <Screen
+        name="Simulation"
+        component={SimulationScreen}
+        options={{ tabBarIcon: ({ focused }) => <TabBarIcon Icon={Settings} focused={focused} /> }}
       />
       <Screen
         name="Chat"
