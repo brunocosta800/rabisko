@@ -52,13 +52,13 @@ const FEATURED = {
   name: 'João Santos',
   tagline: 'Realismo · Premiado',
   rating: 4.9,
-  photo: 'https://images.unsplash.com/photo-1598133894008-61f7fdb8cc3a?q=80&w=800&auto=format&fit=crop',
+  photo: 'https://i.pravatar.cc/800?u=joao-santos',
 };
 
 const FAVORITES = [
-  { id: 'fav1', name: 'Marina', photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop' },
+  { id: 'fav1', name: 'Marina', photo: 'https://i.pravatar.cc/300?u=marina' },
   { id: 'fav2', name: 'Estúdio Fênix', photo: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=200&auto=format&fit=crop' },
-  { id: 'fav3', name: 'Pedro', photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop' },
+  { id: 'fav3', name: 'Pedro', photo: 'https://i.pravatar.cc/300?u=pedro' },
 ];
 
 const NEAR_YOU = [
@@ -67,7 +67,7 @@ const NEAR_YOU = [
     name: 'João Santos',
     rating: 4.9,
     tags: ['Realismo', 'Minimalista'],
-    photo: 'https://images.unsplash.com/photo-1598133894008-61f7fdb8cc3a?q=80&w=400&auto=format&fit=crop',
+    photo: 'https://i.pravatar.cc/400?u=joao-santos',
   },
   {
     id: '2',
@@ -178,13 +178,17 @@ export function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Editorial headline — 3 lines */}
+        {/* Editorial headline — 2 linhas: "ARTISTAS" em cima, "perto de VOCÊ" embaixo. O
+            "perto de" italic plum acompanha o "VOCÊ" Bebas pela baseline (alignItems: baseline)
+            pra criar o ritmo editorial sem quebrar em 3 linhas. */}
         <View className="px-6 mb-6">
           <Text className="font-display text-[64px] leading-[60px] text-ink">ARTISTAS</Text>
-          <Text className="font-body-italic text-[28px] leading-[32px] text-plum lowercase ml-1">
-            perto de
-          </Text>
-          <Text className="font-display text-[64px] leading-[60px] text-ink">VOCÊ</Text>
+          <View className="flex-row items-baseline ml-1">
+            <Text className="font-body-italic text-[28px] leading-[32px] text-plum lowercase mr-3">
+              perto de
+            </Text>
+            <Text className="font-display text-[64px] leading-[60px] text-ink">VOCÊ</Text>
+          </View>
         </View>
 
         {/* Search field */}
@@ -212,6 +216,42 @@ export function HomeScreen() {
               active={activeFilter === f.id}
               onPress={() => setActiveFilter(f.id)}
             />
+          ))}
+        </ScrollView>
+
+        {/* Em destaque (BOOST hero) — primeira seção após pesquisa+filtros (gancho editorial). */}
+        <SectionHeader title="Em destaque" />
+        <Animated.View entering={FadeInDown.duration(400).springify()} className="px-6">
+          <TouchableOpacity
+            activeOpacity={0.92}
+            onPress={() => navigation.navigate('EstablishmentProfile', { id: FEATURED.id })}
+            className="rounded-r-xl overflow-hidden bg-ink"
+            style={{ aspectRatio: 16 / 11 }}
+          >
+            <Image source={{ uri: FEATURED.photo }} className="w-full h-full opacity-80" />
+            <View className="absolute inset-0 p-5 justify-between">
+              <View className="self-start">
+                <StatusPill label="BOOST" tone="plum" />
+              </View>
+              <View>
+                <Text className="font-display text-[32px] text-on-ink leading-[34px]">
+                  {FEATURED.name.toUpperCase()}
+                </Text>
+                <Text className="font-body text-[14px] text-on-ink mt-1">{FEATURED.tagline}</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        </Animated.View>
+
+        {/* Favoritos — logo após o destaque pra valorizar retorno do usuário recorrente. */}
+        <SectionHeader title="Favoritos" action="Ver tudo" />
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 24 }}
+        >
+          {FAVORITES.map((fav) => (
+            <FavoriteTile key={fav.id} name={fav.name} photo={fav.photo} />
           ))}
         </ScrollView>
 
@@ -244,42 +284,6 @@ export function HomeScreen() {
         >
           {FLASH_TODAY.map((f) => (
             <FlashCard key={f.id} title={f.title} price={f.price} photo={f.photo} />
-          ))}
-        </ScrollView>
-
-        {/* Em destaque (BOOST hero) */}
-        <SectionHeader title="Em destaque" />
-        <Animated.View entering={FadeInDown.duration(400).springify()} className="px-6">
-          <TouchableOpacity
-            activeOpacity={0.92}
-            onPress={() => navigation.navigate('EstablishmentProfile', { id: FEATURED.id })}
-            className="rounded-r-xl overflow-hidden bg-ink"
-            style={{ aspectRatio: 16 / 11 }}
-          >
-            <Image source={{ uri: FEATURED.photo }} className="w-full h-full opacity-80" />
-            <View className="absolute inset-0 p-5 justify-between">
-              <View className="self-start">
-                <StatusPill label="BOOST" tone="plum" />
-              </View>
-              <View>
-                <Text className="font-display text-[32px] text-on-ink leading-[34px]">
-                  {FEATURED.name.toUpperCase()}
-                </Text>
-                <Text className="font-body text-[14px] text-on-ink mt-1">{FEATURED.tagline}</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        </Animated.View>
-
-        {/* Favoritos */}
-        <SectionHeader title="Favoritos" action="Ver tudo" />
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 24 }}
-        >
-          {FAVORITES.map((fav) => (
-            <FavoriteTile key={fav.id} name={fav.name} photo={fav.photo} />
           ))}
         </ScrollView>
 

@@ -17,7 +17,7 @@ const ARTIST = {
   rating: '4,9',
   tags: ['Realismo', 'Minimalista'],
   handle: '@joão.santos',
-  photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop',
+  photo: 'https://i.pravatar.cc/400?u=joao-santos',
   about: 'Tatuador profissional, com trabalhos que transitam entre o minimalismo e o traço mais pesado.',
   portfolio: [
     'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=400&auto=format&fit=crop',

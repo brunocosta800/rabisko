@@ -21,8 +21,7 @@ export function SimuladorScreen() {
       <Header title="Simulador" />
 
       <ScrollView
-        className="px-6"
-        contentContainerStyle={{ paddingBottom: 24 }}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Hero — copy + selo "novidade" */}
@@ -47,10 +46,12 @@ export function SimuladorScreen() {
           gente compõe a simulação pra você ver como vai ficar.
         </Text>
 
-        {/* Hero ilustrativo (placeholder até o fluxo real) */}
+        {/* Hero ilustrativo (placeholder até o fluxo real). `width: '100%'` é obrigatório:
+            quando uma View tem só `aspectRatio` (sem width), o Yoga sized-to-content em vez de
+            esticar — ela encolhe pro tamanho dos filhos e sobra margem na direita. */}
         <View
           className="bg-surface items-center justify-center rounded-r-xl mb-6"
-          style={{ aspectRatio: 4 / 3 }}
+          style={{ width: '100%', aspectRatio: 4 / 3 }}
         >
           <View
             className="bg-plum-tint items-center justify-center mb-3"
