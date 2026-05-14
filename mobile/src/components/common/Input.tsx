@@ -1,72 +1,89 @@
 import React from 'react';
 import { View, Text, TextInput, TextInputProps, TouchableOpacity } from 'react-native';
 import { Eye, EyeOff, LucideIcon } from 'lucide-react-native';
-import Animated, { 
-  useAnimatedStyle, 
-  useSharedValue, 
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
   withTiming,
-  interpolateColor
 } from 'react-native-reanimated';
 
+/**
+ * Pill-less text field per the design system (DESIGN.md §8.4): warm-cream surface, 12px radius,
+ * sentence-case label above in `fg-2`, no border at rest, border turns plum on focus.
+ * `secure` adds an eye toggle; `trailingIcon` / `onTrailingPress` for any other trailing action.
+ */
 interface InputProps extends TextInputProps {
   label?: string;
   icon?: LucideIcon;
+  trailingIcon?: LucideIcon;
+  onTrailingPress?: () => void;
   error?: string;
   secure?: boolean;
 }
 
-export function Input({ label, icon: Icon, error, secure, className, onFocus, onBlur, ...rest }: InputProps) {
+const COLOR_REST = '#EAE0D5'; // surface — invisible border at rest
+const COLOR_FOCUS = '#602C66'; // plum
+const COLOR_ERROR = '#B33A3A';
+
+export function Input({
+  label,
+  icon: Icon,
+  trailingIcon: Trailing,
+  onTrailingPress,
+  error,
+  secure,
+  className,
+  onFocus,
+  onBlur,
+  ...rest
+}: InputProps) {
   const [showPassword, setShowPassword] = React.useState(false);
   const focused = useSharedValue(0);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      borderWidth: 1.5,
-      borderColor: withTiming(focused.value === 1 ? '#000' : 'transparent'),
-    };
-  });
-
-  const handleFocus = (e: any) => {
-    focused.value = 1;
-    onFocus?.(e);
-  };
-
-  const handleBlur = (e: any) => {
-    focused.value = 0;
-    onBlur?.(e);
-  };
+  const animatedStyle = useAnimatedStyle(() => ({
+    borderWidth: 1.5,
+    borderColor: withTiming(error ? COLOR_ERROR : focused.value === 1 ? COLOR_FOCUS : COLOR_REST, {
+      duration: 150,
+    }),
+  }));
 
   return (
-    <View className={`mb-5 ${className}`}>
-      {label && <Text className="text-sm font-bold text-black uppercase tracking-widest mb-2 ml-1 text-[11px]">{label}</Text>}
-      
-      <Animated.View 
+    <View className={`mb-4 ${className ?? ''}`}>
+      {label && <Text className="font-body text-[12px] text-fg-2 mb-1.5 ml-1">{label}</Text>}
+
+      <Animated.View
         style={animatedStyle}
-        className={`flex-row items-center bg-[#eaddd7] rounded-[24px] px-5 py-4 ${error ? 'border border-red-500' : ''}`}
+        className="flex-row items-center bg-surface rounded-r-md px-[22px] py-4"
       >
-        {Icon && (
-          <View className="mr-3">
-            <Icon size={20} color="#000" strokeWidth={2.5} />
-          </View>
-        )}
-        
+        {Icon && <Icon size={18} color="#000" style={{ marginRight: 12 }} />}
+
         <TextInput
-          className="flex-1 text-black text-base font-semibold"
-          placeholderTextColor="rgba(0,0,0,0.3)"
+          className="flex-1 font-body text-[16px] text-ink"
+          placeholderTextColor="#6B6B6B"
           secureTextEntry={secure && !showPassword}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
+          onFocus={(e) => {
+            focused.value = 1;
+            onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            focused.value = 0;
+            onBlur?.(e);
+          }}
           {...rest}
         />
 
-        {secure && (
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            {showPassword ? <EyeOff size={20} color="#000" strokeWidth={2.5} /> : <Eye size={20} color="#000" strokeWidth={2.5} />}
+        {secure ? (
+          <TouchableOpacity onPress={() => setShowPassword((v) => !v)}>
+            {showPassword ? <EyeOff size={18} color="#000" /> : <Eye size={18} color="#000" />}
           </TouchableOpacity>
-        )}
+        ) : Trailing ? (
+          <TouchableOpacity onPress={onTrailingPress}>
+            <Trailing size={18} color="#000" />
+          </TouchableOpacity>
+        ) : null}
       </Animated.View>
-      
-      {error && <Text className="text-red-500 text-[10px] font-bold uppercase mt-1 ml-4">{error}</Text>}
+
+      {error && <Text className="font-body text-[11px] text-error mt-1 ml-1">{error}</Text>}
     </View>
   );
 }

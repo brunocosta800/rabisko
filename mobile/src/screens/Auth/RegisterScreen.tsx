@@ -1,102 +1,165 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { Mail, Lock, User, Calendar, CreditCard, MapPin, Clock, Eye, EyeOff } from 'lucide-react-native';
+import React, { useCallback, useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Mail, Lock, User, AtSign, Building2, MapPin, Info } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+import { useAuthStore, type UserRoleId } from '../../store/authStore';
+import { AuthRoutesParamList } from '../../routes/auth.routes';
+import { Header } from '../../components/common/Header';
 import { Input } from '../../components/common/Input';
 import { Button } from '../../components/common/Button';
+import { RoleSwitch } from '../../components/common/RoleSwitch';
+import { PrefChip } from '../../components/common/Chip';
+
+/** Subtitle copy per role (P1 Cadastro — DESIGN.md §3 / IMPLEMENTATION-CHECKLIST F9). */
+const SUBTITLE_BY_ROLE: Record<UserRoleId, string> = {
+  cliente: 'Crie sua conta para encontrar artistas e agendar sessões.',
+  artista: 'Crie sua conta para divulgar seu trabalho e receber reservas.',
+  estudio: 'Crie sua conta para gerenciar seu estúdio, equipe e agenda.',
+};
+
+/** CTA label per role (per IMPLEMENTATION-CHECKLIST P1 Cadastro item). */
+const CTA_BY_ROLE: Record<UserRoleId, string> = {
+  cliente: 'Criar conta',
+  artista: 'Sou artista',
+  estudio: 'Sou estúdio',
+};
+
+/** Tattoo styles offered to artistas (P1 Cadastro). Multi-select pills. */
+const TATTOO_STYLES = [
+  'Realismo',
+  'Minimalista',
+  'Tradicional',
+  'Aquarela',
+  'Geométrico',
+  'Blackwork',
+  'Old School',
+  'Japonês',
+];
 
 export function RegisterScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<AuthRoutesParamList>>();
+  const insets = useSafeAreaInsets();
+  const { role, setRole, setUser } = useAuthStore();
+
+  const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
+
+  const toggleStyle = useCallback((style: string) => {
+    setSelectedStyles((prev) =>
+      prev.includes(style) ? prev.filter((s) => s !== style) : [...prev, style],
+    );
+  }, []);
+
+  const handleRegister = useCallback(() => {
+    // TODO: replace mock with real registration against the Spring backend (`POST /user/cadastro`).
+    // After register, role-based home: cliente → AppRoutes Home; artista/estudio → Dashboard
+    // (P2 #13 — Dashboard not built yet, so all roles land on Home for now).
+    setUser({ id: '1', name: 'User Test', email: 'test@example.com' });
+  }, [setUser]);
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-[#f8f9fa]"
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      className="flex-1 bg-background"
     >
-      <ScrollView className="flex-1 px-8 pt-16" showsVerticalScrollIndicator={false}>
-        <View className="mb-12">
-          <Text className="text-[44px] font-black text-black uppercase leading-[40px] tracking-tighter mb-4">
-            Cadastre-se
+      <Header onBack={() => navigation.goBack()} />
+
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{
+          paddingHorizontal: 24,
+          paddingBottom: insets.bottom + 24,
+        }}
+      >
+        {/* Hero — Bebas 32 + role subtitle */}
+        <View className="mb-6">
+          <Text className="font-display text-[32px] leading-[34px] text-ink mb-3">
+            CRIE SUA CONTA
           </Text>
-          <Text className="text-black text-[15px] font-medium leading-tight">
-            Sua arte merece o palco principal.
+          <Text className="font-body text-[15px] leading-[20px] text-fg-2">
+            {SUBTITLE_BY_ROLE[role]}
           </Text>
         </View>
 
-        <View className="pb-16">
-          <Input 
-            label="Nome Completo"
-            placeholder="Ex: Pedro Campos"
-          />
+        <RoleSwitch value={role} onChange={setRole} className="mb-8" />
 
-          <View className="flex-row items-center mb-0">
-            <View className="flex-1 mr-3">
-              <Input 
-                label="Nascimento"
-                placeholder="dd/mm/yyyy"
-              />
+        {/* Common fields (all roles) */}
+        <Input label="Nome completo" placeholder="Ex: Maria Silva" icon={User} />
+        <Input
+          label="E-mail"
+          placeholder="seu@email.com"
+          icon={Mail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+        />
+        <Input label="Senha" placeholder="••••••••" icon={Lock} secure />
+
+        {/* Artista-only: Instagram handle + tattoo style pills */}
+        {role === 'artista' && (
+          <>
+            <Input
+              label="@ Instagram"
+              placeholder="@seuhandle"
+              icon={AtSign}
+              autoCapitalize="none"
+            />
+            <Text className="font-body text-[12px] text-fg-2 mb-2 ml-1">Estilo principal</Text>
+            <View className="flex-row flex-wrap mb-4" style={{ gap: 8 }}>
+              {TATTOO_STYLES.map((style) => (
+                <PrefChip
+                  key={style}
+                  label={style}
+                  selected={selectedStyles.includes(style)}
+                  onPress={() => toggleStyle(style)}
+                />
+              ))}
             </View>
-            <View className="flex-1">
-              <Input 
-                label="CPF"
-                placeholder="000.000.000-00"
-              />
-            </View>
+          </>
+        )}
+
+        {/* Estúdio-only: CNPJ + full address */}
+        {role === 'estudio' && (
+          <>
+            <Input
+              label="CNPJ"
+              placeholder="00.000.000/0001-00"
+              icon={Building2}
+              keyboardType="numeric"
+            />
+            <Input
+              label="Endereço completo"
+              placeholder="Rua, número, bairro, cidade — UF"
+              icon={MapPin}
+            />
+          </>
+        )}
+
+        {/* Terms acceptance notice */}
+        <View className="flex-row items-start mt-2 mb-6">
+          <View style={{ marginTop: 2, marginRight: 8 }}>
+            <Info size={14} color="#6B6B6B" />
           </View>
+          <Text className="flex-1 font-body text-[12px] text-fg-3 leading-[16px]">
+            Ao continuar você concorda com os <Text className="text-plum">Termos de Uso</Text> e a{' '}
+            <Text className="text-plum">Política de Privacidade</Text>.
+          </Text>
+        </View>
 
-          <Input 
-            label="E-mail Profissional"
-            placeholder="contato@studio.com"
-            icon={Mail}
-          />
+        <Button title={CTA_BY_ROLE[role]} onPress={handleRegister} />
 
-          <Input 
-            label="Senha"
-            placeholder="**********"
-            icon={Lock}
-            secure
-          />
-
-          <Input 
-            label="Confirmar Senha"
-            placeholder="**********"
-            icon={Lock}
-            secure
-          />
-
-          {/* Business Section Info */}
-          <View className="bg-[#eaddd7] p-8 rounded-[40px] mt-4">
-            <View className="flex-row items-center mb-3 ml-1">
-              <MapPin size={20} color="#000" strokeWidth={2.5} />
-              <Text className="font-bold text-black ml-2 text-base">Localização</Text>
-            </View>
-            <View className="bg-[#eaddd7] border border-black rounded-xl p-3.5 mb-6">
-              <Text className="text-black font-medium">Rua das Artes, 123 - Jardins, SP</Text>
-            </View>
-
-            <View className="flex-row items-center mb-3 ml-1">
-              <Clock size={20} color="#000" strokeWidth={2.5} />
-              <Text className="font-bold text-black ml-2 text-base">Horários de Atendimento</Text>
-            </View>
-            <View className="bg-[#eaddd7] border border-black rounded-xl p-3.5 flex-row justify-between mb-2.5">
-              <Text className="text-black font-medium">Segunda - Sexta</Text>
-              <Text className="text-black font-medium">10:00 - 20:00</Text>
-            </View>
-            <View className="bg-[#eaddd7] border border-black rounded-xl p-3.5 flex-row justify-between">
-              <Text className="text-black font-medium">Sábado</Text>
-              <Text className="text-black font-medium">09:00 - 15:00</Text>
-            </View>
-          </View>
-
-          <Button 
-            title="Finalizar Cadastro"
-            onPress={() => navigation.goBack()}
-            className="mt-12"
-          />
-
-          <TouchableOpacity className="items-center mt-6" onPress={() => navigation.goBack()}>
-            <Text className="text-black font-bold">Já tenho conta</Text>
+        <View className="flex-row justify-center mt-6">
+          <Text className="font-body text-[14px] text-fg-2">Já tem conta? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')} hitSlop={8}>
+            <Text className="font-body-bold text-[14px] text-ink">Entrar</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

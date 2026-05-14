@@ -1,103 +1,92 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { Calendar as RNCalendar, LocaleConfig } from 'react-native-calendars';
-import { ChevronLeft, Clock } from 'lucide-react-native';
+import React, { useState, useMemo } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Button } from '../../components/common/Button';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-// Configure Calendar for Portuguese
-LocaleConfig.locales['pt-br'] = {
-  monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-  monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-  dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
-  dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
-  today: 'Hoje'
-};
-LocaleConfig.defaultLocale = 'pt-br';
+import { Header } from '../../components/common/Header';
+import { Stepper } from '../../components/common/Stepper';
+import { CalendarMini } from '../../components/common/CalendarMini';
+import { Button } from '../../components/common/Button';
+import { HomeStackParamList } from '../../routes/home.stack';
 
-const TIME_SLOTS = [
-  '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'
-];
+/** Same mock artist as ArtistProfile until the API is wired (P1). */
+const ARTIST = {
+  id: '1',
+  name: 'João Santos',
+  tags: ['Realismo', 'Minimalista'],
+  photo: 'https://images.unsplash.com/photo-1682406593404-99578759c260?q=80&w=200&auto=format&fit=crop',
+};
+
+/** Fixed slots per the design spec (6 slots, 3 per row). */
+const TIME_SLOTS = ['10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
 
 export function BookingScreen() {
-  const navigation = useNavigation();
-  const [selectedDate, setSelectedDate] = React.useState(format(new Date(), 'yyyy-MM-dd'));
-  const [selectedTime, setSelectedTime] = React.useState('');
+  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedTime, setSelectedTime] = useState<string>('14:00');
+
+  // "{dia} Out · {hora}" subline
+  const subline = useMemo(() => {
+    if (!selectedDate) return '';
+    return `${format(selectedDate, "d 'de' MMM", { locale: ptBR })} · ${selectedTime}`;
+  }, [selectedDate, selectedTime]);
 
   return (
-    <View className="flex-1 bg-white">
-      <View className="px-6 pt-12 pb-4 flex-row items-center">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
-          <ChevronLeft size={24} color="#000" />
-        </TouchableOpacity>
-        <Text className="text-2xl font-bold text-black uppercase tracking-tighter">Reservar Horário</Text>
-      </View>
+    <View className="flex-1 bg-background">
+      <Header title="Reserva" onBack={() => navigation.goBack()} />
 
-      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-        <Text className="text-black font-bold text-xl mb-4 mt-4">Selecione a Data</Text>
-        <View className="bg-primary-100 rounded-3xl overflow-hidden mb-8">
-          <RNCalendar
-            onDayPress={(day: any) => setSelectedDate(day.dateString)}
-            markedDates={{
-              [selectedDate]: { selected: true, selectedColor: '#000' }
-            }}
-            theme={{
-              backgroundColor: 'transparent',
-              calendarBackground: 'transparent',
-              textSectionTitleColor: '#000',
-              selectedDayBackgroundColor: '#000',
-              selectedDayTextColor: '#ffffff',
-              todayTextColor: '#bfa094',
-              dayTextColor: '#000',
-              textDisabledColor: '#ccc',
-              arrowColor: '#000',
-              monthTextColor: '#000',
-              indicatorColor: '#000',
-              textDayFontWeight: '500',
-              textMonthFontWeight: 'bold',
-              textDayHeaderFontWeight: 'bold',
-              textDayFontSize: 14,
-              textMonthFontSize: 16,
-              textDayHeaderFontSize: 12
-            }}
-          />
-        </View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}
+      >
+        <Stepper current={1} />
 
-        <Text className="text-black font-bold text-xl mb-4">Selecione o Horário</Text>
-        <View className="flex-row flex-wrap -mx-2 mb-8">
-          {TIME_SLOTS.map((time) => (
-            <TouchableOpacity
-              key={time}
-              onPress={() => setSelectedTime(time)}
-              className={`w-[30%] m-[1.5%] py-4 rounded-2xl items-center border ${selectedTime === time ? 'bg-black border-black' : 'bg-white border-primary-100'
-                }`}
-            >
-              <Text className={`font-bold ${selectedTime === time ? 'text-white' : 'text-black'}`}>
-                {time}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <View className="bg-primary-100/50 p-6 rounded-3xl mb-10">
-          <View className="flex-row items-center mb-4">
-            <View className="mr-2">
-              <Clock size={20} color="#000" />
-            </View>
-            <Text className="font-bold text-black">Resumo da Reserva</Text>
+        {/* Mini artist row */}
+        <View className="flex-row items-center mb-5 mt-2">
+          <View className="rounded-r-pill overflow-hidden bg-surface mr-3" style={{ width: 46, height: 46 }}>
+            <Image source={{ uri: ARTIST.photo }} className="w-full h-full" />
           </View>
-          <Text className="text-gray-600 mb-1">Data: <Text className="text-black font-bold">{format(new Date(selectedDate), "dd 'de' MMMM", { locale: ptBR })}</Text></Text>
-          <Text className="text-gray-600">Horário: <Text className="text-black font-bold">{selectedTime || 'Não selecionado'}</Text></Text>
+          <View className="flex-1">
+            <Text className="font-body-semibold text-[15px] text-ink">{ARTIST.name}</Text>
+            <Text className="font-body text-[12px] text-fg-3">{ARTIST.tags.join(' · ')}</Text>
+          </View>
+        </View>
+
+        <CalendarMini selectedDate={selectedDate} onSelectDate={setSelectedDate} />
+
+        {/* Horário section */}
+        <Text className="font-aux-bold text-[20px] text-ink mt-7">Horário</Text>
+        <Text className="font-body text-[13px] text-fg-2 mt-1 mb-4 capitalize">{subline}</Text>
+
+        <View className="flex-row flex-wrap" style={{ gap: 10 }}>
+          {TIME_SLOTS.map((time) => {
+            const selected = selectedTime === time;
+            return (
+              <TouchableOpacity
+                key={time}
+                onPress={() => setSelectedTime(time)}
+                activeOpacity={0.85}
+                className={`items-center justify-center rounded-r-md py-4 ${selected ? 'bg-ink' : 'bg-surface'}`}
+                style={{ width: '31.5%' }}
+              >
+                <Text
+                  className={`font-body-semibold text-[15px] ${selected ? 'text-on-ink' : 'text-ink'}`}
+                >
+                  {time}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </ScrollView>
 
-      <View className="p-6 pb-10 bg-white border-t border-gray-100">
+      {/* Sticky CTA */}
+      <View className="absolute left-0 right-0 bottom-0 bg-background pt-3 px-6" style={{ paddingBottom: 24 }}>
         <Button
-          title="Continuar para Pagamento"
-          disabled={!selectedTime}
-          onPress={() => navigation.navigate('Payment' as never)}
+          title="Avançar para Pagamento"
+          onPress={() => navigation.navigate('Payment', { bookingId: ARTIST.id })}
         />
       </View>
     </View>

@@ -1,8 +1,12 @@
 package com.rabisko.mvp.repositories;
 
-
 import com.rabisko.mvp.domain.studio.Studio;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface StudioRepository extends MongoRepository<Studio, String> {
+import java.util.UUID;
+
+/*
+ * Realinhamento: PK UUID (tabela public.estudios).
+ */
+public interface StudioRepository extends JpaRepository<Studio, UUID> {
 }

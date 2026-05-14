@@ -1,107 +1,190 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
-import { ChevronLeft, Star, MapPin, Clock, ShieldCheck } from 'lucide-react-native';
+import { Heart, Star } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+import { Header } from '../../components/common/Header';
 import { Button } from '../../components/common/Button';
+import { StatusPill } from '../../components/common/Chip';
+import { HomeStackParamList } from '../../routes/home.stack';
+
+/* ---------- Mock data (P1 ArtistProfile — replace with real API once wired) ---------- */
+
+const ARTIST = {
+  id: '1',
+  name: 'João Santos',
+  rating: '4,9',
+  tags: ['Realismo', 'Minimalista'],
+  handle: '@joão.santos',
+  photo: 'https://images.unsplash.com/photo-1682406593404-99578759c260?q=80&w=400&auto=format&fit=crop',
+  about: 'Tatuador profissional, com trabalhos que transitam entre o minimalismo e o traço mais pesado.',
+  portfolio: [
+    'https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?q=80&w=400&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1542856391-010fb87dcfed?q=80&w=400&auto=format&fit=crop',
+  ],
+};
+
+const REVIEWS = [
+  {
+    id: 'r1',
+    initials: 'AC',
+    name: 'Ana Costa',
+    timeAgo: 'Há 2 horas',
+    stars: 5,
+    text: 'Trabalho impecável, super atencioso e ambiente muito limpo. Recomendo demais.',
+  },
+  {
+    id: 'r2',
+    initials: 'RS',
+    name: 'Rafa Silva',
+    timeAgo: 'Há 3 dias',
+    stars: 5,
+    text: 'Profissional fora de série. Captou a ideia logo na primeira conversa.',
+  },
+];
+
+/* ---------- Leaf components ---------- */
+
+function ReviewCard({
+  initials,
+  name,
+  timeAgo,
+  stars,
+  text,
+}: {
+  initials: string;
+  name: string;
+  timeAgo: string;
+  stars: number;
+  text: string;
+}) {
+  return (
+    <View className="bg-surface-2 rounded-r-lg p-4 mb-3">
+      <View className="flex-row items-center mb-2">
+        <View className="w-9 h-9 rounded-r-pill bg-ink items-center justify-center mr-3">
+          <Text className="font-body-bold text-[12px] text-on-ink">{initials}</Text>
+        </View>
+        <View className="flex-1">
+          <Text className="font-body-semibold text-[14px] text-ink">{name}</Text>
+          <Text className="font-body text-[11px] text-fg-3">{timeAgo}</Text>
+        </View>
+        <View className="flex-row" style={{ gap: 2 }}>
+          {Array.from({ length: stars }).map((_, i) => (
+            <Star key={i} size={12} color="#000000" fill="#000000" />
+          ))}
+        </View>
+      </View>
+      <Text className="font-body text-[13px] text-fg-2 leading-[18px]">{text}</Text>
+    </View>
+  );
+}
+
+/* ---------- Screen ---------- */
 
 export function EstablishmentProfileScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+  const [favorited, setFavorited] = useState(false);
 
   return (
-    <View className="flex-1 bg-white">
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Banner */}
-        <View className="relative h-72">
-          <Image 
-            source={{ uri: 'https://images.unsplash.com/photo-1598133894008-61f7fdb8cc3a?q=80&w=800&auto=format&fit=crop' }} 
-            className="w-full h-full"
-          />
-          <TouchableOpacity 
-            className="absolute top-12 left-6 bg-white/80 p-2 rounded-full"
-            onPress={() => navigation.goBack()}
+    <View className="flex-1 bg-background">
+      <Header
+        onBack={() => navigation.goBack()}
+        right={
+          <TouchableOpacity
+            onPress={() => setFavorited((v) => !v)}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={favorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
           >
-            <ChevronLeft size={24} color="#000" />
+            <Heart
+              size={24}
+              color={favorited ? '#602C66' : '#000000'}
+              fill={favorited ? '#602C66' : 'transparent'}
+            />
+          </TouchableOpacity>
+        }
+      />
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 120 }}
+      >
+        {/* Hero — chat-centered profile: photo → 1st tag pill → rating+star → name */}
+        <View className="items-center mt-2 mb-6">
+          <View
+            className="rounded-r-pill overflow-hidden bg-surface mb-3"
+            style={{ width: 120, height: 120 }}
+          >
+            <Image source={{ uri: ARTIST.photo }} className="w-full h-full" />
+          </View>
+
+          {ARTIST.tags[0] && <StatusPill label={ARTIST.tags[0]} tone="ink" />}
+
+          <View className="flex-row items-center mt-2">
+            <Text className="font-body-semibold text-[14px] text-ink mr-1">{ARTIST.rating}</Text>
+            <Star size={14} color="#000000" fill="#000000" />
+          </View>
+
+          <Text className="font-aux-bold text-[32px] leading-[36px] text-ink mt-2 text-center">
+            {ARTIST.name}
+          </Text>
+        </View>
+
+        {/* Sobre */}
+        <View className="bg-surface rounded-r-lg p-5 mb-8">
+          <Text className="font-aux-bold text-[16px] text-ink mb-2">Sobre</Text>
+          <Text className="font-body text-[14px] text-fg-2 leading-[20px] mb-3">{ARTIST.about}</Text>
+          <Text className="font-body text-[13px] text-fg-3">{ARTIST.handle}</Text>
+        </View>
+
+        {/* Portfólio */}
+        <View className="flex-row items-end justify-between mb-3">
+          <Text className="font-aux-bold text-[20px] text-ink">Portfólio</Text>
+          <TouchableOpacity hitSlop={8}>
+            <Text className="font-body-semibold text-[12px] text-fg-2">Ver Todos</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Content */}
-        <View className="px-6 -mt-10 bg-white rounded-t-[40px] pt-8 pb-32">
-          <View className="flex-row justify-between items-start mb-4">
-            <View className="flex-1">
-              <Text className="text-3xl font-bold text-black uppercase">João Santos</Text>
-              <View className="flex-row items-center mt-1">
-                <View className="mr-1">
-                  <MapPin size={14} color="#666" />
-                </View>
-                <Text className="text-gray-500 ml-1">Jardins, São Paulo • 1.2km</Text>
-              </View>
+        <View className="flex-row mb-8" style={{ gap: 12 }}>
+          {ARTIST.portfolio.slice(0, 2).map((src, i) => (
+            <View key={i} className="flex-1 rounded-r-xl overflow-hidden bg-surface" style={{ aspectRatio: 1 }}>
+              <Image source={{ uri: src }} className="w-full h-full" />
             </View>
-            <View className="bg-primary-100 px-4 py-2 rounded-2xl items-center">
-              <View className="flex-row items-center">
-                <Star size={16} color="#000" fill="#000" />
-                <Text className="text-black font-bold ml-1">4.9</Text>
-              </View>
-              <Text className="text-gray-500 text-[10px]">128 avaliações</Text>
-            </View>
-          </View>
-
-          <View className="flex-row space-x-3 mb-8">
-            <View className="bg-black px-4 py-2 rounded-full">
-              <Text className="text-white text-xs">Realismo</Text>
-            </View>
-            <View className="bg-black px-4 py-2 rounded-full">
-              <Text className="text-white text-xs">Minimalista</Text>
-            </View>
-            <View className="bg-primary-100 px-4 py-2 rounded-full flex-row items-center">
-              <View className="mr-1">
-                <ShieldCheck size={12} color="#000" />
-              </View>
-              <Text className="text-black text-xs font-bold">Verificado</Text>
-            </View>
-          </View>
-
-          <Text className="text-black font-bold text-xl mb-4">Sobre</Text>
-          <Text className="text-gray-500 leading-6 mb-8">
-            Especialista em realismo e traços finos com mais de 8 anos de experiência. 
-            Premiado em convenções nacionais, busco transformar sua ideia em uma obra de arte única na pele.
-          </Text>
-
-          <Text className="text-black font-bold text-xl mb-4">Portfólio</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row mb-8">
-            {[1, 2, 3, 4].map((i) => (
-              <Image 
-                key={i}
-                source={{ uri: `https://images.unsplash.com/photo-1590247813693-5541d1c609fd?q=80&w=200&h=200&auto=format&fit=crop&sig=${i}` }} 
-                className="w-40 h-40 rounded-3xl mr-4 bg-gray-200"
-              />
-            ))}
-          </ScrollView>
-
-          <Text className="text-black font-bold text-xl mb-4">Horários</Text>
-          <View className="bg-primary-100/50 p-4 rounded-3xl">
-            <View className="flex-row justify-between mb-2">
-              <Text className="text-black">Segunda - Sexta</Text>
-              <Text className="text-black font-bold">10:00 - 20:00</Text>
-            </View>
-            <View className="flex-row justify-between">
-              <Text className="text-black">Sábado</Text>
-              <Text className="text-black font-bold">09:00 - 15:00</Text>
-            </View>
-          </View>
+          ))}
         </View>
+
+        {/* Avaliações */}
+        <Text className="font-aux-bold text-[20px] text-ink mb-3">Avaliações</Text>
+        {REVIEWS.map((r) => (
+          <ReviewCard key={r.id} {...r} />
+        ))}
       </ScrollView>
 
-      {/* Floating Bottom Bar */}
-      <View className="absolute bottom-0 left-0 right-0 bg-white p-6 pb-10 border-t border-gray-100 flex-row items-center justify-between">
-        <View>
-          <Text className="text-gray-500 text-sm">A partir de</Text>
-          <Text className="text-black text-2xl font-bold">R$ 250,00</Text>
+      {/* Sticky CTA. Primary = "Iniciar Conversa" (links to Chat once threading is built, P2).
+       *  Secondary = "Reservar" — temporary DEV entry point to the Booking flow so we can test
+       *  Booking→Payment→Confirmed end-to-end. Product decided the canonical entry is via Chat,
+       *  not this profile screen; remove or rethink this button when the Chat→Booking handoff
+       *  is wired. */}
+      <View
+        className="absolute left-0 right-0 bottom-0 bg-background pt-3 px-6 flex-row"
+        style={{ paddingBottom: 24, gap: 10 }}
+      >
+        <View className="flex-1">
+          <Button
+            title="Reservar"
+            variant="outline"
+            onPress={() => navigation.navigate('BookingFlow', { id: ARTIST.id })}
+          />
         </View>
-        <Button 
-          title="Reservar Agora" 
-          className="px-10" 
-          onPress={() => navigation.navigate('BookingFlow' as never)}
-        />
+        <View className="flex-1">
+          <Button
+            title="Iniciar Conversa"
+            onPress={() => {
+              // TODO: navigate to a chat thread with this artist (P2 — Chat thread/messages
+              // not built yet; for now it's a no-op placeholder).
+            }}
+          />
+        </View>
       </View>
     </View>
   );

@@ -1,97 +1,96 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch } from 'react-native';
-import { ChevronRight, Bell, Lock, CreditCard, LogOut, Moon, User } from 'lucide-react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  User,
+  CalendarDays,
+  CreditCard,
+  Bell,
+  HelpCircle,
+  ChevronRight,
+  LogOut,
+  type LucideIcon,
+} from 'lucide-react-native';
+
 import { useAuthStore } from '../../store/authStore';
-import { LucideIcon } from 'lucide-react-native';
+import { Header } from '../../components/common/Header';
 
-interface SettingItem {
+/**
+ * Settings (DESIGN.md §10 #14 / Screens.jsx#SettingsScreen). Single cream-surface list — five
+ * rows + chevron, hairline dividers, **no chip block around the icon**. Sign-out is rendered
+ * as a separate, low-emphasis link below the list (the design's screen catalog says §14 has
+ * sign-out, even though the prototype stub omits it — see IMPLEMENTATION-CHECKLIST.md).
+ *
+ * The previous version's toggles (Notificações Push, Modo Escuro) are gone — neither belongs
+ * on this screen per the design. Notifications becomes a row → its own screen later.
+ */
+
+interface SettingRow {
   id: string;
-  name: string;
+  label: string;
   icon: LucideIcon;
-  type?: 'toggle';
-  value?: boolean;
-  onToggle?: (value: boolean) => void;
-}
-
-interface SettingGroup {
-  title: string;
-  items: SettingItem[];
+  onPress?: () => void;
 }
 
 export function SettingsScreen() {
   const { logout } = useAuthStore();
-  const [notifications, setNotifications] = React.useState(true);
-  const [darkMode, setDarkMode] = React.useState(false);
 
-  const SETTINGS_GROUPS: SettingGroup[] = [
-    {
-      title: 'Conta',
-      items: [
-        { id: 'profile', name: 'Editar Perfil', icon: User },
-        { id: 'security', name: 'Segurança e Senha', icon: Lock },
-        { id: 'payments', name: 'Métodos de Pagamento', icon: CreditCard },
-      ]
-    },
-    {
-      title: 'Preferências',
-      items: [
-        { id: 'notifications', name: 'Notificações Push', icon: Bell, type: 'toggle', value: notifications, onToggle: setNotifications },
-        { id: 'darkmode', name: 'Modo Escuro', icon: Moon, type: 'toggle', value: darkMode, onToggle: setDarkMode },
-      ]
-    }
+  const rows: SettingRow[] = [
+    { id: 'profile',  label: 'Meu Perfil',           icon: User },
+    { id: 'orders',   label: 'Meus Pedidos',         icon: CalendarDays },
+    { id: 'payments', label: 'Métodos de Pagamento', icon: CreditCard },
+    { id: 'notifs',   label: 'Notificações',         icon: Bell },
+    { id: 'help',     label: 'Ajuda',                icon: HelpCircle },
   ];
 
   return (
-    <View className="flex-1 bg-white pt-14">
-      <View className="px-6 mb-8">
-        <Text className="text-4xl font-bold text-black uppercase tracking-tighter">Configurações</Text>
-      </View>
+    <View className="flex-1 bg-background">
+      <Header title="Configurações" />
 
-      <ScrollView className="px-6" showsVerticalScrollIndicator={false}>
-        {SETTINGS_GROUPS.map((group) => (
-          <View key={group.title} className="mb-10">
-            <Text className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-4">{group.title}</Text>
-            <View className="bg-primary-100/30 rounded-[32px] overflow-hidden">
-              {group.items.map((item, index) => {
-                const Icon = item.icon;
-                return (
-                  <View key={item.id}>
-                    <TouchableOpacity 
-                      className="flex-row items-center p-6"
-                      activeOpacity={item.type === 'toggle' ? 1 : 0.7}
-                    >
-                      <View className="bg-black p-3 rounded-2xl mr-4">
-                        <Icon size={20} stroke="#fff" />
-                      </View>
-                      <Text className="flex-1 text-black font-bold text-lg">{item.name}</Text>
-                      
-                      {item.type === 'toggle' ? (
-                        <Switch 
-                          value={item.value ?? false} 
-                          onValueChange={(val) => item.onToggle?.(val)}
-                          trackColor={{ false: '#ddd', true: '#000' }}
-                          thumbColor="#fff"
-                        />
-                      ) : (
-                        <ChevronRight size={20} stroke="#000" />
-                      )}
-                    </TouchableOpacity>
-                    {index < group.items.length - 1 && <View className="h-[1px] bg-primary-100 mx-6" />}
-                  </View>
-                );
-              })}
-            </View>
-          </View>
-        ))}
+      <ScrollView
+        className="px-6"
+        contentContainerStyle={{ paddingBottom: 32 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text className="font-body text-[14px] text-fg-2 mt-1 mb-6">
+          Gerencie sua conta, pedidos, pagamentos e preferências
+        </Text>
 
-        <TouchableOpacity 
+        <View className="bg-surface rounded-r-lg overflow-hidden">
+          {rows.map((row, i) => {
+            const Icon = row.icon;
+            return (
+              <TouchableOpacity
+                key={row.id}
+                onPress={row.onPress}
+                activeOpacity={0.85}
+                className="flex-row items-center px-[18px] py-4"
+                accessibilityRole="button"
+                accessibilityLabel={row.label}
+                style={{
+                  // 1px hairline divider between rows (not above the first).
+                  borderTopWidth: i === 0 ? 0 : 1,
+                  borderTopColor: 'rgba(0,0,0,0.06)',
+                  gap: 14,
+                }}
+              >
+                <Icon size={22} color="#000000" />
+                <Text className="flex-1 font-body text-[16px] text-ink">{row.label}</Text>
+                <ChevronRight size={22} color="#6B6B6B" />
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        <TouchableOpacity
           onPress={logout}
-          className="bg-red-50 p-6 rounded-[32px] flex-row items-center mb-20"
+          activeOpacity={0.7}
+          className="flex-row items-center justify-center mt-8 py-3"
+          accessibilityRole="button"
+          accessibilityLabel="Sair da Conta"
+          style={{ gap: 8 }}
         >
-          <View className="bg-red-500 p-3 rounded-2xl mr-4">
-            <LogOut size={20} stroke="#fff" />
-          </View>
-          <Text className="text-red-500 font-bold text-lg">Sair da Conta</Text>
+          <LogOut size={16} color="#B33A3A" />
+          <Text className="font-body-semibold text-[14px] text-error">Sair da Conta</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
