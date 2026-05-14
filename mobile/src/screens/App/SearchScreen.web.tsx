@@ -25,7 +25,7 @@ export function SearchScreen() {
     <View className="flex-1 bg-background">
       {/* Header Search */}
       <View style={{ paddingTop: 56, paddingHorizontal: 24 }}>
-        <View className="flex-row items-center bg-paper rounded-r-md px-4 py-4 shadow-xl">
+        <View className="flex-row items-center bg-paper rounded-r-md px-4 py-4 border border-hairline">
           <View className="mr-3">
             <Search size={24} color={theme.colors.ink} />
           </View>

@@ -40,9 +40,9 @@ Status: `[ ]` a fazer · `[~]` em andamento · `[x]` feito.
   - [x] Tokens de família em `tailwind.config.js` → classes `font-display` (Bebas), `font-body`/`font-body-medium`/`font-body-semibold`/`font-body-bold`/`font-body-extrabold`/`font-body-light`/`font-body-italic` (Inter), `font-aux`/`font-aux-bold` (DM Sans).
   - [ ] Substituir nas telas os `font-black uppercase tracking-tighter` que imitam display → `font-display` / `font-aux-bold` / etc., e aplicar a escala de tamanhos (`t-display-lg = 32`, `t-h1 = 32`, `t-h3 = 20`, `t-body-lg = 16`, `t-button = 20`, `t-caption = 11`...). (P1)
 
-- [ ] **F4. Sombras → flat.** Remover `shadow-sm/lg/xl/2xl` de cards, search bars, markers, avatar. Sombra só em coisas que flutuam de verdade (bottom sheet, modal, FAB) ≈ `0 6px 18px rgba(0,0,0,.08)`.
+- [x] **F4. Sombras → flat.** Removidos os `shadow-lg/xl/2xl` que sobravam: `ProfileScreen` (avatar 32×32), `SearchScreen` (search bar, marker bubble, card de seleção), `SearchScreen.web` (search bar). Onde fazia sentido para definir o card sem sombra, a search bar virou `border border-hairline`. `rg "shadow-(sm|md|lg|xl|2xl)"` agora vazio em `src/`. Sombras ficam reservadas pra elementos que de fato flutuam (sheets/modais/FAB), quando aparecerem.
 
-- [ ] **F5. Espaçamento.** Adotar a escala 8pt (a Tailwind padrão já bate: `p-1`=4 … `p-6`=24 … `p-16`=64). Padrões: padding lateral de tela = 24 (`px-6`), topo sob status bar ≈ 68, gap entre cards = 12, padding de card = 16–20, bottom nav reserva = 80. Hoje as telas misturam `px-6`/`px-8` sem critério.
+- [x] **F5. Espaçamento.** Escala 8pt da Tailwind já vinha sendo usada; o que faltava era a padronização lateral. Padrão definitivo: **padding lateral de tela = 24 (`px-6` / `paddingHorizontal: 24`)**. Migrações desta volta: `Header` (`px-8` → `px-6`, agora alinha o chevron-back com a borda do conteúdo), `LoginScreen` e `RegisterScreen` (`paddingHorizontal: 32 → 24`), `LandingScreen` (`px-8 → px-6`), `ChatScreen` (`px-8 → px-6`), `SettingsScreen` (`px-8 → px-6`). `rg "\bpx-(7|8|10)\b|paddingHorizontal:\s*(28|30|32|36|40)"` em `src/` agora só retorna o `px-10` interno do `Button` (padding 18×40 do F6, intencional). Topo sob status bar = `useSafeAreaInsets().top + 8` via `Header`. Gap entre `SessionRow` = 10 (espelha o proto), gap entre cards = 12 (default `gap-3`). Bottom-nav reserva = 96 (altura do `tabBarStyle` em `app.routes.tsx`) — `react-navigation` já tira essa área do `children`, então `paddingBottom: 24` no `contentContainerStyle` é folga interna, não reserva pra nav. Telas P3 (`ForgotPassword`/`NewPassword`/`Profile`) foram intencionalmente deixadas de fora — entram na própria reescrita P3 com `<Header />` + `Field` + tokens.
 
 - [x] **F6. Componentes do kit → `src/components/common/`:**
   - [x] `Button` → retângulo `rounded-r-md`, `font-body-bold` 20px, padding 18×40, press scale .97 (sem `opacity .8`), variantes `primary(ink)`/`secondary(surface)`/**`plum`**/`outline`/`ghost`, estados `loading`/`disabled`.
@@ -52,10 +52,10 @@ Status: `[ ]` a fazer · `[~]` em andamento · `[x]` feito.
   - [x] `CalendarMini` → grade do mês (pt-BR, domingo primeiro), nav de mês, dia selecionado = bolinha plum, hoje = ink negrito sublinhado, dias antes de `minDate` mutados; controlado via `selectedDate`/`onSelectDate`.
   - [x] `Chip` → `FilterChip` (pill cream→ink, ícone), `PrefChip` (pill ink→plum, label branco uppercase), `StatusPill` (`ink` = cream+borda ink / `plum` = plum cheia).
   - [x] `ArtistCard` → bloco preto `rounded-r-lg`, coração top-left (`favorited`/`onToggleFavorite`), nota+estrela top-right, foto 96px `rounded-r-lg`, nome centro, tags pill outline branco, rodapé cream "ver mais...".
-  - [x] `BottomNav` custom → ver F7.
+  - [x] `BottomNav` custom (`src/components/common/BottomNav.tsx`) — extraído do `app.routes.tsx`. Plugado no navigator via `tabBar={(props) => <BottomNav {...props} />}`. Encapsula a surface cream 96px, o `TabIcon` animado (spring 0→1 escalando 1.0→1.12 + pílula plum 0→18px), os mapas de ícones/labels por nome de rota e o handling de `tabPress`/`tabLongPress`. Honra `tabBarStyle: { display: 'none' }` setado por screens (`ConfirmedScreen` depende disso). O `app.routes.tsx` ficou enxuto: só registra os 4 `Screen` e o `tabBar` prop.
   - [ ] `Toast` (snackbar plum) — ainda não portado (baixa prioridade).
 
-- [x] **F7. Bottom navigation** (`src/routes/app.routes.tsx`). **4 abas — Home · Chat · Sessões · Settings** (Chat agora tem `ChatScreen` — lista de conversas estática; o thread completo com anexos é P2). Surface cream `#EAE0D5`, sem borda; ativo = **plum** + indicador "pill underline" animado (`withSpring`, largura 0→18) + ícone com escala 1.12 (componente `TabBarIcon` com reanimated). Abas **Search** (mapa) e **Profile** removidas da nav (os arquivos `SearchScreen`/`ProfileScreen` continuam no repo até a decisão de P3). Altura ~96px (≈ design 80 + safe-area; refinar com inset depois é polish).
+- [x] **F7. Bottom navigation** — componente `BottomNav` em `src/components/common/BottomNav.tsx` (refatorado para fora do `app.routes.tsx`); `app.routes.tsx` agora só declara os 4 `Screen`s e passa `tabBar={(props) => <BottomNav {...props} />}`. **4 abas — Home · Chat · Sessões · Settings** (Chat tem `ChatScreen` — lista de conversas estática; o thread completo com anexos é P2). Surface cream `#EAE0D5`, sem borda; ativo = **plum** + indicador "pill underline" animado (`withSpring`, largura 0→18) + ícone com escala 1.12. Abas **Search** (mapa) e **Profile** removidas da nav (os arquivos `SearchScreen`/`ProfileScreen` continuam no repo até a decisão de P3). Altura 96px (≈ design 80 + safe-area; refinar com inset depois é polish).
 
 - [ ] **F8. Animações.** Padronizar: screen-enter `fadeUp` (10px→0, opacity 0→1, ~220ms `ease-out`), press scale .97, indicador de aba `width 0→18px` com mola, sucesso (Confirmed) = check com mola + 2 anéis expandindo, stagger de lista 30ms, respeitar reduced-motion.
 
@@ -120,20 +120,21 @@ Status: `[ ]` a fazer · `[~]` em andamento · `[x]` feito.
 - [x] Nota `<Lock size={12}>` + "Pagamento criptografado e processado com segurança." em `font-body 12 text-fg-3`.
 - [x] Botão "Confirmar Pagamento" sticky no rodapé → vira "Processando…" com `loading={processing}` por ~700ms → `navigation.navigate('Confirmed', { artistName, dateTime, total })`. `alert()` removido.
 
-### Bookings → "Sessões" (`src/screens/App/BookingsScreen.tsx`)
-- [ ] Header: overline "MINHA AGENDA" + "Sessões" Bebas.
-- [ ] `CalendarMini` no topo.
-- [ ] Toggle: segmented control real (container cream `rounded-r-pill`, ativo = ink), labels "Próximas"/"Concluídas", com estado funcional + filtro.
-- [ ] Cards → `SessionRow`: foto 52px `rounded-r-md`, nome + (pill "HOJE" plum se hoje) + estilo·local + data·duração; trailing = pill plum "CHECK-IN" + QR se hoje / check-circle plum se concluída / chevron senão; linha de hoje = fundo ink invertido. Tirar verde/amarelo.
-- [ ] Datas relativas ("Hoje · 14:00", "Sex · 19 Out · 18:30"); incluir endereço/distância/preço/depósito/código. Tirar "Barbearia VIP".
-- [ ] Card com `onPress` → tela Session Detail (P2).
+### Bookings → "Sessões" (`src/screens/App/BookingsScreen.tsx`) — `[~]`
+- [x] Header `<Header title="Sessões" />` Bebas centralizado + overline "MINHA AGENDA" `font-aux-bold text-[10px] tracking-widest text-fg-3`.
+- [x] `CalendarMini` no topo (controlado por `selectedDate`/`setSelectedDate`); na aba "Concluídas", `minDate` afrouxa pra deixar navegar meses passados.
+- [x] Segmented "Próximas"/"Concluídas" — container `bg-surface rounded-r-pill p-1`, pílulas `flex-1 py-2.5 rounded-r-pill`, ativa = `bg-ink text-surface`, inativa = transparente + `text-ink`. Estado funcional (`useState<Tab>`) filtrando a lista.
+- [x] `SessionRow`: foto 52×52 `rounded-r-md` (12px), nome `font-body-semibold 14`, estilo+data em `text-[11px]`, fundo ink invertido quando `status==='hoje'` (cream caso contrário). Pílula "HOJE" plum quando hoje. Trailing: pílula plum "CHECK-IN" + `QrCode` 14 (hoje) / `CheckCircle2` 22 plum (concluída) / `ChevronRight` 22 fg-3 (futura). Cores legacy `bg-green-100`/`bg-yellow-100` já não existiam (varridas no F2); aqui ratificado.
+- [x] Datas pré-formatadas no mock seguindo o protótipo: "Hoje · 14:00", "Sex · 19 Out · 18:30", "Sáb · 27 Out · 11:00", "22 Set · 15:00". Removido "Barbearia VIP". `code` (RBK-NNNN) já no tipo `Session` pra alimentar futura Session Detail.
+- [~] `onOpen` em `SessionRow` está como TODO até a tela Session Detail existir (P2 #9b).
+- [x] Entrada de lista com `Animated.View entering={FadeInDown.delay(40 * i)}` para o stagger (combina com F8).
 
-### Settings (`src/screens/App/SettingsScreen.tsx`)
-- [ ] Título "Configurações" Bebas + subtítulo "Gerencie sua conta, pedidos, pagamentos e preferências".
-- [ ] Alinhar a lista ao design (lista única, sem grupos): "Meu Perfil / Meus Pedidos / Métodos de Pagamento / Notificações / Ajuda" — ou, mantendo grupos+toggles, levar a variação pro DESIGN.md primeiro.
-- [ ] Linhas: ícone "pelado" + label + chevron (tirar o chip preto de cada ícone). Card container `rounded-r-lg` com `surface` sólido (não translúcido), divisores `hairline #D9D9D9`.
-- [ ] Toggle "ligado" → plum (não preto).
-- [ ] "Sair da Conta": se ficar, usar `error #B33A3A` (não `red-500`/`red-50`); decidir no DESIGN.md se Settings tem sign-out (§10 diz que sim; o stub não mostra).
+### Settings (`src/screens/App/SettingsScreen.tsx`) — `[x]`
+- [x] Header `<Header title="Configurações" />` Bebas centralizado + subtítulo `font-body 14 text-fg-2` "Gerencie sua conta, pedidos, pagamentos e preferências".
+- [x] Lista única (sem agrupamentos): "Meu Perfil / Meus Pedidos / Métodos de Pagamento / Notificações / Ajuda" — espelha exatamente `Screens.jsx#SettingsScreen`. Ícones lucide: `User` / `CalendarDays` / `CreditCard` / `Bell` / `HelpCircle`.
+- [x] Cada linha: ícone "pelado" 22px + label `font-body 16 text-ink` + `ChevronRight` fg-3 22. Container `bg-surface rounded-r-lg overflow-hidden`. Divisor entre linhas via `borderTopWidth: 1 / borderTopColor: rgba(0,0,0,0.06)` (mais leve que o `bg-hairline` que tinha antes — o hairline de 1px sobre cream ficava marcado demais). Removido o quadrado preto `bg-black p-3 rounded-r-md` ao redor de cada ícone.
+- [x] Toggles "Notificações Push" e "Modo Escuro" removidos — não estão no design pra essa tela; viram destinos dos seus rows (TODOs até existirem). (O `Switch trackColor: '#602C66'` plum continua sendo o padrão se voltar a aparecer em outra tela.)
+- [x] "Sair da Conta": agora é um link discreto fora da lista (centered, ícone `LogOut` 16 + label `font-body-semibold 14 text-error`). Usa `error #B33A3A` (não `red-500`/`red-50`). Confirmando §10 do DESIGN.md ("Settings: …, sign out") — o stub do protótipo realmente omite, mas a especificação manda manter o logout reachable.
 
 ---
 
@@ -148,7 +149,7 @@ Status: `[ ]` a fazer · `[~]` em andamento · `[x]` feito.
 - [ ] **Healing (11)** — timeline de cicatrização pós-tattoo.
 - [ ] **Rating (12)** — estrelas + comentário pós-sessão.
 - [ ] **Dashboard (13)** — overview de reservas + receita (artista/estúdio); definir `AppRoutes` por papel.
-- [ ] **Simulador (07)** — preview do desenho no corpo (`expo-image-picker` + visão; contraparte do `boofcv` no backend); entradas: card "NOVIDADE" da Home e botão "ABRIR".
+- [~] **Simulador (07)** — `src/screens/App/SimuladorScreen.tsx` agora é uma **aba do bottom nav** (3ª posição, ícone `Sparkles`, label "Simulador") — virou ponto de entrada de 1º nível em vez do card "NOVIDADE → ABRIR" da Home. Placeholder atual: header Bebas "Simulador" + selo plum "BISKO AI · NOVIDADE" + headline "VEJA NO SEU CORPO ANTES DE TATUAR" + copy explicativa + hero ilustrativo (ícone `Wand2` em círculo plum-tint dentro de surface 4:3) + dois CTAs ("Tirar foto" `bg-ink` / "Carregar do rolo" `bg-surface`) + nota de rodapé sobre envio direto no chat. Falta: plumbar `expo-image-picker` (`launchCameraAsync` / `launchImageLibraryAsync`), o passo de seleção da referência de tatuagem, e o pipeline com o `boofcv-all` no backend.
 
 ---
 

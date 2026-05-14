@@ -10,7 +10,9 @@
       "Bash(node -p \"Object.keys\\(require\\('@expo-google-fonts/dm-sans'\\)\\).filter\\(k=>/^DMSans_/.test\\(k\\)\\)\")",
       "Bash(npm start *)",
       "PowerShell(Get-NetTCPConnection *)",
-      "Bash(curl -s -o \"D:/GitHub/rabisko/mobile/.expo/_bc.txt\" -w \"HTTP %{http_code} | %{size_download} bytes\\\\n\" \"http://localhost:8081/node_modules/expo/AppEntry.bundle?platform=android&dev=true&minify=false\" --max-time 240)"
+      "Bash(curl -s -o \"D:/GitHub/rabisko/mobile/.expo/_bc.txt\" -w \"HTTP %{http_code} | %{size_download} bytes\\\\n\" \"http://localhost:8081/node_modules/expo/AppEntry.bundle?platform=android&dev=true&minify=false\" --max-time 240)",
+      "WebFetch(domain:unsplash.com)",
+      "WebSearch"
     ]
   }
 }

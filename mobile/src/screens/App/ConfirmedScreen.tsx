@@ -80,7 +80,7 @@ const FALLBACK = {
   artistName: 'João Santos',
   dateTime: 'Ter 14 Out · 14:00',
   total: 'R$ 220,00',
-  photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop',
+  photo: 'https://images.unsplash.com/photo-1682406593404-99578759c260?q=80&w=200&auto=format&fit=crop',
 };
 
 export function ConfirmedScreen() {

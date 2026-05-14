@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -13,10 +13,9 @@ import { Button } from '../../components/common/Button';
  * tagline 14/Inter centered (max 280), primary CTA "Entrar", then text link "Novo por aqui?
  * Criar conta".
  *
- * Logo asset: the design references `assets/logo-bisko-mark.png` (white octopus silhouette on
- * ink) — that file is not yet in the repo. We render a stylized "R" placeholder in white Bebas
- * for now; when the asset is dropped under `assets/images/`, swap the `<Text>` below for an
- * `<Image source={require(...)} />` at the same 132×132 sizing.
+ * Logo: marca "Bisko Branco" (polvo branco sobre ink) em `assets/images/bisko-branco.png`. O
+ * PNG já tem o fundo ink embutido (512×512); o container `rounded-r-2xl overflow-hidden` clipa
+ * os cantos arredondados sobre a imagem.
  */
 export function LandingScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<AuthRoutesParamList>>();
@@ -24,15 +23,21 @@ export function LandingScreen() {
 
   return (
     <View
-      className="flex-1 bg-background items-center justify-center px-8"
+      className="flex-1 bg-background items-center justify-center px-6"
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom + 16 }}
     >
-      {/* Logo block — ink square r-2xl. TODO: replace placeholder with the octopus mark image. */}
+      {/* Logo block — marca Bisko Branco (polvo). PNG já é ink+branco; overflow-hidden clipa
+          os cantos arredondados sobre a imagem. */}
       <View
-        className="bg-ink rounded-r-2xl items-center justify-center mb-7"
+        className="bg-ink rounded-r-2xl overflow-hidden mb-7"
         style={{ width: 132, height: 132 }}
       >
-        <Text className="font-display text-[80px] leading-[80px] text-on-ink">R</Text>
+        <Image
+          source={require('../../../assets/images/bisko-branco.png')}
+          style={{ width: 132, height: 132 }}
+          resizeMode="contain"
+          accessibilityLabel="Logo Rabisko"
+        />
       </View>
 
       <Text className="font-display text-[64px] leading-[62px] text-ink" style={{ letterSpacing: 1.3 }}>
