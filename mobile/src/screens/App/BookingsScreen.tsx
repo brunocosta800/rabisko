@@ -34,7 +34,7 @@ const UPCOMING: Session[] = [
   {
     id: '1',
     artistName: 'João Santos',
-    photo: 'https://i.pravatar.cc/300?u=joao-santos',
+    photo: 'https://images.unsplash.com/photo-1682406593404-99578759c260?q=80&w=200&h=200&auto=format&fit=crop',
     date: 'Hoje · 14:00',
     duration: '3h',
     style: 'Blackwork · antebraço',
@@ -44,7 +44,7 @@ const UPCOMING: Session[] = [
   {
     id: '2',
     artistName: 'Ana Costa',
-    photo: 'https://i.pravatar.cc/300?u=ana-costa',
+    photo: 'https://images.unsplash.com/photo-1745953707460-959b97dfa42d?q=80&w=200&h=200&auto=format&fit=crop',
     date: 'Sex · 19 Out · 18:30',
     duration: '2h',
     style: 'Aquarela · panturrilha',
@@ -54,7 +54,7 @@ const UPCOMING: Session[] = [
   {
     id: '3',
     artistName: 'Lia Prata',
-    photo: 'https://i.pravatar.cc/300?u=lia-prata',
+    photo: 'https://images.unsplash.com/photo-1702700382679-26890ebe71c5?q=80&w=200&h=200&auto=format&fit=crop',
     date: 'Sáb · 27 Out · 11:00',
     duration: '4h',
     style: 'Realismo · braço',
@@ -67,7 +67,7 @@ const PAST: Session[] = [
   {
     id: '9',
     artistName: 'João Santos',
-    photo: 'https://i.pravatar.cc/300?u=joao-santos',
+    photo: 'https://images.unsplash.com/photo-1682406593404-99578759c260?q=80&w=200&h=200&auto=format&fit=crop',
     date: '22 Set · 15:00',
     duration: '2h',
     style: 'Blackwork · pulso',

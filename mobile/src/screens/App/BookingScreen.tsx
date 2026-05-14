@@ -16,7 +16,7 @@ const ARTIST = {
   id: '1',
   name: 'João Santos',
   tags: ['Realismo', 'Minimalista'],
-  photo: 'https://i.pravatar.cc/300?u=joao-santos',
+  photo: 'https://images.unsplash.com/photo-1682406593404-99578759c260?q=80&w=200&auto=format&fit=crop',
 };
 
 /** Fixed slots per the design spec (6 slots, 3 per row). */

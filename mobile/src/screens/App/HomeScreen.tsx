@@ -52,13 +52,16 @@ const FEATURED = {
   name: 'João Santos',
   tagline: 'Realismo · Premiado',
   rating: 4.9,
-  photo: 'https://i.pravatar.cc/800?u=joao-santos',
+  // Homem com tatuagem no braço trabalhando em arte — perfeito pra hero do tatuador.
+  photo: 'https://images.unsplash.com/photo-1682406593404-99578759c260?q=80&w=800&auto=format&fit=crop',
 };
 
 const FAVORITES = [
-  { id: 'fav1', name: 'Marina', photo: 'https://i.pravatar.cc/300?u=marina' },
+  // Marina: mulher tatuada (Annie Spratt 2018, retrato clássico).
+  { id: 'fav1', name: 'Marina', photo: 'https://images.unsplash.com/photo-1523783419860-28486a354a3b?q=80&w=200&auto=format&fit=crop' },
   { id: 'fav2', name: 'Estúdio Fênix', photo: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=200&auto=format&fit=crop' },
-  { id: 'fav3', name: 'Pedro', photo: 'https://i.pravatar.cc/300?u=pedro' },
+  // Pedro: tatuador preparando o trabalho.
+  { id: 'fav3', name: 'Pedro', photo: 'https://images.unsplash.com/photo-1753259789341-808371092e19?q=80&w=200&auto=format&fit=crop' },
 ];
 
 const NEAR_YOU = [
@@ -67,7 +70,7 @@ const NEAR_YOU = [
     name: 'João Santos',
     rating: 4.9,
     tags: ['Realismo', 'Minimalista'],
-    photo: 'https://i.pravatar.cc/400?u=joao-santos',
+    photo: 'https://images.unsplash.com/photo-1682406593404-99578759c260?q=80&w=400&auto=format&fit=crop',
   },
   {
     id: '2',
