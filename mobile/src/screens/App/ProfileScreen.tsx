@@ -12,7 +12,7 @@ export function ProfileScreen() {
     <View className="flex-1 bg-white">
       <View className="px-6 pt-14 pb-6 bg-surface rounded-b-r-2xl items-center">
         <View className="relative">
-          <View className="w-32 h-32 rounded-r-pill bg-white items-center justify-center border-4 border-white shadow-xl overflow-hidden">
+          <View className="w-32 h-32 rounded-r-pill bg-white items-center justify-center border-4 border-white overflow-hidden">
              {user?.avatar ? (
                <Image source={{ uri: user.avatar }} className="w-full h-full" />
              ) : (

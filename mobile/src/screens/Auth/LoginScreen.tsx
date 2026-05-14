@@ -41,7 +41,7 @@ export function LoginScreen() {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
           flexGrow: 1,
-          paddingHorizontal: 32,
+          paddingHorizontal: 24,
           paddingTop: 24,
           paddingBottom: insets.bottom + 24,
         }}

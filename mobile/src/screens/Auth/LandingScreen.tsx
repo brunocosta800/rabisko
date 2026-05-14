@@ -24,7 +24,7 @@ export function LandingScreen() {
 
   return (
     <View
-      className="flex-1 bg-background items-center justify-center px-8"
+      className="flex-1 bg-background items-center justify-center px-6"
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom + 16 }}
     >
       {/* Logo block — ink square r-2xl. TODO: replace placeholder with the octopus mark image. */}

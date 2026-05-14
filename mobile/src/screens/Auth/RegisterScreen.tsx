@@ -76,7 +76,7 @@ export function RegisterScreen() {
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
-          paddingHorizontal: 32,
+          paddingHorizontal: 24,
           paddingBottom: insets.bottom + 24,
         }}
       >

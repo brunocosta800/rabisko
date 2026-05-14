@@ -18,7 +18,7 @@ export function Header({ title, onBack, right }: HeaderProps) {
   const insets = useSafeAreaInsets();
   return (
     <View
-      className="flex-row items-center px-8 pb-2"
+      className="flex-row items-center px-6 pb-2"
       style={{ paddingTop: insets.top + 8 }}
     >
       <View className="w-8 items-start">

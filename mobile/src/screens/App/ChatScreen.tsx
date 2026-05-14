@@ -18,7 +18,7 @@ export function ChatScreen() {
   return (
     <View className="flex-1 bg-background">
       <ScrollView
-        className="flex-1 px-8"
+        className="flex-1 px-6"
         contentContainerStyle={{ paddingTop: insets.top + 16, paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
       >
