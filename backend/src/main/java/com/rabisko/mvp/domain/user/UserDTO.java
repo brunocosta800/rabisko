@@ -9,24 +9,26 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-/*
- * DTO de INPUT pra cadastro de cliente (POST /user/cadastro/cliente).
- * Carrega so os campos do User base — cliente nao tem campos extras
- * no momento do cadastro (dadosPagamentoToken so vem depois, quando
- * o user cadastra metodo de pagamento na tela de Settings).
+/**
+ * INPUT do cadastro de cliente (POST /user/cadastro/cliente). Cliente nao
+ * tem campos exclusivos no momento do cadastro — so os do User base.
  *
- * Pra artista/estudio: ver RegisterArtistaDTO / RegisterEstudioDTO.
+ * Campos NAO presentes (deliberado):
+ *  - userId: gerado pelo servidor (@GeneratedValue UUID).
+ *  - role: ja determinado pela URL do endpoint. Aceitar do payload abriria
+ *    spoof (cliente se cadastrando como admin).
+ *  - dataCriacao / status: server-side only.
  *
- * Notas:
- *  - userId removido: PK gerado pelo servidor (@GeneratedValue UUID).
- *  - role removido: o endpoint /cliente ja assume role=cliente.
- *    Aceitar do payload abriria vetor de spoof (cliente se cadastrando
- *    como admin, etc.).
- *  - dataCriacao / status / etc.: server-side only.
+ * Validacoes Bean Validation (@Valid no controller):
+ *  - @NotBlank em nome/email/senha — nao pode vir vazio.
+ *  - @Email no email — formato basico.
+ *  - @Size(min=8) na senha — alinha com User.senha (@Size(min=8)).
+ *  - @AssertTrue em termosAceitos — bloqueia cadastro se vier false.
  */
 @Getter
 @Setter
 public class UserDTO {
+
     @NotBlank
     private String nome;
 

@@ -14,25 +14,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-/*
- * 3 fluxos publicos de cadastro, um por papel:
+/**
+ * Camada de servico do cadastro. Cada papel tem seu metodo publico:
  *
- *   - cadastrarCliente(UserDTO)     -> User(role=cliente)   + Client
- *   - cadastrarArtista(RegisterArtistaDTO) -> User(role=tatuador) + Artist
- *   - cadastrarEstudio(RegisterEstudioDTO) -> User(role=estudio)  + Studio
+ *   cadastrarCliente(UserDTO)              -> cria User(role=cliente)  + Client
+ *   cadastrarArtista(RegisterArtistaDTO)   -> cria User(role=tatuador) + Artist
+ *   cadastrarEstudio(RegisterEstudioDTO)   -> cria User(role=estudio)  + Studio
  *
- * Cada um cria a linha em `users` (com senha BCrypt + termosAceitos +
- * status=true) e dispara o service especializado pra criar a linha do
- * aggregate especifico. Tudo dentro de @Transactional pra garantir
- * rollback se a segunda etapa falhar (evita ficar com User orfao em
- * `users` sem a contraparte em tatuadores/estudios/clientes).
+ * Cada metodo segue o mesmo padrao:
+ *  1. construirUser(...) — monta a entidade User com senha BCrypt e role
+ *     hardcoded (NUNCA do payload — fecha vetor de spoof).
+ *  2. userRepository.save — persiste a linha em `users`.
+ *  3. delega ao service do aggregate (Client/Artist/Studio) pra criar a
+ *     linha filha vinculada via user_id.
  *
- * Nao ha mais um cadastrarUser(UserDTO) generico com role no body —
- * removido pra fechar o vetor de spoof (cliente cadastrando como
- * admin). O role e determinado pelo endpoint, nao pelo payload.
+ * @Transactional:
+ *  - Garante que se a etapa 3 falhar, a etapa 2 sofre rollback. Sem isso,
+ *    um erro ao criar o Artist deixaria um User orfao em `users` que
+ *    bloqueia o re-cadastro (UNIQUE em email).
+ *  - Tambem necessario pro deleteByEmail (derived query JPA exige tx).
  */
 @Service
 public class UserService {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -81,7 +85,7 @@ public class UserService {
 
     @Transactional
     public User cadastrarEstudio(RegisterEstudioDTO body) {
-        // estudio e PJ: dataNasc/cpf nao se aplicam, ficam null.
+        // Estudio e PJ — dataNasc e cpf nao se aplicam (ficam null em users).
         User novoUser = construirUser(
                 body.getNome(),
                 body.getEmail(),
@@ -105,6 +109,11 @@ public class UserService {
         return userRepository.deleteByEmail(body.email());
     }
 
+    /**
+     * Helper privado — concentra a montagem do User pra evitar copy-paste
+     * dos 3 metodos publicos. Aplica BCrypt na senha aqui (cripto fica
+     * encapsulada no service; controller/DTO nao tocam).
+     */
     private User construirUser(
             String nome,
             String email,

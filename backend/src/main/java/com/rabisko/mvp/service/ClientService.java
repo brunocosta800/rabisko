@@ -6,13 +6,14 @@ import com.rabisko.mvp.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/*
- * Realinhamento ao schema "clientes":
- *  - body.getUserId() agora devolve UUID.
- *  - dadosPagamento (lista) saiu; o schema tem uma única string
- *    `dados_pagamento_token` que é preenchida quando o cliente
- *    cadastrar método de pagamento (Mercado Pago, etc.). No cadastro
- *    inicial fica null — só criamos a linha com o vínculo ao usuário.
+/**
+ * Cria a linha em `clientes`. O cliente nao tem campos proprios no
+ * cadastro — so o vinculo com o User. dadosPagamentoToken (token de
+ * gateway tipo Mercado Pago/Stripe) entra depois, quando o usuario
+ * cadastrar um metodo de pagamento.
+ *
+ * Por isso o cadastrarCliente recebe so o User salvo (nao um DTO) — nao
+ * ha nada extra do payload pra plumbar aqui.
  */
 @Service
 public class ClientService {
@@ -20,9 +21,9 @@ public class ClientService {
     @Autowired
     private ClientRepository clientRepository;
 
-    public Client cadastrarCliente(User body){
+    public Client cadastrarCliente(User user) {
         Client novoClient = Client.builder()
-                .userId(body.getUserId())
+                .userId(user.getUserId())
                 .build();
 
         return clientRepository.save(novoClient);

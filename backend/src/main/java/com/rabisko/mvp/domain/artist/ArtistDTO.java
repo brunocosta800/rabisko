@@ -2,14 +2,12 @@ package com.rabisko.mvp.domain.artist;
 
 import java.util.UUID;
 
-/*
- * DTO de RESPOSTA (read-only) — usado pra devolver dados de um artista
- * (ex.: GET /artist/{id}, listagem). So traz o que e proprio do Artist.
- *
- * Dados pessoais do tatuador (nome/email/cpf/telefone) vivem no `users` e
- * NAO sao duplicados aqui — quando o endpoint de listagem precisar deles,
- * faz JOIN com User e devolve um ArtistWithUserDTO ou popula manualmente
- * via UserRepository.findById(userId). Ver Artist.java pro motivo.
+/**
+ * RESPONSE DTO (read-only). Devolve os campos proprios do Artist em
+ * endpoints como GET /artist/{id} e listagens. NAO inclui dados pessoais
+ * (nome/email/cpf/telefone) — esses vivem em `users` e devem vir via
+ * JOIN ou compostos com UserResponseDTO em um wrapper futuro
+ * (ArtistWithUserDTO) quando o GET precisar deles.
  */
 public record ArtistDTO(
     UUID tatuadorId,

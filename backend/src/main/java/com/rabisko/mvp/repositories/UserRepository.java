@@ -8,18 +8,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-/*
- * Realinhamento ao schema do Supabase:
- *  - O tipo do PK passou de Long para UUID (vide User.userId).
- *  - existsByEmail / findByEmail / deleteByEmail continuam derived:
- *    Hibernate infere a query a partir do nome.
- *  - deleteByEmail mantém @Modifying + @Transactional — sem isso, a
- *    JPA falha em runtime com InvalidDataAccessApiUsageException.
- *  - findByEmail mantém o retorno UserDetails (User implements
- *    UserDetails), pra AuthorizationService / SecurityFilter
- *    continuarem inalterados.
+/**
+ * Repositorio JPA de User. Os 3 metodos abaixo sao "derived queries" — o
+ * Spring Data JPA gera o SQL a partir do nome do metodo (`existsByEmail`
+ * vira `SELECT count(*) FROM users WHERE email = ?`).
+ *
+ * findByEmail retorna UserDetails (interface do Spring Security) em vez de
+ * User pra que o AuthorizationService.loadUserByUsername possa devolver
+ * direto sem cast — User implementa UserDetails.
+ *
+ * deleteByEmail precisa de @Modifying + @Transactional pra rodar dentro
+ * de uma transacao ativa (sem isso, Spring Data lanca
+ * InvalidDataAccessApiUsageException em runtime).
  */
 public interface UserRepository extends JpaRepository<User, UUID> {
+
     boolean existsByEmail(String email);
 
     UserDetails findByEmail(String email);

@@ -7,23 +7,22 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-/*
- * DTO de INPUT pra cadastro de estudio (POST /user/cadastro/estudio).
- * Carrega os campos do User base (credenciais de login) + os campos
- * especificos do Studio (cnpj). O 'nome' aqui e o nome do estudio
- * (mapeado pra Studio.nome E pra User.nome — como estudio nao tem
- * pessoa fisica, sao iguais).
+/**
+ * INPUT do cadastro de estudio (POST /user/cadastro/estudio). Carrega os
+ * campos do User base (credenciais de login do dono) + os campos
+ * exclusivos do Studio (cnpj, endereco).
  *
- * Notas:
- *  - dataNasc / cpf nao entram: estudio e pessoa juridica (cnpj).
- *  - role nao vem: endpoint /estudio ja assume role=estudio.
- *  - endereco / horarios de funcionamento ficam de fora ate a tabela
- *    enderecos / o par horarioAbertura/Fechamento serem implementados
- *    de ponta a ponta (Studio.java ja tem os campos comentados).
+ * O 'nome' aqui e o nome do estudio — vai pra Studio.nome E pra User.nome
+ * (estudio nao tem pessoa fisica, entao e o mesmo nome nas duas linhas
+ * no cadastro inicial).
+ *
+ * dataNasc / cpf NAO entram: estudio e PJ — usa cnpj.
+ * role NAO vem no payload (idem outros DTOs de cadastro).
  */
 @Getter
 @Setter
 public class RegisterEstudioDTO {
+
     @NotBlank
     private String nome;
 
@@ -39,11 +38,6 @@ public class RegisterEstudioDTO {
 
     private String cnpj;
 
-    /*
-     * Endereco fisico do estudio. Estudio e local fisico, entao na pratica
-     * sempre tem — mas mantido opcional no MVP pra nao bloquear cadastro
-     * incremental (o dono pode preencher depois pela tela de perfil).
-     */
     private String endereco;
 
     @AssertTrue(message = "Voce deve aceitar os termos de uso")

@@ -5,8 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-/*
- * Realinhamento: PK UUID (tabela public.clientes).
+/**
+ * Repositorio JPA de Client (tabela `clientes`). Sem queries customizadas
+ * por enquanto — JpaRepository cobre o que precisamos.
  */
 public interface ClientRepository extends JpaRepository<Client, UUID> {
 }

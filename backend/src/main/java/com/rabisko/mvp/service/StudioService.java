@@ -7,13 +7,18 @@ import com.rabisko.mvp.repositories.StudioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/*
- * Cadastro de estudio. Espelha ArtistService:
- *  - Recebe o User ja salvo (pra ter user_id) + o DTO original com os
- *    campos especificos de Studio (cnpj, telefone — nome/email vem do
- *    User mas sao replicados aqui pelo schema atual).
- *  - termosAceitos vem do payload (validado com @AssertTrue no DTO).
- *  - Endereco e horarios ficam de fora ate Studio ter campos pra isso.
+/**
+ * Cria a linha em `estudios` que materializa o papel de estudio do User
+ * dono. Espelha a forma do ArtistService.
+ *
+ * Diferenca relevante vs Artist: o Studio mantem nome/email/telefone na
+ * sua propria linha porque conceitualmente sao dados COMERCIAIS, podem
+ * divergir do User dono (email comercial vs email pessoal de login,
+ * nome fantasia vs nome do dono). Hoje o cadastro grava os mesmos
+ * valores nos dois lados; quando o app tiver tela de "editar estudio",
+ * esses campos viram independentes.
+ *
+ * termosAceitos vive em User (ver Studio.java).
  */
 @Service
 public class StudioService {
@@ -22,8 +27,6 @@ public class StudioService {
     private StudioRepository studioRepository;
 
     public Studio cadastrarEstudio(User user, RegisterEstudioDTO body) {
-        // termosAceitos NAO e setado aqui — vive em User.termosAceitos
-        // (UserService.construirUser ja propagou). Ver Studio.java.
         Studio novoStudio = Studio.builder()
                 .userId(user.getUserId())
                 .nome(user.getNome())

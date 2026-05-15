@@ -2,12 +2,9 @@ package com.rabisko.mvp.domain.studio;
 
 import java.util.UUID;
 
-/*
- * DTO de RESPOSTA (read-only) — usado pra devolver dados de um estúdio
- * (ex.: GET /studio/{id}). Não inclui senha nem termosAceitos.
- *
- * Pra INPUT de cadastro de estúdio, ver RegisterEstudioDTO (a criar) —
- * carrega senha + endereço + horários junto.
+/**
+ * RESPONSE DTO (read-only). Devolve os dados publicos do Studio. Nao
+ * inclui senha (mora em `users`) nem termosAceitos (idem).
  */
 public record StudioDTO(
     UUID estudioId,

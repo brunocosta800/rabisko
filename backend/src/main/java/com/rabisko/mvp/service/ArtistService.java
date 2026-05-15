@@ -7,16 +7,19 @@ import com.rabisko.mvp.repositories.ArtistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/*
- * Cadastro do tatuador. Recebe o User ja salvo (pra ter user_id) + o DTO
- * com os campos exclusivos do Artist (bio, instagram, estilos, termos).
+/**
+ * Cria a linha em `tatuadores` que materializa o papel de artista do User.
+ * Recebe o User ja salvo (pra ter user_id) + o RegisterArtistaDTO original
+ * (pelos campos exclusivos: bio, instagram, endereco, estilos).
  *
- * Nao replica nome/email/cpf/telefone/senha aqui — esses dados vivem no
- * `users` e sao consultados por JOIN/userId quando preciso. Ver comentario
- * em Artist.java.
- *
- * estilos: chega como List<String>, mas a M:N tatuador_estilos nao tem
- * entity/repo ainda. Ignorado por ora — TODO quando o repo existir.
+ * Notas:
+ *  - Dados pessoais (nome/email/cpf/telefone/senha) NAO sao replicados
+ *    aqui — vivem em `users` e sao consultados via JOIN ou
+ *    UserRepository.findById(userId). Ver Artist.java.
+ *  - termosAceitos vive em User.termosAceitos (UserService.construirUser
+ *    ja gravou). Mantido fora desta linha pra evitar duplicacao.
+ *  - estilos: lista de nomes vinda do DTO. A persistencia espera a tabela
+ *    M:N `tatuador_estilos` ter sua propria entity/repo — TODO ate la.
  */
 @Service
 public class ArtistService {
@@ -25,8 +28,6 @@ public class ArtistService {
     private ArtistRepository artistRepository;
 
     public Artist cadastrarArtista(User user, RegisterArtistaDTO body) {
-        // termosAceitos NAO e setado aqui — vive em User.termosAceitos
-        // (UserService.construirUser ja propagou). Ver Artist.java.
         Artist novoArtist = Artist.builder()
                 .userId(user.getUserId())
                 .bio(body.getBio())

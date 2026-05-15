@@ -16,17 +16,29 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-/*
- * 3 endpoints de cadastro, um por papel — cada um aceita seu DTO
- * proprio (UserDTO / RegisterArtistaDTO / RegisterEstudioDTO) e
- * delega pro UserService correspondente. Todos retornam o JWT direto
- * (auto-login pos-cadastro) pra evitar o round trip extra de chamar
- * /auth/login na sequencia. O front salva o token no AsyncStorage e
- * navega pra Home (ou Dashboard, no caso de artista/estudio quando
- * existir).
+/**
+ * Endpoints de gestao de usuario.
  *
- * O endpoint generico /user/cadastro foi removido — cada papel agora
- * tem seu path dedicado, alinhado com a estrategia de DTOs separados.
+ * Cadastro: 3 endpoints, um por papel (cliente / artista / estudio). A
+ * decisao de qual rota chamar fica no front (RoleSwitch). Cada endpoint
+ * aceita seu DTO proprio (UserDTO / RegisterArtistaDTO / RegisterEstudioDTO)
+ * com os campos que aquele papel precisa, e delega ao metodo correspondente
+ * do UserService.
+ *
+ * Por que NAO um unico /user/cadastro recebendo `role` no body:
+ *  - Evita spoofing (cliente nao consegue se cadastrar como admin).
+ *  - Mantem cada DTO enxuto, sem campos que nao se aplicam.
+ *  - Permite Bean Validation (@Valid) especifico por papel.
+ *
+ * Auto-login: apos cadastro bem-sucedido, todos os 3 endpoints retornam o
+ * JWT direto (HTTP 201 + LoginResponseDTO). Isso evita um round-trip extra
+ * de POST /auth/login pelo front depois.
+ *
+ * Tratamento de erro:
+ *  - DataIntegrityViolationException: viola UNIQUE em users.email/cpf
+ *    ou estudios.cnpj. Retorna 400 com mensagem amigavel.
+ *  - RuntimeException generico: erro de regra de negocio (ex.: "E-mail
+ *    ja cadastrado!" lancado pelo UserService). Retorna 400 com a msg.
  */
 @RestController
 @RequestMapping("/user")
@@ -86,6 +98,11 @@ public class UserController {
         }
     }
 
+    /**
+     * Devolve o User logado. @AuthenticationPrincipal e injetado pelo Spring
+     * a partir do SecurityContext que o SecurityFilter populou. Devolve
+     * UserResponseDTO em vez de User direto pra nao vazar senha_hash.
+     */
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> me(@AuthenticationPrincipal User user) {
         if (user == null) {
