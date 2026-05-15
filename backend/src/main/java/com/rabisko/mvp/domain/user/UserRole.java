@@ -26,5 +26,6 @@ package com.rabisko.mvp.domain.user;
 public enum UserRole {
     admin,
     cliente,
-    tatuador
+    tatuador, 
+    estudio
 }

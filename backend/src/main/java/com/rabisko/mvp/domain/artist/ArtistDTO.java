@@ -1,28 +1,34 @@
 package com.rabisko.mvp.domain.artist;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.UUID;
 
 /*
- * Realinhamento ao schema "tatuadores":
- *  - Ids passaram a UUID.
- *  - Campos do schema (bio/instagram/vinculadoEstudio/termosAceitos/
- *    perfilCompleto) entram no DTO para quando existir uma rota de
- *    edição/conclusão de perfil. Os campos antigos `estilos` e
- *    `boostPremium` saíram (vivem em outras tabelas — tatuador_estilos,
- *    boosts).
+ * DTO de RESPOSTA (read-only) — usado pra devolver dados de um artista
+ * (ex.: GET /artist/{id}, listagem). So traz o que e proprio do Artist.
+ *
+ * Dados pessoais do tatuador (nome/email/cpf/telefone) vivem no `users` e
+ * NAO sao duplicados aqui — quando o endpoint de listagem precisar deles,
+ * faz JOIN com User e devolve um ArtistWithUserDTO ou popula manualmente
+ * via UserRepository.findById(userId). Ver Artist.java pro motivo.
  */
-@Getter
-@Setter
-public class ArtistDTO {
-    private UUID tatuadorId;
-    private UUID estudioId;
-    private UUID userId;
-    private String bio;
-    private String instagram;
-    private boolean vinculadoEstudio;
-    private boolean termosAceitos;
-    private boolean perfilCompleto;
+public record ArtistDTO(
+    UUID tatuadorId,
+    UUID userId,
+    UUID estudioId,
+    String bio,
+    String instagram,
+    String endereco,
+    boolean vinculadoEstudio
+) {
+    public static ArtistDTO from(Artist a) {
+        return new ArtistDTO(
+            a.getTatuadorId(),
+            a.getUserId(),
+            a.getEstudioId(),
+            a.getBio(),
+            a.getInstagram(),
+            a.getEndereco(),
+            a.isVinculadoEstudio()
+        );
+    }
 }

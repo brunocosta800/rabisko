@@ -13,27 +13,16 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /*
- * Realinhamento ao schema do Supabase (tabela "public.tatuadores"):
+ * Tabela "tatuadores" no Supabase. Aggregate enxuto: guarda APENAS o que e
+ * proprio do tatuador. Dados pessoais (nome/email/cpf/telefone/senha) vivem
+ * no `users` — quando precisar deles, faz JOIN via user_id ou consulta o
+ * UserRepository com o userId daqui.
  *
- *  - @Table apontando para "tatuadores" (a classe Java continua se
- *    chamando Artist para não derrubar ArtistService/ArtistRepository).
- *  - PK UUID em vez de Long IDENTITY.
- *  - user_id é UNIQUE no schema (um tatuador por usuário) — anotado
- *    com unique=true para o ddl-auto=validate aceitar.
- *  - estudio_id é UUID e nullable (tatuador pode não estar vinculado).
- *  - Removidos os campos da versão anterior:
- *      * boostPremium  -> virou a tabela própria public.boosts,
- *                         vinculada a uma imagem do portfólio. Não faz
- *                         parte do perfil base.
- *      * estilos       -> virou public.tatuador_estilos (join com
- *                         public.estilos, master). Fora do escopo do
- *                         cadastro inicial.
- *  - Campos novos vindos do schema, todos com default false para casar
- *    com os DEFAULT do DB:
- *      vinculado_estudio, termos_aceitos, perfil_completo.
- *  - bio (text) e instagram (varchar) ficam nulos até o tatuador
- *    completar o perfil. data_criacao usa @CreationTimestamp pela
- *    mesma razão explicada em User.
+ * Ja teve nome/email/senha_hash/cpf/telefone duplicados aqui — removidos
+ * porque (1) o schema do Supabase nao tem essas colunas em `tatuadores`,
+ * e (2) duplicar dado vira problema de sincronizacao quando o usuario
+ * editar o proprio perfil. bio e instagram FICAM, sao de fato exclusivos
+ * do papel artista.
  */
 @Entity
 @Table(name = "tatuadores")
@@ -52,8 +41,21 @@ public class Artist {
     @Column(name = "user_id", nullable = false, unique = true)
     private UUID userId;
 
+    /*
+     * estudio_id e nullable: tatuador autonomo (sem estudio) tem essa
+     * coluna como NULL e usa o proprio `endereco` abaixo pra que clientes
+     * saibam onde encontra-lo. Quando vinculado a estudio, pode ser null
+     * tambem — o endereco do estudio supre.
+     */
     @Column(name = "estudio_id")
     private UUID estudioId;
+
+    /*
+     * Endereco do tatuador autonomo. Texto livre por enquanto (MVP). Quando
+     * a tabela polimorfica `enderecos` (owner_id + owner_type) virar uma
+     * entity JPA, migrar este campo pra um @OneToOne com `enderecos`.
+     */
+    private String endereco;
 
     private String bio;
 
@@ -62,11 +64,12 @@ public class Artist {
     @Column(name = "vinculado_estudio", nullable = false)
     private boolean vinculadoEstudio;
 
-    @Column(name = "termos_aceitos", nullable = false)
-    private boolean termosAceitos;
-
-    @Column(name = "perfil_completo", nullable = false)
-    private boolean perfilCompleto;
+    /*
+     * termos_aceitos vive em `users` — o aceite e do usuario, nao do papel.
+     * O DTO de cadastro (RegisterArtistaDTO) ainda valida o checkbox via
+     * @AssertTrue, mas o valor e propagado pra User.termosAceitos no
+     * UserService.construirUser, nao aqui.
+     */
 
     @CreationTimestamp
     @Column(name = "data_criacao", updatable = false, nullable = false)

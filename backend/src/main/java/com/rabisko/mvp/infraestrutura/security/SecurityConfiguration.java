@@ -28,7 +28,9 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/user/cadastro").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/user/cadastro/cliente").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/user/cadastro/artista").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/user/cadastro/estudio").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

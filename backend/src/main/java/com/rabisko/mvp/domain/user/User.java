@@ -105,6 +105,9 @@ public class User implements UserDetails {
     @Column(name = "data_modificacao", nullable = false)
     private LocalDateTime dataModificacao;
 
+    @Column(name = "termos_aceitos", nullable = false)
+    private boolean termosAceitos;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // Constantes do enum em minúsculo após o realinhamento ao ENUM
