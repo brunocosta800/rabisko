@@ -1,20 +1,25 @@
 package com.rabisko.mvp.service;
 
 import com.rabisko.mvp.domain.artist.Artist;
+import com.rabisko.mvp.domain.artist.RegisterArtistaDTO;
 import com.rabisko.mvp.domain.user.User;
 import com.rabisko.mvp.repositories.ArtistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/*
- * Realinhamento ao schema "tatuadores":
- *  - artist.getUserId() agora devolve UUID.
- *  - Campos `estilos` e `boostPremium` saíram do Artist (moraram em
- *    tabelas próprias no schema do Supabase). No cadastro só criamos
- *    a linha mínima vinculando user_id e marcando vinculado_estudio /
- *    termos_aceitos / perfil_completo como false (idem aos DEFAULT do
- *    schema; o usuário completa esses campos depois).
- *  - bio / instagram ficam null até o tatuador editar o perfil.
+/**
+ * Cria a linha em `tatuadores` que materializa o papel de artista do User.
+ * Recebe o User ja salvo (pra ter user_id) + o RegisterArtistaDTO original
+ * (pelos campos exclusivos: bio, instagram, endereco, estilos).
+ *
+ * Notas:
+ *  - Dados pessoais (nome/email/cpf/telefone/senha) NAO sao replicados
+ *    aqui — vivem em `users` e sao consultados via JOIN ou
+ *    UserRepository.findById(userId). Ver Artist.java.
+ *  - termosAceitos vive em User.termosAceitos (UserService.construirUser
+ *    ja gravou). Mantido fora desta linha pra evitar duplicacao.
+ *  - estilos: lista de nomes vinda do DTO. A persistencia espera a tabela
+ *    M:N `tatuador_estilos` ter sua propria entity/repo — TODO ate la.
  */
 @Service
 public class ArtistService {
@@ -22,12 +27,13 @@ public class ArtistService {
     @Autowired
     private ArtistRepository artistRepository;
 
-    public Artist cadastrarArtista(User artist){
+    public Artist cadastrarArtista(User user, RegisterArtistaDTO body) {
         Artist novoArtist = Artist.builder()
-                .userId(artist.getUserId())
+                .userId(user.getUserId())
+                .bio(body.getBio())
+                .instagram(body.getInstagram())
+                .endereco(body.getEndereco())
                 .vinculadoEstudio(false)
-                .termosAceitos(false)
-                .perfilCompleto(false)
                 .build();
 
         return artistRepository.save(novoArtist);

@@ -10,22 +10,18 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.UUID;
 
-/*
- * Realinhamento ao schema do Supabase (tabela "public.estudios"):
+/**
+ * Linha em `estudios` — materializa o papel "estudio" de um User dono.
  *
- *  - PK UUID.
- *  - cnpj UNIQUE mas nullable (segue o schema; antes eu tinha
- *    nullable=false).
- *  - O `horarioFuncionamento` único (java.sql.Time) virou um par
- *    horario_abertura + horario_fechamento (LocalTime, idiomático).
- *  - Novo: telefone (varchar nullable).
- *  - Removido: endereco. No Supabase os endereços moram numa tabela
- *    polimórfica `enderecos` (owner_id + owner_type) que aponta para
- *    estudios/tatuadores/etc. Fora do escopo do cadastro.
- *  - data_criacao com @CreationTimestamp pelos mesmos motivos de User.
+ * Diferenca vs Artist: aqui mantemos nome/email/telefone na propria linha,
+ * porque sao dados COMERCIAIS do estudio (podem divergir do nome/email
+ * pessoal do dono — nome fantasia, email comercial, etc.). No cadastro
+ * inicial sao copiados do User, mas a tela de "editar estudio" futura
+ * vai permitir desvinculo.
+ *
+ * cnpj UNIQUE — duas linhas de estudio nao podem ter o mesmo CNPJ.
  */
 @Entity
 @Table(name = "estudios")
@@ -36,24 +32,32 @@ import java.util.UUID;
 @Builder
 @EqualsAndHashCode(of = "estudioId")
 public class Studio {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "estudio_id", updatable = false, nullable = false)
     private UUID estudioId;
 
+    /**
+     * FK pro User dono. UNIQUE: cada User com role=estudio gerencia 1 estudio
+     * no MVP. Multi-estudio por dono fica fora de escopo.
+     */
+    @Column(name = "user_id", nullable = false, unique = true)
+    private UUID userId;
+
     @Column(nullable = false)
     private String nome;
+
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @Column(unique = true)
     private String cnpj;
 
     private String telefone;
 
-    @Column(name = "horario_abertura")
-    private LocalTime horarioAbertura;
-
-    @Column(name = "horario_fechamento")
-    private LocalTime horarioFechamento;
+    /** Endereco fisico. Texto livre no MVP — ver Artist.endereco. */
+    private String endereco;
 
     @CreationTimestamp
     @Column(name = "data_criacao", updatable = false, nullable = false)

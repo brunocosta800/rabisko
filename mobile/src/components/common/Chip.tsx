@@ -5,7 +5,10 @@ import { LucideIcon } from 'lucide-react-native';
 /**
  * The three chip variants from the design system (DESIGN.md §8.5 — Chip.jsx).
  *  - FilterChip: pill, cream → ink fill when active; optional leading icon. (Home filters.)
- *  - PrefChip:   pill, ink → plum when selected; always white uppercase label. (Inside cards.)
+ *  - PrefChip:   pill multi-select; outline-ink (não selecionado) → fill-plum (selecionado).
+ *    A versão "ink → plum" original (ambos escuros) era difícil de distinguir num grid de
+ *    multi-select: o usuário marcava várias mas parecia que só uma ficava ativa. Outline
+ *    vs filled deixa o estado óbvio.
  *  - StatusPill: pill; tone `ink` = cream + ink border, tone `plum` = plum fill. ("Pago", …)
  */
 
@@ -44,9 +47,14 @@ export function PrefChip({ label, selected, onPress }: PrefChipProps) {
       activeOpacity={0.8}
       accessibilityRole="button"
       accessibilityState={{ selected: !!selected }}
-      className={`rounded-r-pill px-[18px] py-2.5 ${selected ? 'bg-plum' : 'bg-ink'}`}
+      className={`rounded-r-pill px-[18px] py-2.5 border-[1.5px] ${
+        selected ? 'bg-plum border-plum' : 'bg-transparent border-ink'
+      }`}
     >
-      <Text className="font-body-bold text-[13px] uppercase text-white" style={{ letterSpacing: 0.4 }}>
+      <Text
+        className={`font-body-bold text-[13px] uppercase ${selected ? 'text-white' : 'text-ink'}`}
+        style={{ letterSpacing: 0.4 }}
+      >
         {label}
       </Text>
     </TouchableOpacity>

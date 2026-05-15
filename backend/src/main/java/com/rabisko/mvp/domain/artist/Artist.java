@@ -12,28 +12,21 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/*
- * Realinhamento ao schema do Supabase (tabela "public.tatuadores"):
+/**
+ * Linha em `tatuadores` — materializa o papel "artista" de um User. Aggregate
+ * enxuto: guarda APENAS o que e proprio do tatuador.
  *
- *  - @Table apontando para "tatuadores" (a classe Java continua se
- *    chamando Artist para não derrubar ArtistService/ArtistRepository).
- *  - PK UUID em vez de Long IDENTITY.
- *  - user_id é UNIQUE no schema (um tatuador por usuário) — anotado
- *    com unique=true para o ddl-auto=validate aceitar.
- *  - estudio_id é UUID e nullable (tatuador pode não estar vinculado).
- *  - Removidos os campos da versão anterior:
- *      * boostPremium  -> virou a tabela própria public.boosts,
- *                         vinculada a uma imagem do portfólio. Não faz
- *                         parte do perfil base.
- *      * estilos       -> virou public.tatuador_estilos (join com
- *                         public.estilos, master). Fora do escopo do
- *                         cadastro inicial.
- *  - Campos novos vindos do schema, todos com default false para casar
- *    com os DEFAULT do DB:
- *      vinculado_estudio, termos_aceitos, perfil_completo.
- *  - bio (text) e instagram (varchar) ficam nulos até o tatuador
- *    completar o perfil. data_criacao usa @CreationTimestamp pela
- *    mesma razão explicada em User.
+ * Dados pessoais (nome/email/cpf/telefone/senha) vivem no `users`. Pra
+ * obte-los, faca JOIN via user_id ou consulta UserRepository.findById.
+ *
+ * Por que nao duplicar:
+ *  - Schema do Supabase nao tem essas colunas em `tatuadores`.
+ *  - Duplicacao geraria sincronizacao (toda vez que o user editar nome,
+ *    teria que atualizar nas duas tabelas) — fonte classica de bug.
+ *
+ * O que fica aqui (proprio do papel):
+ *  - bio, instagram, endereco
+ *  - vinculo com estudio (estudio_id + flag)
  */
 @Entity
 @Table(name = "tatuadores")
@@ -44,29 +37,36 @@ import java.util.UUID;
 @Builder
 @EqualsAndHashCode(of = "tatuadorId")
 public class Artist {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "tatuador_id", updatable = false, nullable = false)
     private UUID tatuadorId;
 
+    /** FK pro User dono. UNIQUE: cada User com role=tatuador tem 1 perfil. */
     @Column(name = "user_id", nullable = false, unique = true)
     private UUID userId;
 
+    /**
+     * Nullable: tatuador pode ser autonomo (sem estudio). Quando ha vinculo,
+     * o app usa o endereco do estudio; caso contrario, usa o `endereco` abaixo.
+     */
     @Column(name = "estudio_id")
     private UUID estudioId;
+
+    /**
+     * Endereco do tatuador autonomo (texto livre no MVP). Migrar pra
+     * @OneToOne com `enderecos` quando essa tabela polimorfica virar entity.
+     */
+    private String endereco;
 
     private String bio;
 
     private String instagram;
 
+    /** Espelha a presenca de estudio_id; util pra filtros sem JOIN. */
     @Column(name = "vinculado_estudio", nullable = false)
     private boolean vinculadoEstudio;
-
-    @Column(name = "termos_aceitos", nullable = false)
-    private boolean termosAceitos;
-
-    @Column(name = "perfil_completo", nullable = false)
-    private boolean perfilCompleto;
 
     @CreationTimestamp
     @Column(name = "data_criacao", updatable = false, nullable = false)
