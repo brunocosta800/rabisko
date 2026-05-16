@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { ImagePlus, Sparkles, Camera, Wand2 } from 'lucide-react-native';
-
+import * as ImagePicker from 'expo-image-picker';
 import { Header } from '../../components/common/Header';
 
 /**
@@ -16,6 +16,50 @@ import { Header } from '../../components/common/Header';
  */
 
 export function SimuladorScreen() {
+  const [image, setImage] = useState<string | null>(null);
+
+  const abrirCamera = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      Alert.alert(
+        'Permissão necessária',
+        'É necessário permitir o acesso à câmera para tirar uma foto.'
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      console.log('Foto capturada:', result.assets[0].uri);
+    }
+  };
+
+  const abrirGaleria = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      Alert.alert(
+        'Permissão necessária',
+        'É necessário permitir o acesso à galeria para escolher uma foto.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
+
+    console.log(result);
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
   return (
     <View className="flex-1 bg-background">
       <Header title="Simulador" />
@@ -65,25 +109,24 @@ export function SimuladorScreen() {
           </Text>
         </View>
 
-        {/* CTAs — dois caminhos pra alimentar a foto-base */}
-        <TouchableOpacity
-          activeOpacity={0.85}
+        <TouchableOpacity // Botão tirar foto
+          activeOpacity={0.65}
           className="bg-ink flex-row items-center justify-center py-4 rounded-r-md mb-3"
           style={{ gap: 10 }}
-          // TODO: plugar `expo-image-picker` (launchCameraAsync) — passar a imagem pro pipeline.
+          onPress={abrirCamera}
         >
           <Camera size={18} color="#FFFFFF" />
           <Text className="font-body-bold text-[16px] text-surface">Tirar foto</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          activeOpacity={0.85}
+        <TouchableOpacity // Botão importar foto
+          activeOpacity={0.65}
           className="bg-surface flex-row items-center justify-center py-4 rounded-r-md"
           style={{ gap: 10 }}
-          // TODO: plugar `expo-image-picker` (launchImageLibraryAsync).
+          onPress={abrirGaleria}
         >
           <ImagePlus size={18} color="#000000" />
-          <Text className="font-body-bold text-[16px] text-ink">Carregar do rolo</Text>
+          <Text className="font-body-bold text-[16px] text-ink">Carregar da galeria</Text>
         </TouchableOpacity>
 
         <Text className="font-body text-[11px] text-fg-3 text-center mt-6">
