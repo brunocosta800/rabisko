@@ -6,6 +6,7 @@ import { EstablishmentProfileScreen } from '../screens/App/EstablishmentProfileS
 import { BookingScreen } from '../screens/App/BookingScreen';
 import { PaymentScreen } from '../screens/App/PaymentScreen';
 import { ConfirmedScreen } from '../screens/App/ConfirmedScreen';
+import { SearchResultsScreen } from '../screens/App/SearchResultsScreen';
 
 export type HomeStackParamList = {
   HomeList: undefined;
@@ -13,6 +14,7 @@ export type HomeStackParamList = {
   BookingFlow: { id: string };
   Payment: { bookingId: string };
   Confirmed: { artistName?: string; dateTime?: string; total?: string } | undefined;
+  SearchResults: { estilo?: string } | undefined;
 };
 
 const { Navigator, Screen } = createNativeStackNavigator<HomeStackParamList>();
@@ -29,6 +31,7 @@ export function HomeStack() {
         component={ConfirmedScreen}
         options={{ gestureEnabled: false }}
       />
+      <Screen name="SearchResults" component={SearchResultsScreen} />
     </Navigator>
   );
 }
