@@ -26,35 +26,28 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-/*
- * Realinhamento ao schema do Supabase (tabela "public.users"):
+/**
+ * Tabela `users` — entidade central de autenticacao. TODA conta no sistema
+ * (cliente, tatuador, estudio, admin) tem uma linha aqui. As tabelas
+ * filhas (`clientes`, `tatuadores`, `estudios`) carregam dados do papel.
  *
- *  - PK: Long IDENTITY -> UUID. Hibernate gera o UUID no Java
- *    (@GeneratedValue(UUID)); o DB também tem DEFAULT uuid_generate_v4(),
- *    mas não importa: sempre que mandamos um valor, ele é usado.
- *  - Mapeamento de coluna -> Java:
- *      user_id              -> userId            (UUID)
- *      senha_hash           -> senha             (renomeada via @Column)
- *      status_ativo         -> status            (idem)
- *      data_nasc            -> dataNasc          (Date -> LocalDate;
- *                                                 a coluna no DB é `date`)
- *      data_criacao         -> dataCriacao       (@CreationTimestamp)
- *      data_modificacao     -> dataModificacao   (@UpdateTimestamp)
- *  - Campo novo: telefone (varchar nullable).
- *  - cpf: agora apenas UNIQUE (no schema é nullable; tirei o
- *    nullable=false que eu tinha colocado).
- *  - role: mapeado para o ENUM nativo Postgres `user_role`. A tríade
- *    @Enumerated(STRING) + @JdbcTypeCode(NAMED_ENUM) +
- *    columnDefinition="user_role" faz o driver enviar o valor como
- *    tipo ENUM em vez de varchar. As constantes em UserRole estão em
- *    minúsculo justamente para casar com os valores do ENUM
- *    ('admin'/'cliente'/'tatuador').
- *  - @CreationTimestamp / @UpdateTimestamp: o schema tem NOT NULL +
- *    DEFAULT now() nessas colunas. O Hibernate, por padrão, incluiria
- *    a coluna no INSERT mesmo com valor nulo (violando NOT NULL).
- *    Setando pelo Java a gente garante que sempre vai um timestamp.
- *  - Implementação de UserDetails inalterada (getEmail como username,
- *    senha como password). Login/SecurityFilter continuam funcionando.
+ * Implementa UserDetails do Spring Security pra que o AuthorizationService
+ * possa devolver o User direto no loadUserByUsername — sem DTO intermediario.
+ *
+ * Pontos de atencao pra quem mexer:
+ *  - role e mapeado pro ENUM nativo Postgres `user_role` (admin/cliente/
+ *    tatuador/estudio). Por isso a triade @Enumerated(STRING) +
+ *    @JdbcTypeCode(NAMED_ENUM) + columnDefinition="user_role" — sem isso
+ *    o driver envia varchar e o Postgres rejeita o INSERT. As constantes
+ *    do enum em Java tambem ficam em minusculo pra casar com os valores
+ *    do ENUM no banco.
+ *  - data_criacao / data_modificacao tem NOT NULL + DEFAULT now() no schema.
+ *    @CreationTimestamp/@UpdateTimestamp setam pelo lado Java pra garantir
+ *    que o INSERT nao mande NULL (Hibernate inclui a coluna mesmo vazia).
+ *  - cpf nullable + UNIQUE: cliente/tatuador (PF) tem; estudio (PJ) nao
+ *    tem cpf — usa o cnpj que vive em `estudios`.
+ *  - termos_aceitos: o aceite e do USUARIO, nao do papel. Por isso vive
+ *    aqui e nao em tatuadores/estudios.
  */
 @Entity
 @Table(name = "users")
@@ -65,6 +58,7 @@ import java.util.UUID;
 @Builder
 @EqualsAndHashCode(of = "userId")
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id", updatable = false, nullable = false)
@@ -105,10 +99,15 @@ public class User implements UserDetails {
     @Column(name = "data_modificacao", nullable = false)
     private LocalDateTime dataModificacao;
 
+    @Column(name = "termos_aceitos", nullable = false)
+    private boolean termosAceitos;
+
+    /**
+     * Mapeia o role do dominio pra GrantedAuthorities do Spring Security.
+     * @PreAuthorize("hasRole('TATUADOR')") em endpoints futuros vai usar isso.
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Constantes do enum em minúsculo após o realinhamento ao ENUM
-        // Postgres `user_role`.
         if (this.role == UserRole.admin)
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         else if (this.role == UserRole.cliente)
@@ -124,28 +123,14 @@ public class User implements UserDetails {
         return this.senha;
     }
 
+    /** Spring Security usa email como "username" — chave de login do sistema. */
     @Override
     public String getUsername() {
         return email;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    @Override public boolean isAccountNonExpired()     { return true; }
+    @Override public boolean isAccountNonLocked()      { return true; }
+    @Override public boolean isCredentialsNonExpired() { return true; }
+    @Override public boolean isEnabled()               { return true; }
 }

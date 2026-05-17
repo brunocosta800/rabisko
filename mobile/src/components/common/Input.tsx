@@ -11,6 +11,10 @@ import Animated, {
  * Pill-less text field per the design system (DESIGN.md §8.4): warm-cream surface, 12px radius,
  * sentence-case label above in `fg-2`, no border at rest, border turns plum on focus.
  * `secure` adds an eye toggle; `trailingIcon` / `onTrailingPress` for any other trailing action.
+ *
+ * `multiline` muda o layout pra textarea: o container alinha pelo topo (em vez de centralizar)
+ * pra que o ícone e o texto fiquem na primeira linha em vez de centralizados verticalmente
+ * no meio do bloco crescido.
  */
 interface InputProps extends TextInputProps {
   label?: string;
@@ -32,6 +36,7 @@ export function Input({
   onTrailingPress,
   error,
   secure,
+  multiline,
   className,
   onFocus,
   onBlur,
@@ -53,14 +58,25 @@ export function Input({
 
       <Animated.View
         style={animatedStyle}
-        className="flex-row items-center bg-surface rounded-r-md px-[22px] py-4"
+        className={`flex-row bg-surface rounded-r-md px-[22px] ${
+          multiline ? 'items-start py-3' : 'items-center py-4'
+        }`}
       >
-        {Icon && <Icon size={18} color="#000" style={{ marginRight: 12 }} />}
+        {/* No multiline o ícone ganha 2px de marginTop pra alinhar com a linha-de-base
+            da primeira linha do TextInput (que tem ~22px de line-height). */}
+        {Icon && (
+          <Icon
+            size={18}
+            color="#000"
+            style={{ marginRight: 12, marginTop: multiline ? 2 : 0 }}
+          />
+        )}
 
         <TextInput
           className="flex-1 font-body text-[16px] text-ink"
           placeholderTextColor="#6B6B6B"
           secureTextEntry={secure && !showPassword}
+          multiline={multiline}
           onFocus={(e) => {
             focused.value = 1;
             onFocus?.(e);

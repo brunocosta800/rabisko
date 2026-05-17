@@ -1,28 +1,32 @@
 package com.rabisko.mvp.domain.artist;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.UUID;
 
-/*
- * Realinhamento ao schema "tatuadores":
- *  - Ids passaram a UUID.
- *  - Campos do schema (bio/instagram/vinculadoEstudio/termosAceitos/
- *    perfilCompleto) entram no DTO para quando existir uma rota de
- *    edição/conclusão de perfil. Os campos antigos `estilos` e
- *    `boostPremium` saíram (vivem em outras tabelas — tatuador_estilos,
- *    boosts).
+/**
+ * RESPONSE DTO (read-only). Devolve os campos proprios do Artist em
+ * endpoints como GET /artist/{id} e listagens. NAO inclui dados pessoais
+ * (nome/email/cpf/telefone) — esses vivem em `users` e devem vir via
+ * JOIN ou compostos com UserResponseDTO em um wrapper futuro
+ * (ArtistWithUserDTO) quando o GET precisar deles.
  */
-@Getter
-@Setter
-public class ArtistDTO {
-    private UUID tatuadorId;
-    private UUID estudioId;
-    private UUID userId;
-    private String bio;
-    private String instagram;
-    private boolean vinculadoEstudio;
-    private boolean termosAceitos;
-    private boolean perfilCompleto;
+public record ArtistDTO(
+    UUID tatuadorId,
+    UUID userId,
+    UUID estudioId,
+    String bio,
+    String instagram,
+    String endereco,
+    boolean vinculadoEstudio
+) {
+    public static ArtistDTO from(Artist a) {
+        return new ArtistDTO(
+            a.getTatuadorId(),
+            a.getUserId(),
+            a.getEstudioId(),
+            a.getBio(),
+            a.getInstagram(),
+            a.getEndereco(),
+            a.isVinculadoEstudio()
+        );
+    }
 }

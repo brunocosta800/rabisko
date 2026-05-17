@@ -12,18 +12,13 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/*
- * Realinhamento ao schema do Supabase (tabela "public.clientes"):
+/**
+ * Linha em `clientes` — materializa o papel "cliente" de um User. Aggregate
+ * minimo: so o vinculo com o User + um campo de pagamento que entra depois.
  *
- *  - @Table apontando para "clientes" (classe Java continua Client).
- *  - PK UUID; user_id UUID UNIQUE.
- *  - dadosPagamento (List<String>, antes mapeada como @ElementCollection)
- *    deu lugar a um único campo varchar `dados_pagamento_token`. Pela
- *    cara é um token de cliente em gateway (Mercado Pago, Stripe...),
- *    coisa que o app provavelmente vai preencher depois do cadastro.
- *    Aqui ele já entra como null.
- *  - Adicionado data_criacao (@CreationTimestamp) — não existia na
- *    minha versão anterior, mas é coluna NOT NULL no schema.
+ * dadosPagamentoToken: token de cliente em gateway (Mercado Pago, Stripe,
+ * etc.). Fica null no cadastro inicial e e preenchido quando o usuario
+ * cadastrar metodo de pagamento na tela de Settings.
  */
 @Entity
 @Table(name = "clientes")
@@ -34,11 +29,13 @@ import java.util.UUID;
 @Builder
 @EqualsAndHashCode(of = "clientId")
 public class Client {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "cliente_id", updatable = false, nullable = false)
     private UUID clientId;
 
+    /** FK pro User. UNIQUE: cada User com role=cliente tem 1 perfil. */
     @Column(name = "user_id", nullable = false, unique = true)
     private UUID userId;
 

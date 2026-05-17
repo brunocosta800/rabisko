@@ -4,10 +4,10 @@ export interface User {
   email: string;
   avatar?: string;
   phone?: string;
-  role?: 'client' | 'establishment' | 'professional';
+  role?: 'cliente' | 'artista' | 'estudio';
 }
 
-export interface Establishment {
+export interface Estudio {
   id: string;
   name: string;
   description: string;
@@ -26,12 +26,6 @@ export interface Establishment {
     latitude: number;
     longitude: number;
   };
-  openingHours: {
-    day: string;
-    open: string;
-    close: string;
-    closed: boolean;
-  }[];
 }
 
 export interface Booking {
