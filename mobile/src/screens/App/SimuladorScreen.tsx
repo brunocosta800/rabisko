@@ -44,7 +44,7 @@ export function SimuladorScreen() {
         type: 'image/jpeg',
       } as any);
 
-      const API_URL = 'http://192.168.15.27:8080/simulation/removebg';
+      const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/simulation/removebg`;
 
       const response = await fetch(API_URL, {
         method: 'POST',
