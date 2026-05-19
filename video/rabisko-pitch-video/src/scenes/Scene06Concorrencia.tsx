@@ -85,7 +85,7 @@ export const Scene06Concorrencia: React.FC = () => {
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  const tituloOpacityOut = interpolate(frame, [1500, 1560], [1, 0], {
+  const tituloOpacityOut = interpolate(frame, [720, 810], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeOut,
@@ -98,20 +98,20 @@ export const Scene06Concorrencia: React.FC = () => {
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  const tabelaOpacityOut = interpolate(frame, [1500, 1620], [1, 0], {
+  const tabelaOpacityOut = interpolate(frame, [720, 810], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeOut,
   });
   const tabelaOpacity = Math.min(tabelaOpacityIn, tabelaOpacityOut);
 
-  // ---- Bloco C: frase final ----
-  const fraseOpacity = interpolate(frame, [1620, 1740], [0, 1], {
+  // ---- Bloco C: frase final (entra em 3:13.5 = local frame 780) ----
+  const fraseOpacity = interpolate(frame, [720, 810], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  const fraseY = interpolate(frame, [1620, 1740], [24, 0], {
+  const fraseY = interpolate(frame, [720, 810], [24, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
@@ -325,13 +325,15 @@ export const Scene06Concorrencia: React.FC = () => {
         </div>
       </AbsoluteFill>
 
-      {/* Frase final */}
+      {/* Frase final — alinhada à esquerda */}
       <AbsoluteFill
         style={{
-          alignItems: 'center',
+          alignItems: 'flex-start',
           justifyContent: 'center',
           opacity: fraseOpacity,
           transform: `translateY(${fraseY}px)`,
+          paddingLeft: '7%',
+          paddingRight: '7%',
         }}
       >
         <div
@@ -339,10 +341,10 @@ export const Scene06Concorrencia: React.FC = () => {
             fontFamily: fonts.bebas,
             fontSize: 140,
             color: colors.gelo,
-            textAlign: 'center',
+            textAlign: 'left',
             lineHeight: 0.95,
             letterSpacing: '0.03em',
-            width: '90%',
+            maxWidth: '85%',
           }}
         >
           <span
