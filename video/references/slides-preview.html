@@ -1,0 +1,2594 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rabisko — Preview dos slides do pitch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --preto: #000000;
+    --violeta: #602C66;
+    --azul: #2C4466;
+    --bege: #EAE0D5;
+    --gelo: #F8F9FA;
+    --bebas: 'Bebas Neue', sans-serif;
+    --inter: 'Inter', sans-serif;
+    --dm: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: #1a1a1a;
+    font-family: var(--inter);
+    color: var(--gelo);
+    min-height: 100vh;
+  }
+
+  .page-header {
+    padding: 32px 40px;
+    border-bottom: 1px solid #333;
+    position: sticky;
+    top: 0;
+    background: rgba(26, 26, 26, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+
+  .page-header h1 {
+    font-family: var(--bebas);
+    font-size: 32px;
+    letter-spacing: 0.05em;
+    color: var(--gelo);
+    margin-bottom: 4px;
+  }
+
+  .page-header p {
+    font-family: var(--dm);
+    font-size: 13px;
+    color: #888;
+  }
+
+  .nav {
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .nav a {
+    font-family: var(--dm);
+    font-size: 11px;
+    color: #aaa;
+    text-decoration: none;
+    padding: 6px 10px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .nav a:hover {
+    border-color: var(--violeta);
+    color: var(--gelo);
+  }
+
+  .slides-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 40px;
+  }
+
+  .slide-wrapper {
+    margin-bottom: 80px;
+    scroll-margin-top: 180px;
+  }
+
+  .slide-label {
+    font-family: var(--dm);
+    font-size: 12px;
+    color: #666;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .slide-label .timing {
+    color: #444;
+  }
+
+  .slide {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ============ CENA 1 — HOOK (ANIMADA) ============ */
+  .cena-1 {
+    background: var(--preto);
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    display: block;
+  }
+
+  /* Controles */
+  .cena-1-controls {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    z-index: 50;
+    display: flex;
+    gap: 6px;
+    background: rgba(0,0,0,0.5);
+    padding: 6px 8px;
+    border-radius: 4px;
+    backdrop-filter: blur(8px);
+  }
+
+  .cena-1-controls button {
+    background: transparent;
+    border: 1px solid rgba(234,224,213,0.4);
+    color: var(--bege);
+    font-family: var(--dm);
+    font-size: 10px;
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+  }
+
+  .cena-1-controls button:hover {
+    background: rgba(234,224,213,0.15);
+    color: var(--gelo);
+  }
+
+  .cena-1-controls .beat-indicator {
+    color: var(--bege);
+    font-family: var(--dm);
+    font-size: 10px;
+    padding: 4px 8px;
+    opacity: 0.7;
+    align-self: center;
+  }
+
+  /* Beat 1 (0-6s): Logo central */
+  .cena-1 .logo-central {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    animation: c1-logo-central 30s linear forwards;
+    z-index: 10;
+  }
+
+  @keyframes c1-logo-central {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+    8% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    18% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    /* Beat 2 (6-10s): logo se desloca para o canto superior esquerdo */
+    25% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    33% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; }
+  }
+
+  .cena-1 .logo-central .polvo-grande {
+    width: clamp(60px, 8vw, 120px);
+    height: clamp(60px, 8vw, 120px);
+    background: var(--gelo);
+    -webkit-mask: radial-gradient(circle at 50% 30%, #000 30%, transparent 32%), radial-gradient(circle at 25% 70%, #000 13%, transparent 15%), radial-gradient(circle at 40% 80%, #000 14%, transparent 16%), radial-gradient(circle at 60% 80%, #000 14%, transparent 16%), radial-gradient(circle at 75% 70%, #000 13%, transparent 15%);
+    border-radius: 50%;
+  }
+
+  .cena-1 .logo-central .marca-grande {
+    font-family: var(--bebas);
+    font-size: clamp(32px, 4.5vw, 72px);
+    letter-spacing: 0.15em;
+    color: var(--gelo);
+  }
+
+  /* Logo no canto (aparece no Beat 2 em diante) */
+  .cena-1 .logo-canto {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: c1-logo-canto 30s linear forwards;
+    z-index: 10;
+  }
+
+  @keyframes c1-logo-canto {
+    0% { opacity: 0; }
+    25% { opacity: 0; }
+    33% { opacity: 1; }
+    100% { opacity: 1; }
+  }
+
+  .cena-1 .logo-canto .polvo {
+    width: clamp(20px, 2.2vw, 32px);
+    height: clamp(20px, 2.2vw, 32px);
+    background: var(--gelo);
+    -webkit-mask: radial-gradient(circle at 50% 30%, #000 30%, transparent 32%), radial-gradient(circle at 25% 70%, #000 13%, transparent 15%), radial-gradient(circle at 40% 80%, #000 14%, transparent 16%), radial-gradient(circle at 60% 80%, #000 14%, transparent 16%), radial-gradient(circle at 75% 70%, #000 13%, transparent 15%);
+    border-radius: 50%;
+  }
+
+  .cena-1 .logo-canto .marca {
+    font-family: var(--bebas);
+    font-size: clamp(14px, 1.5vw, 22px);
+    letter-spacing: 0.15em;
+    color: var(--gelo);
+  }
+
+  /* Beat 3 (10-22s): 3 linhas com a evolução */
+  .cena-1 .linhas-evolucao {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 8;
+  }
+
+  .cena-1 .linhas-evolucao .linha {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  .cena-1 .linhas-evolucao .linha-1 {
+    font-family: var(--inter);
+    font-size: clamp(20px, 3vw, 44px);
+    font-weight: 300;
+    color: var(--gelo);
+    animation: c1-linha-1 30s linear forwards;
+    margin-bottom: 1%;
+  }
+
+  .cena-1 .linhas-evolucao .linha-2 {
+    font-family: var(--inter);
+    font-size: clamp(20px, 3vw, 44px);
+    font-weight: 300;
+    color: var(--gelo);
+    animation: c1-linha-2 30s linear forwards;
+    margin-bottom: 2%;
+  }
+
+  .cena-1 .linhas-evolucao .linha-3 {
+    font-family: var(--bebas);
+    font-size: clamp(36px, 5vw, 80px);
+    color: var(--violeta);
+    animation: c1-linha-3 30s linear forwards;
+  }
+
+  @keyframes c1-linha-1 {
+    0%, 33% { opacity: 0; transform: translateY(15px); }
+    38% { opacity: 1; transform: translateY(0); }
+    72% { opacity: 1; transform: translateY(0); }
+    78% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 0; }
+  }
+
+  @keyframes c1-linha-2 {
+    0%, 41% { opacity: 0; transform: translateY(15px); }
+    46% { opacity: 1; transform: translateY(0); }
+    72% { opacity: 1; transform: translateY(0); }
+    78% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 0; }
+  }
+
+  @keyframes c1-linha-3 {
+    0%, 51% { opacity: 0; transform: translateY(20px); }
+    58% { opacity: 1; transform: translateY(0); }
+    72% { opacity: 1; transform: translateY(0); }
+    78% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 0; }
+  }
+
+  /* Beat 4 (22-30s): frase final monumental */
+  .cena-1 .frase-final {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -45%);
+    text-align: center;
+    opacity: 0;
+    animation: c1-frase-final 30s linear forwards;
+    z-index: 9;
+    width: 90%;
+    padding: 0 4%;
+  }
+
+  @keyframes c1-frase-final {
+    0%, 75% { opacity: 0; transform: translate(-50%, -45%); }
+    82% { opacity: 1; transform: translate(-50%, -50%); }
+    100% { opacity: 1; transform: translate(-50%, -50%); }
+  }
+
+  .cena-1 .frase-final-texto {
+    font-family: var(--bebas);
+    font-size: clamp(36px, 6vw, 96px);
+    line-height: 0.95;
+    color: var(--gelo);
+    letter-spacing: 0.02em;
+  }
+
+  .cena-1 .frase-final-texto .destaque {
+    color: var(--violeta);
+    display: block;
+  }
+
+  /* Pausa */
+  .cena-1.paused .logo-central,
+  .cena-1.paused .logo-canto,
+  .cena-1.paused .linhas-evolucao .linha,
+  .cena-1.paused .frase-final {
+    animation-play-state: paused;
+  }
+
+  /* ============ CENA 2 — PROBLEMA ============ */
+  .cena-2 {
+    background: var(--bege);
+    flex-direction: column;
+    padding: 6%;
+    text-align: center;
+  }
+
+  .cena-2 .numero {
+    font-family: var(--bebas);
+    font-size: clamp(100px, 16vw, 200px);
+    line-height: 0.9;
+    color: var(--preto);
+    letter-spacing: -0.02em;
+  }
+
+  .cena-2 .descricao {
+    font-family: var(--inter);
+    font-size: clamp(16px, 2vw, 24px);
+    color: var(--preto);
+    margin-top: 1.5%;
+    max-width: 85%;
+    line-height: 1.4;
+  }
+
+  .cena-2 .complemento {
+    font-family: var(--dm);
+    font-size: clamp(12px, 1.4vw, 18px);
+    color: var(--preto);
+    opacity: 0.7;
+    margin-top: 3%;
+    max-width: 75%;
+    line-height: 1.5;
+  }
+
+  .cena-2 .fonte {
+    font-family: var(--dm);
+    font-size: clamp(9px, 1vw, 12px);
+    color: var(--preto);
+    opacity: 0.45;
+    margin-top: 2%;
+    letter-spacing: 0.05em;
+  }
+
+  /* ============ CENA 3 — SOLUÇÃO ============ */
+  .cena-3 {
+    background: var(--preto);
+    flex-direction: column;
+    padding: 3%;
+    justify-content: space-between;
+  }
+
+  .cena-3 .titulo {
+    font-family: var(--bebas);
+    font-size: clamp(22px, 3.2vw, 44px);
+    line-height: 0.95;
+    color: var(--gelo);
+    text-align: center;
+    margin-bottom: 2%;
+    letter-spacing: 0.02em;
+  }
+
+  /* Bloco superior — 3 pilares de funcionalidade */
+  .cena-3 .bloco-pilares {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .cena-3 .pilares {
+    display: flex;
+    gap: 1.5%;
+    width: 95%;
+    margin: 0 auto;
+    justify-content: center;
+  }
+
+  .cena-3 .pilar {
+    flex: 1;
+    border: 1px solid var(--violeta);
+    padding: 2% 2%;
+    background: rgba(96, 44, 102, 0.08);
+  }
+
+  .cena-3 .pilar h3 {
+    font-family: var(--bebas);
+    font-size: clamp(13px, 1.6vw, 22px);
+    color: var(--gelo);
+    letter-spacing: 0.05em;
+    margin-bottom: 3%;
+    line-height: 1;
+  }
+
+  .cena-3 .pilar p {
+    font-family: var(--inter);
+    font-size: clamp(9px, 1.05vw, 12px);
+    color: var(--gelo);
+    opacity: 0.85;
+    line-height: 1.4;
+  }
+
+  /* Divisor sutil */
+  .cena-3 .divisor {
+    width: 12%;
+    height: 1px;
+    background: var(--bege);
+    opacity: 0.25;
+    margin: 2% auto;
+  }
+
+  /* Bloco inferior — 3 perfis de cliente */
+  .cena-3 .bloco-perfis {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .cena-3 .label-perfis {
+    font-family: var(--dm);
+    font-size: clamp(8px, 0.95vw, 11px);
+    color: var(--bege);
+    letter-spacing: 0.25em;
+    text-align: center;
+    margin-bottom: 2%;
+    opacity: 0.7;
+  }
+
+  .cena-3 .perfis {
+    display: flex;
+    gap: 2%;
+    width: 90%;
+    margin: 0 auto;
+    justify-content: center;
+  }
+
+  .cena-3 .perfil {
+    flex: 1;
+    text-align: center;
+    padding: 2% 1.5%;
+  }
+
+  .cena-3 .perfil .icone {
+    font-family: var(--bebas);
+    font-size: clamp(18px, 2.4vw, 32px);
+    color: var(--violeta);
+    line-height: 1;
+    margin-bottom: 4%;
+  }
+
+  .cena-3 .perfil h4 {
+    font-family: var(--bebas);
+    font-size: clamp(12px, 1.5vw, 18px);
+    color: var(--gelo);
+    letter-spacing: 0.05em;
+    margin-bottom: 3%;
+    line-height: 1;
+  }
+
+  .cena-3 .perfil .stat {
+    font-family: var(--bebas);
+    font-size: clamp(14px, 1.9vw, 26px);
+    color: var(--bege);
+    line-height: 1;
+    margin-bottom: 3%;
+    letter-spacing: 0.01em;
+  }
+
+  .cena-3 .perfil .desc {
+    font-family: var(--inter);
+    font-size: clamp(8px, 0.95vw, 11px);
+    color: var(--gelo);
+    opacity: 0.65;
+    line-height: 1.3;
+    font-weight: 300;
+  }
+
+  .cena-3 .fechamento {
+    font-family: var(--bebas);
+    font-size: clamp(13px, 1.7vw, 22px);
+    color: var(--gelo);
+    margin-top: 2%;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+
+  .cena-3 .fechamento .destaque {
+    color: var(--violeta);
+  }
+
+  /* ============ CENA 4 — MERCADO (ANIMADA) ============ */
+  .cena-4 {
+    background: var(--azul);
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    display: block;
+  }
+
+  /* Controles de animação */
+  .cena-4-controls {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    z-index: 50;
+    display: flex;
+    gap: 6px;
+    background: rgba(0,0,0,0.5);
+    padding: 6px 8px;
+    border-radius: 4px;
+    backdrop-filter: blur(8px);
+  }
+
+  .cena-4-controls button {
+    background: transparent;
+    border: 1px solid rgba(234,224,213,0.4);
+    color: var(--bege);
+    font-family: var(--dm);
+    font-size: 10px;
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+  }
+
+  .cena-4-controls button:hover {
+    background: rgba(234,224,213,0.15);
+    color: var(--gelo);
+  }
+
+  .cena-4-controls .beat-indicator {
+    color: var(--bege);
+    font-family: var(--dm);
+    font-size: 10px;
+    padding: 4px 8px;
+    opacity: 0.7;
+    align-self: center;
+  }
+
+  /* Label superior — sempre visível mas com fade no início */
+  .cena-4 .label-top {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: c4-label-fade 45s linear forwards;
+    z-index: 10;
+  }
+
+  .cena-4 .label-top::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--bege);
+  }
+
+  .cena-4 .label-top span {
+    font-family: var(--dm);
+    font-size: clamp(9px, 1vw, 12px);
+    color: var(--bege);
+    letter-spacing: 0.25em;
+    font-weight: 500;
+  }
+
+  @keyframes c4-label-fade {
+    0% { opacity: 0; }
+    4% { opacity: 0.8; }
+    100% { opacity: 0.8; }
+  }
+
+  /* Container do mapa — usa SVG inline */
+  .cena-4 .mapa-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 55%;
+    height: 88%;
+    transform: translate(-50%, -50%);
+    animation: c4-mapa-move 45s linear forwards;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cena-4 .mapa-container #cena4-mapa-real {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .cena-4 .mapa-container #cena4-mapa-real svg {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  /* Ajusta strokes do SVG do CorelDRAW (que vem com stroke branco) para tom bege e visibilidade */
+  .cena-4 .mapa-container #cena4-mapa-real svg path[class*="str"],
+  .cena-4 .mapa-container #cena4-mapa-real svg .str0,
+  .cena-4 .mapa-container #cena4-mapa-real svg .str1,
+  .cena-4 .mapa-container #cena4-mapa-real svg .str2,
+  .cena-4 .mapa-container #cena4-mapa-real svg .str3 {
+    stroke: var(--bege) !important;
+    stroke-opacity: 0.55 !important;
+  }
+
+  /* Fill levemente bege transparente nos estados */
+  .cena-4 .mapa-container #cena4-mapa-real svg .fil4,
+  .cena-4 .mapa-container #cena4-mapa-real svg .fil5,
+  .cena-4 .mapa-container #cena4-mapa-real svg .fil6,
+  .cena-4 .mapa-container #cena4-mapa-real svg .fil7 {
+    fill: rgba(234, 224, 213, 0.06) !important;
+  }
+
+  /* Overlay de pontos (estúdios) sobreposto ao mapa */
+  .cena-4 .overlay-sp {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .cena-4 .overlay-sp .ponto {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    background: var(--violeta);
+    border-radius: 50%;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+    animation: c4-ponto-aparecer 45s linear forwards;
+    box-shadow: 0 0 4px rgba(96, 44, 102, 0.6);
+  }
+
+  .cena-4 .overlay-sp .ponto-grande {
+    width: 11px;
+    height: 11px;
+    animation: c4-ponto-sp 45s linear forwards;
+    box-shadow: 0 0 8px rgba(96, 44, 102, 0.8);
+  }
+
+  @keyframes c4-mapa-move {
+    /* Beat 1: 0-8s — centralizado */
+    0% { transform: translate(-50%, -50%) scale(1); }
+    17% { transform: translate(-50%, -50%) scale(1); }
+    /* Beat 2: 8-18s — desliza pra esquerda */
+    22% { transform: translate(-90%, -50%) scale(1); }
+    40% { transform: translate(-90%, -50%) scale(1); }
+    /* Beat 3: 18-28s — mantém posição */
+    62% { transform: translate(-90%, -50%) scale(1); }
+    /* Beat 4: 28-40s — zoom em São Paulo */
+    78% { transform: translate(-145%, -65%) scale(2.4); }
+    89% { transform: translate(-145%, -65%) scale(2.4); }
+    /* Beat 5: 40-45s — fade out */
+    95% { transform: translate(-145%, -65%) scale(2.4); opacity: 0; }
+    100% { transform: translate(-145%, -65%) scale(2.4); opacity: 0; }
+  }
+
+  @keyframes c4-ponto-aparecer {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+    /* Pontos aparecem entre 2s e 7s */
+    4% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+    16% { opacity: 0.85; transform: translate(-50%, -50%) scale(1); }
+    /* Fade nos pontos periféricos no Beat 3 */
+    62% { opacity: 0.85; transform: translate(-50%, -50%) scale(1); }
+    74% { opacity: 0.15; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0.15; transform: translate(-50%, -50%) scale(1); }
+  }
+
+  @keyframes c4-ponto-sp {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+    4% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+    16% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    62% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    74% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); box-shadow: 0 0 12px 4px rgba(96, 44, 102, 0.7); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+  }
+
+  /* Painel direito de dados */
+  .cena-4 .painel-dados {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5% 6% 5% 4%;
+    z-index: 8;
+  }
+
+  /* Texto inicial do Beat 1 */
+  .cena-4 .texto-abertura {
+    position: absolute;
+    bottom: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--inter);
+    font-size: clamp(12px, 1.4vw, 18px);
+    color: var(--gelo);
+    opacity: 0;
+    letter-spacing: 0.05em;
+    font-weight: 300;
+    text-align: center;
+    animation: c4-abertura 45s linear forwards;
+    z-index: 9;
+  }
+
+  @keyframes c4-abertura {
+    0% { opacity: 0; }
+    9% { opacity: 0.7; }
+    16% { opacity: 0.7; }
+    20% { opacity: 0; }
+    100% { opacity: 0; }
+  }
+
+  /* Beat 2 — 150 mil estúdios */
+  .cena-4 .bloco-150 {
+    position: absolute;
+    top: 50%;
+    right: 6%;
+    transform: translateY(-50%);
+    opacity: 0;
+    animation: c4-bloco-150 45s linear forwards;
+    text-align: left;
+    width: 42%;
+  }
+
+  @keyframes c4-bloco-150 {
+    0%, 22% { opacity: 0; transform: translate(20px, -50%); }
+    27% { opacity: 1; transform: translate(0, -50%); }
+    /* No Beat 3, encolhe e sobe */
+    40% { opacity: 1; transform: translate(0, -50%); }
+    45% { opacity: 1; transform: translate(0, -160%) scale(0.55); }
+    62% { opacity: 1; transform: translate(0, -160%) scale(0.55); }
+    /* Beat 4 — some */
+    70% { opacity: 0; transform: translate(0, -160%) scale(0.55); }
+    100% { opacity: 0; }
+  }
+
+  .cena-4 .bloco-150 .numero {
+    font-family: var(--bebas);
+    font-size: clamp(60px, 9vw, 140px);
+    line-height: 0.85;
+    color: var(--gelo);
+    letter-spacing: -0.01em;
+  }
+
+  .cena-4 .bloco-150 .numero .plus {
+    color: var(--bege);
+  }
+
+  .cena-4 .bloco-150 .descricao {
+    font-family: var(--inter);
+    font-size: clamp(11px, 1.3vw, 16px);
+    color: var(--gelo);
+    opacity: 0.75;
+    margin-top: 3%;
+    line-height: 1.3;
+    font-weight: 300;
+  }
+
+  /* Beat 3 — R$ 2,5 BI */
+  .cena-4 .bloco-bi {
+    position: absolute;
+    top: 50%;
+    right: 6%;
+    transform: translate(0, -50%);
+    opacity: 0;
+    animation: c4-bloco-bi 45s linear forwards;
+    width: 42%;
+  }
+
+  @keyframes c4-bloco-bi {
+    0%, 40% { opacity: 0; transform: translate(20px, -30%); }
+    47% { opacity: 1; transform: translate(0, -30%); }
+    62% { opacity: 1; transform: translate(0, -30%); }
+    70% { opacity: 0; transform: translate(0, -30%); }
+    100% { opacity: 0; }
+  }
+
+  .cena-4 .bloco-bi .valor {
+    font-family: var(--bebas);
+    font-size: clamp(70px, 11vw, 170px);
+    line-height: 0.85;
+    color: var(--gelo);
+    letter-spacing: -0.02em;
+  }
+
+  .cena-4 .bloco-bi .moeda {
+    font-size: 0.5em;
+    color: var(--bege);
+    vertical-align: top;
+    margin-right: 0.1em;
+  }
+
+  .cena-4 .bloco-bi .unidade {
+    font-size: 0.42em;
+    color: var(--bege);
+    letter-spacing: 0.05em;
+  }
+
+  .cena-4 .bloco-bi .descricao {
+    font-family: var(--inter);
+    font-size: clamp(11px, 1.3vw, 16px);
+    color: var(--gelo);
+    opacity: 0.75;
+    margin-top: 3%;
+    line-height: 1.3;
+    font-weight: 300;
+  }
+
+  .cena-4 .bloco-bi .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(234,224,213,0.12);
+    border: 1px solid rgba(234,224,213,0.3);
+    padding: 6px 14px;
+    border-radius: 2px;
+    font-family: var(--dm);
+    font-size: clamp(10px, 1.1vw, 13px);
+    color: var(--bege);
+    letter-spacing: 0.08em;
+    margin-top: 5%;
+    font-weight: 500;
+  }
+
+  /* Beat 4 — 2.219 em SP */
+  .cena-4 .bloco-sp {
+    position: absolute;
+    top: 50%;
+    right: 6%;
+    transform: translate(0, -50%);
+    opacity: 0;
+    animation: c4-bloco-sp 45s linear forwards;
+    width: 42%;
+  }
+
+  @keyframes c4-bloco-sp {
+    0%, 65% { opacity: 0; transform: translate(20px, -50%); }
+    72% { opacity: 1; transform: translate(0, -50%); }
+    89% { opacity: 1; transform: translate(0, -50%); }
+    93% { opacity: 0; transform: translate(0, -50%); }
+    100% { opacity: 0; }
+  }
+
+  .cena-4 .bloco-sp .label-cidade {
+    font-family: var(--dm);
+    font-size: clamp(10px, 1.2vw, 14px);
+    color: var(--bege);
+    letter-spacing: 0.25em;
+    margin-bottom: 3%;
+    font-weight: 500;
+  }
+
+  .cena-4 .bloco-sp .numero {
+    font-family: var(--bebas);
+    font-size: clamp(70px, 10vw, 150px);
+    line-height: 0.85;
+    color: var(--gelo);
+    letter-spacing: -0.01em;
+  }
+
+  .cena-4 .bloco-sp .descricao {
+    font-family: var(--inter);
+    font-size: clamp(11px, 1.3vw, 16px);
+    color: var(--gelo);
+    opacity: 0.75;
+    margin-top: 3%;
+    line-height: 1.4;
+    font-weight: 300;
+  }
+
+  .cena-4 .bloco-sp .small {
+    font-family: var(--dm);
+    font-size: clamp(9px, 1vw, 12px);
+    color: var(--bege);
+    opacity: 0.7;
+    margin-top: 4%;
+    letter-spacing: 0.1em;
+  }
+
+  /* Beat 5 — frase de timing */
+  .cena-4 .frase-timing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    opacity: 0;
+    animation: c4-frase-timing 45s linear forwards;
+    z-index: 20;
+    width: 80%;
+  }
+
+  @keyframes c4-frase-timing {
+    0%, 91% { opacity: 0; transform: translate(-50%, -45%); }
+    95% { opacity: 1; transform: translate(-50%, -50%); }
+    100% { opacity: 1; transform: translate(-50%, -50%); }
+  }
+
+  .cena-4 .frase-timing-texto {
+    font-family: var(--bebas);
+    font-size: clamp(28px, 5vw, 80px);
+    color: var(--gelo);
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+
+  .cena-4 .frase-timing-texto .destaque {
+    color: var(--violeta);
+    display: block;
+  }
+
+  /* Fonte */
+  .cena-4 .fonte {
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    font-family: var(--dm);
+    font-size: clamp(8px, 0.9vw, 11px);
+    color: var(--bege);
+    opacity: 0;
+    letter-spacing: 0.15em;
+    z-index: 10;
+    animation: c4-fonte 45s linear forwards;
+  }
+
+  @keyframes c4-fonte {
+    0%, 17% { opacity: 0; }
+    22% { opacity: 0.5; }
+    89% { opacity: 0.5; }
+    93% { opacity: 0; }
+    100% { opacity: 0; }
+  }
+
+  /* Indicador de beat — mostra qual está rodando */
+  .cena-4.paused .mapa-container,
+  .cena-4.paused .overlay-sp .ponto,
+  .cena-4.paused .label-top,
+  .cena-4.paused .texto-abertura,
+  .cena-4.paused .bloco-150,
+  .cena-4.paused .bloco-bi,
+  .cena-4.paused .bloco-sp,
+  .cena-4.paused .frase-timing,
+  .cena-4.paused .fonte {
+    animation-play-state: paused;
+  }
+
+  /* Loader enquanto o mapa carrega */
+  .cena-4 .mapa-loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--bege);
+    font-family: var(--dm);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    opacity: 0.6;
+    z-index: 1;
+  }
+
+  /* ============ CENA 5 — RECEITA ============ */
+  .cena-5 {
+    background: var(--gelo);
+    flex-direction: column;
+    padding: 4%;
+  }
+
+  .cena-5 .titulo {
+    font-family: var(--bebas);
+    font-size: clamp(24px, 3.5vw, 48px);
+    color: var(--preto);
+    text-align: center;
+    margin-bottom: 4%;
+    letter-spacing: 0.02em;
+  }
+
+  .cena-5 .cards {
+    display: flex;
+    gap: 2%;
+    width: 95%;
+    margin: 0 auto;
+    justify-content: center;
+  }
+
+  .cena-5 .card {
+    flex: 1;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 3% 2.5%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cena-5 .card .num {
+    font-family: var(--bebas);
+    font-size: clamp(28px, 4vw, 56px);
+    color: var(--violeta);
+    line-height: 1;
+    margin-bottom: 4%;
+  }
+
+  .cena-5 .card h3 {
+    font-family: var(--bebas);
+    font-size: clamp(14px, 1.8vw, 24px);
+    color: var(--preto);
+    margin-bottom: 4%;
+    letter-spacing: 0.03em;
+    line-height: 1;
+  }
+
+  .cena-5 .card p {
+    font-family: var(--inter);
+    font-size: clamp(10px, 1.1vw, 13px);
+    color: var(--preto);
+    opacity: 0.75;
+    line-height: 1.4;
+    margin-bottom: 6%;
+    flex-grow: 1;
+  }
+
+  .cena-5 .card .valor {
+    font-family: var(--dm);
+    font-size: clamp(10px, 1.1vw, 13px);
+    color: var(--violeta);
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  /* ============ CENA 6 — CONCORRÊNCIA ============ */
+  .cena-6 {
+    background: var(--preto);
+    flex-direction: column;
+    padding: 4%;
+  }
+
+  .cena-6 .titulo {
+    font-family: var(--bebas);
+    font-size: clamp(20px, 2.5vw, 36px);
+    color: var(--gelo);
+    text-align: center;
+    margin-bottom: 4%;
+    letter-spacing: 0.05em;
+  }
+
+  .cena-6 table {
+    width: 90%;
+    border-collapse: collapse;
+    margin: 0 auto;
+  }
+
+  .cena-6 th, .cena-6 td {
+    padding: clamp(6px, 0.8vw, 12px) clamp(8px, 1vw, 14px);
+    font-family: var(--inter);
+    font-size: clamp(9px, 1.1vw, 14px);
+    color: var(--gelo);
+    text-align: center;
+    border-bottom: 1px solid rgba(248, 249, 250, 0.1);
+  }
+
+  .cena-6 th {
+    font-family: var(--bebas);
+    font-size: clamp(11px, 1.3vw, 16px);
+    letter-spacing: 0.08em;
+    color: var(--gelo);
+    border-bottom: 2px solid rgba(248, 249, 250, 0.3);
+  }
+
+  .cena-6 th:first-child, .cena-6 td:first-child {
+    text-align: left;
+    font-weight: 500;
+  }
+
+  .cena-6 td.rabisko-cell {
+    background: rgba(96, 44, 102, 0.2);
+  }
+
+  .cena-6 th.rabisko-col {
+    background: rgba(96, 44, 102, 0.3);
+    color: var(--gelo);
+  }
+
+  .cena-6 .check {
+    color: var(--violeta);
+    font-weight: 700;
+    font-size: 1.2em;
+  }
+
+  .cena-6 .x {
+    color: rgba(248, 249, 250, 0.3);
+  }
+
+  .cena-6 .destaque-row {
+    font-weight: 500;
+  }
+
+  /* ============ CENA 7 — TRAÇÃO (ANIMADA - SEQUENCIAL) ============ */
+  .cena-7 {
+    background: var(--bege);
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    display: block;
+  }
+
+  /* Controles */
+  .cena-7-controls {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    z-index: 50;
+    display: flex;
+    gap: 6px;
+    background: rgba(0,0,0,0.5);
+    padding: 6px 8px;
+    border-radius: 4px;
+    backdrop-filter: blur(8px);
+  }
+
+  .cena-7-controls button {
+    background: transparent;
+    border: 1px solid rgba(234,224,213,0.4);
+    color: var(--bege);
+    font-family: var(--dm);
+    font-size: 10px;
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+  }
+
+  .cena-7-controls button:hover {
+    background: rgba(234,224,213,0.15);
+    color: var(--gelo);
+  }
+
+  .cena-7-controls .beat-indicator {
+    color: var(--bege);
+    font-family: var(--dm);
+    font-size: 10px;
+    padding: 4px 8px;
+    opacity: 0.7;
+    align-self: center;
+  }
+
+  /* Cada bloco ocupa a tela inteira centralizado */
+  .cena-7 .bloco {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 88%;
+    text-align: center;
+    opacity: 0;
+  }
+
+  /* ====== BLOCO 1: PARCEIROS (0-8s) ====== */
+  .cena-7 .bloco-parceiros {
+    animation: c7-bloco-parceiros 30s linear forwards;
+  }
+
+  @keyframes c7-bloco-parceiros {
+    0% { opacity: 0; transform: translate(-50%, -45%); }
+    5% { opacity: 1; transform: translate(-50%, -50%); }
+    22% { opacity: 1; transform: translate(-50%, -50%); }
+    27% { opacity: 0; transform: translate(-50%, -55%); }
+    100% { opacity: 0; }
+  }
+
+  .cena-7 .bloco-parceiros .label-secao {
+    font-family: var(--dm);
+    font-size: clamp(10px, 1.2vw, 14px);
+    color: var(--preto);
+    opacity: 0.55;
+    letter-spacing: 0.3em;
+    margin-bottom: 6%;
+  }
+
+  .cena-7 .bloco-parceiros .parceiros-grandes {
+    display: flex;
+    justify-content: center;
+    gap: 4%;
+    flex-wrap: wrap;
+  }
+
+  .cena-7 .parceiro-grande {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3% 4%;
+    background: rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 2px;
+    min-width: 30%;
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  .cena-7 .parceiro-grande:nth-child(1) { animation: c7-parc-entra 30s linear forwards; animation-delay: 0.4s; }
+  .cena-7 .parceiro-grande:nth-child(2) { animation: c7-parc-entra 30s linear forwards; animation-delay: 0.9s; }
+
+  @keyframes c7-parc-entra {
+    0% { opacity: 0; transform: translateY(15px); }
+    5% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .cena-7 .parceiro-grande .label-tipo {
+    font-family: var(--dm);
+    font-size: clamp(9px, 1vw, 12px);
+    color: var(--violeta);
+    letter-spacing: 0.25em;
+    margin-bottom: 8%;
+    font-weight: 500;
+  }
+
+  .cena-7 .parceiro-grande .nome {
+    font-family: var(--bebas);
+    font-size: clamp(20px, 2.6vw, 38px);
+    color: var(--preto);
+    letter-spacing: 0.03em;
+    line-height: 1;
+  }
+
+  /* ====== BLOCO 2: GO-TO-MARKET (8-16s) ====== */
+  .cena-7 .bloco-gtm {
+    animation: c7-bloco-gtm 30s linear forwards;
+  }
+
+  @keyframes c7-bloco-gtm {
+    0%, 25% { opacity: 0; transform: translate(-50%, -45%); }
+    30% { opacity: 1; transform: translate(-50%, -50%); }
+    50% { opacity: 1; transform: translate(-50%, -50%); }
+    55% { opacity: 0; transform: translate(-50%, -55%); }
+    100% { opacity: 0; }
+  }
+
+  .cena-7 .bloco-gtm .label-secao {
+    font-family: var(--dm);
+    font-size: clamp(10px, 1.2vw, 14px);
+    color: var(--preto);
+    opacity: 0.55;
+    letter-spacing: 0.3em;
+    margin-bottom: 5%;
+  }
+
+  .cena-7 .bloco-gtm .frentes-grandes {
+    display: flex;
+    gap: 2%;
+    justify-content: center;
+  }
+
+  .cena-7 .frente-grande {
+    flex: 1;
+    max-width: 30%;
+    background: rgba(0,0,0,0.04);
+    border-left: 2px solid var(--violeta);
+    padding: 3% 2.5%;
+    text-align: left;
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  .cena-7 .frente-grande:nth-child(1) { animation: c7-frente-entra 30s linear forwards; animation-delay: 8s; }
+  .cena-7 .frente-grande:nth-child(2) { animation: c7-frente-entra 30s linear forwards; animation-delay: 8.4s; }
+  .cena-7 .frente-grande:nth-child(3) { animation: c7-frente-entra 30s linear forwards; animation-delay: 8.8s; }
+
+  @keyframes c7-frente-entra {
+    0% { opacity: 0; transform: translateY(15px); }
+    5% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .cena-7 .frente-grande .num {
+    font-family: var(--bebas);
+    font-size: clamp(16px, 2vw, 28px);
+    color: var(--violeta);
+    letter-spacing: 0.05em;
+    margin-bottom: 5%;
+    line-height: 1;
+  }
+
+  .cena-7 .frente-grande h4 {
+    font-family: var(--bebas);
+    font-size: clamp(14px, 1.8vw, 24px);
+    color: var(--preto);
+    letter-spacing: 0.03em;
+    margin-bottom: 4%;
+    line-height: 1.05;
+  }
+
+  .cena-7 .frente-grande p {
+    font-family: var(--inter);
+    font-size: clamp(9px, 1.05vw, 13px);
+    color: var(--preto);
+    opacity: 0.7;
+    line-height: 1.4;
+    font-weight: 300;
+  }
+
+  /* ====== BLOCO 3: ROADMAP + MÉTRICAS (16-30s) ====== */
+  .cena-7 .bloco-roadmap {
+    animation: c7-bloco-roadmap 30s linear forwards;
+  }
+
+  @keyframes c7-bloco-roadmap {
+    0%, 53% { opacity: 0; transform: translate(-50%, -45%); }
+    58% { opacity: 1; transform: translate(-50%, -50%); }
+    93% { opacity: 1; transform: translate(-50%, -50%); }
+    100% { opacity: 0; transform: translate(-50%, -55%); }
+  }
+
+  .cena-7 .bloco-roadmap .label-secao {
+    font-family: var(--dm);
+    font-size: clamp(10px, 1.2vw, 14px);
+    color: var(--preto);
+    opacity: 0.55;
+    letter-spacing: 0.3em;
+    margin-bottom: 5%;
+  }
+
+  .cena-7 .timeline-grande {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin-bottom: 7%;
+  }
+
+  /* Linha base desenhada */
+  .cena-7 .timeline-grande::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 8%;
+    right: 8%;
+    height: 1.5px;
+    background: var(--preto);
+    opacity: 0.25;
+    z-index: 0;
+    transform-origin: left;
+    transform: scaleX(0);
+    animation: c7-linha 30s linear forwards;
+  }
+
+  @keyframes c7-linha {
+    0%, 57% { transform: scaleX(0); }
+    65% { transform: scaleX(1); }
+    100% { transform: scaleX(1); }
+  }
+
+  .cena-7 .marco-grande {
+    text-align: center;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  .cena-7 .marco-grande:nth-child(1) { animation: c7-marco 30s linear forwards; animation-delay: 19.5s; }
+  .cena-7 .marco-grande:nth-child(2) { animation: c7-marco-destaque 30s linear forwards; animation-delay: 20.3s; }
+  .cena-7 .marco-grande:nth-child(3) { animation: c7-marco 30s linear forwards; animation-delay: 21.1s; }
+
+  @keyframes c7-marco {
+    0% { opacity: 0; transform: scale(0); }
+    5% { opacity: 1; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes c7-marco-destaque {
+    0% { opacity: 0; transform: scale(0); }
+    5% { opacity: 1; transform: scale(1.05); }
+    100% { opacity: 1; transform: scale(1.05); }
+  }
+
+  .cena-7 .marco-grande .ponto {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--violeta);
+    margin: 0 auto;
+    margin-bottom: 6%;
+    border: 4px solid var(--bege);
+  }
+
+  .cena-7 .marco-grande.destaque-marco .ponto {
+    width: 44px;
+    height: 44px;
+    box-shadow: 0 0 0 3px var(--violeta), 0 0 16px rgba(96, 44, 102, 0.5);
+  }
+
+  .cena-7 .marco-grande .data {
+    font-family: var(--bebas);
+    font-size: clamp(14px, 1.8vw, 26px);
+    color: var(--preto);
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+
+  .cena-7 .marco-grande .desc {
+    font-family: var(--inter);
+    font-size: clamp(10px, 1.15vw, 14px);
+    color: var(--preto);
+    opacity: 0.7;
+    margin-top: 4%;
+    line-height: 1.35;
+  }
+
+  .cena-7 .numeros-grandes {
+    display: flex;
+    gap: 8%;
+    width: 70%;
+    margin: 0 auto;
+    justify-content: center;
+    opacity: 0;
+  }
+
+  .cena-7 .numeros-grandes {
+    animation: c7-numeros 30s linear forwards;
+  }
+
+  @keyframes c7-numeros {
+    0%, 75% { opacity: 0; transform: translateY(12px); }
+    82% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .cena-7 .num-grupo-grande {
+    text-align: center;
+  }
+
+  .cena-7 .num-grupo-grande .num {
+    font-family: var(--bebas);
+    font-size: clamp(28px, 3.6vw, 56px);
+    color: var(--violeta);
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+
+  .cena-7 .num-grupo-grande .label {
+    font-family: var(--dm);
+    font-size: clamp(10px, 1.15vw, 14px);
+    color: var(--preto);
+    margin-top: 4%;
+    letter-spacing: 0.2em;
+    opacity: 0.7;
+  }
+
+  /* Pausa */
+  .cena-7.paused .bloco-parceiros,
+  .cena-7.paused .bloco-gtm,
+  .cena-7.paused .bloco-roadmap,
+  .cena-7.paused .parceiro-grande,
+  .cena-7.paused .frente-grande,
+  .cena-7.paused .timeline-grande::before,
+  .cena-7.paused .marco-grande,
+  .cena-7.paused .numeros-grandes {
+    animation-play-state: paused;
+  }
+
+  /* ============ CENA 8 — TIME ============ */
+  .cena-8 {
+    background: var(--preto);
+    flex-direction: column;
+    padding: 5%;
+  }
+
+  .cena-8 .ask {
+    text-align: center;
+  }
+
+  .cena-8 .ask .num {
+    font-family: var(--bebas);
+    font-size: clamp(72px, 11vw, 160px);
+    color: var(--violeta);
+    line-height: 1;
+    letter-spacing: 0.01em;
+  }
+
+  .cena-8 .ask .label {
+    font-family: var(--dm);
+    font-size: clamp(12px, 1.5vw, 22px);
+    color: var(--gelo);
+    opacity: 0.8;
+    margin-top: 2%;
+    letter-spacing: 0.25em;
+  }
+
+  .cena-8 .time {
+    display: flex;
+    justify-content: center;
+    gap: 2%;
+    margin-top: 5%;
+  }
+
+  .cena-8 .pessoa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    max-width: 13%;
+  }
+
+  .cena-8 .pessoa .avatar {
+    width: clamp(28px, 3.5vw, 52px);
+    height: clamp(28px, 3.5vw, 52px);
+    border-radius: 50%;
+    background: var(--violeta);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--bebas);
+    font-size: clamp(11px, 1.4vw, 20px);
+    color: var(--gelo);
+    margin-bottom: 8%;
+    letter-spacing: 0.05em;
+  }
+
+  .cena-8 .pessoa .role {
+    font-family: var(--dm);
+    font-size: clamp(8px, 0.85vw, 10px);
+    color: var(--gelo);
+    opacity: 0.6;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .cena-8 .fecap {
+    font-family: var(--inter);
+    font-size: clamp(10px, 1.2vw, 14px);
+    color: var(--gelo);
+    opacity: 0.7;
+    text-align: center;
+    margin-top: 3%;
+    font-weight: 300;
+  }
+
+  /* ============ CENA 9 — FECHAMENTO (ANIMADA) ============ */
+  .cena-9 {
+    background: var(--preto);
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    display: block;
+    animation: c9-bg 15s linear forwards;
+  }
+
+  /* Background faz transição de preto para violeta no Beat 1 */
+  @keyframes c9-bg {
+    0% { background: var(--preto); }
+    20% { background: var(--violeta); }
+    100% { background: var(--violeta); }
+  }
+
+  /* Controles */
+  .cena-9-controls {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    z-index: 50;
+    display: flex;
+    gap: 6px;
+    background: rgba(0,0,0,0.5);
+    padding: 6px 8px;
+    border-radius: 4px;
+    backdrop-filter: blur(8px);
+  }
+
+  .cena-9-controls button {
+    background: transparent;
+    border: 1px solid rgba(248,249,250,0.4);
+    color: var(--gelo);
+    font-family: var(--dm);
+    font-size: 10px;
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+  }
+
+  .cena-9-controls button:hover {
+    background: rgba(248,249,250,0.15);
+  }
+
+  .cena-9-controls .beat-indicator {
+    color: var(--gelo);
+    font-family: var(--dm);
+    font-size: 10px;
+    padding: 4px 8px;
+    opacity: 0.7;
+    align-self: center;
+  }
+
+  /* Beat 1 + 2: frase principal */
+  .cena-9 .frase-top {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 90%;
+    z-index: 10;
+    opacity: 0;
+    animation: c9-frase-top 15s linear forwards;
+  }
+
+  @keyframes c9-frase-top {
+    /* Beat 1 (0-5s): primeira linha entra */
+    0% { opacity: 0; transform: translate(-50%, -45%); }
+    10% { opacity: 1; transform: translate(-50%, -50%); }
+    /* Beat 2 (5-10s): segunda linha já está visível, fica estável */
+    65% { opacity: 1; transform: translate(-50%, -50%); }
+    /* Beat 3 (10-15s): sobe e diminui pra abrir espaço pro logo */
+    73% { opacity: 1; transform: translate(-50%, -130%) scale(0.55); }
+    100% { opacity: 1; transform: translate(-50%, -130%) scale(0.55); }
+  }
+
+  .cena-9 .frase-top .linha-1 {
+    font-family: var(--bebas);
+    font-size: clamp(28px, 4.5vw, 72px);
+    color: var(--gelo);
+    line-height: 1.05;
+    margin-bottom: 2%;
+    letter-spacing: 0.02em;
+  }
+
+  /* Linha 2 só aparece no Beat 2 */
+  .cena-9 .frase-top .linha-2 {
+    font-family: var(--bebas);
+    font-size: clamp(36px, 5.5vw, 92px);
+    color: var(--gelo);
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    animation: c9-linha-2 15s linear forwards;
+  }
+
+  @keyframes c9-linha-2 {
+    0%, 30% { opacity: 0; transform: translateY(15px); }
+    40% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Beat 3: logo grande + marca + slogan */
+  .cena-9 .logo-final {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    opacity: 0;
+    z-index: 8;
+    animation: c9-logo-final 15s linear forwards;
+  }
+
+  @keyframes c9-logo-final {
+    0%, 70% { opacity: 0; transform: translate(-50%, -45%) scale(0.92); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+
+  .cena-9 .logo-final .logo-grupo {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .cena-9 .logo-final .polvo {
+    width: clamp(70px, 9vw, 120px);
+    height: clamp(70px, 9vw, 120px);
+    background: var(--gelo);
+    -webkit-mask: radial-gradient(circle at 50% 30%, #000 30%, transparent 32%), radial-gradient(circle at 25% 70%, #000 13%, transparent 15%), radial-gradient(circle at 40% 80%, #000 14%, transparent 16%), radial-gradient(circle at 60% 80%, #000 14%, transparent 16%), radial-gradient(circle at 75% 70%, #000 13%, transparent 15%);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .cena-9 .logo-final .marca {
+    font-family: var(--bebas);
+    font-size: clamp(48px, 7vw, 100px);
+    color: var(--gelo);
+    letter-spacing: 0.05em;
+    line-height: 0.9;
+  }
+
+  .cena-9 .logo-final .slogan {
+    font-family: var(--bebas);
+    font-size: clamp(16px, 2.2vw, 32px);
+    color: var(--gelo);
+    letter-spacing: 0.05em;
+    text-align: center;
+    margin-top: 12px;
+    opacity: 0;
+    animation: c9-slogan 15s linear forwards;
+  }
+
+  @keyframes c9-slogan {
+    0%, 82% { opacity: 0; letter-spacing: 0.05em; }
+    92% { opacity: 1; letter-spacing: 0.25em; }
+    100% { opacity: 1; letter-spacing: 0.25em; }
+  }
+
+  /* Pausa */
+  .cena-9.paused,
+  .cena-9.paused .frase-top,
+  .cena-9.paused .frase-top .linha-2,
+  .cena-9.paused .logo-final,
+  .cena-9.paused .logo-final .slogan {
+    animation-play-state: paused;
+  }
+
+  /* ============ NOTAS DE RODAPÉ ============ */
+  .footer {
+    padding: 60px 40px;
+    border-top: 1px solid #333;
+    text-align: center;
+    color: #666;
+    font-family: var(--dm);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .footer strong {
+    color: #aaa;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .slides-container { padding: 20px; }
+    .slide-wrapper { margin-bottom: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <h1>RABISKO — preview dos slides do pitch</h1>
+  <p>9 cenas em proporção 16:9 · duração total 5:20 · cobertura completa do BMC · brandbook aplicado</p>
+  <nav class="nav">
+    <a href="#cena-1">1 · Hook</a>
+    <a href="#cena-2">2 · Problema</a>
+    <a href="#cena-3">3 · Solução + Perfis</a>
+    <a href="#cena-4">4 · Mercado</a>
+    <a href="#cena-5">5 · Receita</a>
+    <a href="#cena-6">6 · Concorrência</a>
+    <a href="#cena-7">7 · Tração + Parceiros</a>
+    <a href="#cena-8">8 · Time + Ask</a>
+    <a href="#cena-9">9 · Fechamento</a>
+  </nav>
+</header>
+
+<main class="slides-container">
+
+  <!-- CENA 1 — HOOK (ANIMADA) -->
+  <section class="slide-wrapper" id="cena-1">
+    <div class="slide-label">
+      <span>Cena 1 · Hook — animação 30s em loop</span>
+      <span class="timing">0:00 — 0:30</span>
+    </div>
+    <div class="slide cena-1" id="cena1-slide">
+
+      <div class="cena-1-controls">
+        <span class="beat-indicator" id="cena1-beat">BEAT 1/4</span>
+        <button onclick="cena1Restart()">↻ REINICIAR</button>
+        <button onclick="cena1TogglePause()" id="cena1-pause-btn">⏸ PAUSAR</button>
+      </div>
+
+      <!-- Beat 1: Logo central grande -->
+      <div class="logo-central">
+        <div class="polvo-grande"></div>
+        <div class="marca-grande">RABISKO</div>
+      </div>
+
+      <!-- Beat 2 em diante: logo no canto -->
+      <div class="logo-canto">
+        <div class="polvo"></div>
+        <div class="marca">RABISKO</div>
+      </div>
+
+      <!-- Beat 3: 3 linhas de evolução -->
+      <div class="linhas-evolucao">
+        <div class="linha linha-1">A arte evoluiu.</div>
+        <div class="linha linha-2">A sociedade evoluiu.</div>
+        <div class="linha linha-3">A GESTÃO, NÃO.</div>
+      </div>
+
+      <!-- Beat 4: Frase final monumental -->
+      <div class="frase-final">
+        <div class="frase-final-texto">
+          CHEGOU A HORA DESSA EVOLUÇÃO<br>
+          <span class="destaque">ACOMPANHAR A AGULHA.</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function() {
+        const slide = document.getElementById('cena1-slide');
+        const beatIndicator = document.getElementById('cena1-beat');
+        const pauseBtn = document.getElementById('cena1-pause-btn');
+        let isPaused = false;
+
+        function getBeat(percentage) {
+          if (percentage < 25) return { num: 1, name: 'LOGO' };
+          if (percentage < 51) return { num: 2, name: 'TRANSIÇÃO' };
+          if (percentage < 75) return { num: 3, name: 'EVOLUÇÃO' };
+          return { num: 4, name: 'AGULHA' };
+        }
+
+        function trackBeat() {
+          if (isPaused) return;
+          const anims = slide.getAnimations();
+          if (anims.length > 0) {
+            const anim = anims[0];
+            const ct = anim.currentTime || 0;
+            const pct = (ct / 30000) * 100;
+            const beat = getBeat(pct);
+            beatIndicator.textContent = `BEAT ${beat.num}/4 · ${beat.name}`;
+          }
+        }
+
+        if ('getAnimations' in slide) {
+          setInterval(trackBeat, 200);
+        }
+
+        window.cena1TogglePause = function() {
+          isPaused = !isPaused;
+          if (isPaused) {
+            slide.classList.add('paused');
+            pauseBtn.textContent = '▶ CONTINUAR';
+          } else {
+            slide.classList.remove('paused');
+            pauseBtn.textContent = '⏸ PAUSAR';
+          }
+        };
+
+        window.cena1Restart = function() {
+          const els = slide.querySelectorAll('.logo-central, .logo-canto, .linhas-evolucao .linha, .frase-final');
+          els.forEach(el => {
+            el.style.animation = 'none';
+            void el.offsetWidth;
+            el.style.animation = '';
+          });
+          if (isPaused) {
+            isPaused = false;
+            slide.classList.remove('paused');
+            pauseBtn.textContent = '⏸ PAUSAR';
+          }
+        };
+      })();
+    </script>
+  </section>
+
+  <!-- CENA 2 — PROBLEMA -->
+  <section class="slide-wrapper" id="cena-2">
+    <div class="slide-label">
+      <span>Cena 2 · Problema</span>
+      <span class="timing">0:30 — 1:15</span>
+    </div>
+    <div class="slide cena-2">
+      <div class="numero">275 MIL</div>
+      <div class="descricao">brasileiros pesquisaram remoção de tatuagem em 6 meses</div>
+      <div class="complemento">
+        Brasil é o 2º país do mundo no ranking — só atrás dos EUA.<br>
+        1 em cada 4 brasileiros tatuados se arrepende.
+      </div>
+      <div class="fonte">FONTE: PREPLY, 2024</div>
+    </div>
+  </section>
+
+  <!-- CENA 3 — SOLUÇÃO -->
+  <section class="slide-wrapper" id="cena-3">
+    <div class="slide-label">
+      <span>Cena 3 · Solução</span>
+      <span class="timing">1:15 — 2:00</span>
+    </div>
+    <div class="slide cena-3">
+      <div class="titulo">
+        O SISTEMA OPERACIONAL DO TATUADOR.
+      </div>
+
+      <div class="bloco-pilares">
+        <div class="pilares">
+          <div class="pilar">
+            <h3>SIMULAÇÃO<br>NO CORPO</h3>
+            <p>IA que mostra como a tatuagem fica antes do procedimento.</p>
+          </div>
+          <div class="pilar">
+            <h3>VITRINE<br>PÚBLICA</h3>
+            <p>Descoberta de artistas por estilo, técnica e localização.</p>
+          </div>
+          <div class="pilar">
+            <h3>FLUXO<br>INTEGRADO</h3>
+            <p>Da descoberta ao pós-procedimento em um único app.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="divisor"></div>
+
+      <div class="bloco-perfis">
+        <div class="label-perfis">OS 3 PILARES DO MERCADO</div>
+        <div class="perfis">
+          <div class="perfil">
+            <div class="icone">01</div>
+            <h4>ESTÚDIOS</h4>
+            <div class="stat">10 tatuadores</div>
+            <div class="desc">compartilhados<br>R$ 50 mil/mês de faturamento</div>
+          </div>
+          <div class="perfil">
+            <div class="icone">02</div>
+            <h4>TATUADORES</h4>
+            <div class="stat">30 trabalhos</div>
+            <div class="desc">independentes<br>por mês em média</div>
+          </div>
+          <div class="perfil">
+            <div class="icone">03</div>
+            <h4>CLIENTES</h4>
+            <div class="stat">Insegurança</div>
+            <div class="desc">querem tatuar mas<br>não sabem como vai ficar</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fechamento">
+        UNIDOS EM UMA <span class="destaque">SÓ</span> PLATAFORMA.
+      </div>
+    </div>
+  </section>
+
+  <!-- CENA 4 — MERCADO (ANIMADA) -->
+  <section class="slide-wrapper" id="cena-4">
+    <div class="slide-label">
+      <span>Cena 4 · Mercado e timing — animação 45s em loop</span>
+      <span class="timing">2:00 — 2:45</span>
+    </div>
+    <div class="slide cena-4" id="cena4-slide">
+
+      <!-- Controles -->
+      <div class="cena-4-controls">
+        <span class="beat-indicator" id="cena4-beat">BEAT 1/5</span>
+        <button onclick="cena4Restart()">↻ REINICIAR</button>
+        <button onclick="cena4TogglePause()" id="cena4-pause-btn">⏸ PAUSAR</button>
+      </div>
+
+      <!-- Label do topo -->
+      <div class="label-top">
+        <span>MERCADO BRASILEIRO DE TATUAGEM</span>
+      </div>
+
+      <!-- Mapa do Brasil em SVG real carregado via fetch -->
+      <div class="mapa-container" id="cena4-mapa-container">
+        <div id="cena4-mapa-real"></div>
+        <!-- Pontos de SP serão sobrepostos via div absoluta -->
+        <div class="overlay-sp" id="cena4-overlay-sp"></div>
+      </div>
+
+      <!-- Texto de abertura — Beat 1 -->
+      <div class="texto-abertura">vista aérea — todo o território brasileiro</div>
+
+      <!-- Beat 2: +150 mil estúdios -->
+      <div class="bloco-150">
+        <div class="numero"><span class="plus">+</span>150 MIL</div>
+        <div class="descricao">estúdios de tatuagem ativos<br>em todo o território nacional</div>
+      </div>
+
+      <!-- Beat 3: R$ 2,5 BI -->
+      <div class="bloco-bi">
+        <div class="valor"><span class="moeda">R$</span>2,5<span class="unidade"> BI</span></div>
+        <div class="descricao">foi o que o mercado de tatuagem<br>movimentou em 2024</div>
+        <div class="pill">↗ CRESCENDO +15% AO ANO</div>
+      </div>
+
+      <!-- Beat 4: SP -->
+      <div class="bloco-sp">
+        <div class="label-cidade">SÃO PAULO</div>
+        <div class="numero">2.219</div>
+        <div class="descricao">novos estúdios abertos<br>só na capital em 2022</div>
+        <div class="small">FONTE: SEBRAE</div>
+      </div>
+
+      <!-- Beat 5: frase de timing -->
+      <div class="frase-timing">
+        <div class="frase-timing-texto">
+          O TATUADOR DE 2026 NÃO QUER MAIS<br>
+          <span class="destaque">SEIS ABAS ABERTAS.</span>
+        </div>
+      </div>
+
+      <!-- Loader -->
+      <div class="mapa-loader" id="cena4-loader">CARREGANDO MAPA...</div>
+
+      <!-- Fonte fixa -->
+      <div class="fonte">FONTE: TATTOO WEEK SP / AGÊNCIA BRASIL · SEBRAE</div>
+    </div>
+
+    <script>
+      (function() {
+        const slide = document.getElementById('cena4-slide');
+        const beatIndicator = document.getElementById('cena4-beat');
+        const pauseBtn = document.getElementById('cena4-pause-btn');
+        const mapaContainer = document.getElementById('cena4-mapa-real');
+        const overlay = document.getElementById('cena4-overlay-sp');
+        const loader = document.getElementById('cena4-loader');
+        let isPaused = false;
+        let beatTracker = null;
+
+        // Coordenadas dos pontos em % do container
+        // O viewBox real do SVG é 0 0 220000 194010 (Brasil completo)
+        // Posições alinhadas ao mapa real do Brasil:
+        //  - Norte/AM/PA: x 25-50%, y 20-35%
+        //  - Nordeste: x 65-80%, y 35-55%
+        //  - Centro-Oeste: x 45-58%, y 50-65%
+        //  - Sudeste (sem SP): x 60-72%, y 65-72%
+        //  - Sul: x 50-62%, y 78-92%
+        //  - SP cluster: x 58-62%, y 72-76%
+        const pontosEstudios = [
+          // Norte (AM, PA, RR, AP)
+          { x: 28, y: 22 }, { x: 32, y: 26 }, { x: 38, y: 24 },
+          { x: 42, y: 28 }, { x: 46, y: 24 }, { x: 50, y: 28 },
+          { x: 26, y: 30 }, { x: 36, y: 32 }, { x: 44, y: 34 },
+          { x: 52, y: 30 }, { x: 56, y: 32 },
+          // Nordeste (MA, PI, CE, RN, PB, PE, AL, SE, BA)
+          { x: 64, y: 36 }, { x: 70, y: 38 }, { x: 76, y: 42 },
+          { x: 78, y: 46 }, { x: 74, y: 50 }, { x: 80, y: 52 },
+          { x: 72, y: 54 }, { x: 78, y: 58 }, { x: 70, y: 60 },
+          // Centro-Oeste (MT, MS, GO, DF)
+          { x: 48, y: 48 }, { x: 52, y: 52 }, { x: 46, y: 56 },
+          { x: 54, y: 58 }, { x: 50, y: 62 }, { x: 58, y: 60 },
+          // Sudeste sem SP (MG, ES, RJ)
+          { x: 64, y: 64 }, { x: 68, y: 66 }, { x: 70, y: 70 },
+          { x: 66, y: 72 }, { x: 72, y: 68 },
+          // Sul (PR, SC, RS)
+          { x: 56, y: 78 }, { x: 52, y: 82 }, { x: 58, y: 84 },
+          { x: 50, y: 86 }, { x: 54, y: 90 }, { x: 48, y: 92 }
+        ];
+
+        // Cluster de pontos densos em SP (canto sudeste do mapa real)
+        const pontosSaoPaulo = [
+          { x: 59, y: 73 }, { x: 60, y: 74 }, { x: 58, y: 74 },
+          { x: 61, y: 73 }, { x: 60, y: 72 }, { x: 59, y: 75 }
+        ];
+
+        function criarPontos() {
+          pontosEstudios.forEach((p, i) => {
+            const ponto = document.createElement('div');
+            ponto.className = 'ponto';
+            ponto.style.left = p.x + '%';
+            ponto.style.top = p.y + '%';
+            ponto.style.animationDelay = (2 + i * 0.05) + 's';
+            overlay.appendChild(ponto);
+          });
+
+          pontosSaoPaulo.forEach((p, i) => {
+            const ponto = document.createElement('div');
+            ponto.className = 'ponto ponto-grande';
+            ponto.style.left = p.x + '%';
+            ponto.style.top = p.y + '%';
+            ponto.style.animationDelay = (2 + i * 0.05) + 's';
+            overlay.appendChild(ponto);
+          });
+        }
+
+        async function carregarMapa() {
+          // Estratégia 1: tentar carregar brazil.svg do mesmo diretório (file://)
+          // Estratégia 2: usar a versão embutida via window.BRAZIL_SVG (se houver)
+          // Estratégia 3: fallback minimalista
+
+          try {
+            const res = await fetch('brazil.svg');
+            if (res.ok) {
+              const txt = await res.text();
+              if (txt.includes('<svg')) {
+                mapaContainer.innerHTML = txt;
+                loader.style.display = 'none';
+                criarPontos();
+                iniciarTracker();
+                return;
+              }
+            }
+          } catch (e) {
+            console.info('Fetch local falhou (esperado em file://). Tentando fallback...');
+          }
+
+          // Fallback: usa versão embutida se carregada
+          if (window.BRAZIL_SVG) {
+            mapaContainer.innerHTML = window.BRAZIL_SVG;
+            loader.style.display = 'none';
+            criarPontos();
+            iniciarTracker();
+            return;
+          }
+
+          // Último fallback: mensagem
+          loader.innerHTML = 'MAPA NÃO CARREGADO<br><span style="font-size:9px;opacity:0.5;display:block;margin-top:8px;">Coloque brazil.svg na mesma pasta deste HTML<br>ou abra via servidor local</span>';
+        }
+
+        function getBeat(percentage) {
+          if (percentage < 17) return { num: 1, name: 'ABERTURA' };
+          if (percentage < 40) return { num: 2, name: '+150 MIL' };
+          if (percentage < 62) return { num: 3, name: 'R$ 2,5 BI' };
+          if (percentage < 90) return { num: 4, name: 'ZOOM SP' };
+          return { num: 5, name: 'TIMING' };
+        }
+
+        function trackBeat() {
+          if (isPaused) return;
+          const allAnims = slide.getAnimations();
+          if (allAnims.length > 0) {
+            const anim = allAnims[0];
+            const ct = anim.currentTime || 0;
+            const dur = 45000;
+            const pct = (ct / dur) * 100;
+            const beat = getBeat(pct);
+            beatIndicator.textContent = `BEAT ${beat.num}/5 · ${beat.name}`;
+          }
+        }
+
+        function iniciarTracker() {
+          if ('getAnimations' in slide) {
+            beatTracker = setInterval(trackBeat, 200);
+          }
+        }
+
+        window.cena4TogglePause = function() {
+          isPaused = !isPaused;
+          if (isPaused) {
+            slide.classList.add('paused');
+            pauseBtn.textContent = '▶ CONTINUAR';
+          } else {
+            slide.classList.remove('paused');
+            pauseBtn.textContent = '⏸ PAUSAR';
+          }
+        };
+
+        window.cena4Restart = function() {
+          const animatedEls = slide.querySelectorAll('.mapa-container, .overlay-sp .ponto, .label-top, .texto-abertura, .bloco-150, .bloco-bi, .bloco-sp, .frase-timing, .fonte');
+          animatedEls.forEach(el => {
+            el.style.animation = 'none';
+            void el.offsetWidth;
+            el.style.animation = '';
+          });
+          if (isPaused) {
+            isPaused = false;
+            slide.classList.remove('paused');
+            pauseBtn.textContent = '⏸ PAUSAR';
+          }
+        };
+
+        carregarMapa();
+      })();
+    </script>
+  </section>
+
+  <!-- CENA 5 — RECEITA -->
+  <section class="slide-wrapper" id="cena-5">
+    <div class="slide-label">
+      <span>Cena 5 · Modelo de receita</span>
+      <span class="timing">2:45 — 3:30</span>
+    </div>
+    <div class="slide cena-5">
+      <div class="titulo">3 FORMAS DE GANHAR DINHEIRO</div>
+      <div class="cards">
+        <div class="card">
+          <div class="num">01</div>
+          <h3>MENSALIDADE</h3>
+          <p>Tatuadores e estúdios pagam pela plataforma.</p>
+          <div class="valor">R$ 400 a R$ 600 por mês</div>
+        </div>
+        <div class="card">
+          <div class="num">02</div>
+          <h3>IMPULSO<br>DE PERFIL</h3>
+          <p>Artistas pagam para aparecer mais na vitrine.</p>
+          <div class="valor">Pacotes semanais</div>
+        </div>
+        <div class="card">
+          <div class="num">03</div>
+          <h3>TAXA SOBRE<br>O SINAL</h3>
+          <p>Pequena taxa em cada pagamento via Pix.</p>
+          <div class="valor">A cada sessão fechada</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CENA 6 — CONCORRÊNCIA -->
+  <section class="slide-wrapper" id="cena-6">
+    <div class="slide-label">
+      <span>Cena 6 · Concorrência</span>
+      <span class="timing">3:30 — 4:10</span>
+    </div>
+    <div class="slide cena-6">
+      <div class="titulo">POSICIONAMENTO COMPETITIVO</div>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>INKER</th>
+            <th>GESTÃOINK</th>
+            <th class="rabisko-col">RABISKO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Gestão do tatuador</td>
+            <td><span class="check">✓</span></td>
+            <td><span class="check">✓</span></td>
+            <td class="rabisko-cell"><span class="check">✓</span></td>
+          </tr>
+          <tr>
+            <td>Captação de clientes</td>
+            <td><span class="check">✓</span></td>
+            <td>parcial</td>
+            <td class="rabisko-cell"><span class="check">✓</span></td>
+          </tr>
+          <tr>
+            <td>IA — referência artística</td>
+            <td><span class="check">✓</span></td>
+            <td><span class="x">—</span></td>
+            <td class="rabisko-cell"><span class="check">✓</span></td>
+          </tr>
+          <tr class="destaque-row">
+            <td>Simulação no corpo do cliente</td>
+            <td><span class="x">—</span></td>
+            <td><span class="x">—</span></td>
+            <td class="rabisko-cell"><span class="check">✓</span></td>
+          </tr>
+          <tr class="destaque-row">
+            <td>Taxa sobre o sinal (Pix)</td>
+            <td><span class="x">—</span></td>
+            <td><span class="x">—</span></td>
+            <td class="rabisko-cell"><span class="check">✓</span></td>
+          </tr>
+          <tr class="destaque-row">
+            <td>Mobile-first nativo</td>
+            <td>parcial</td>
+            <td><span class="x">—</span></td>
+            <td class="rabisko-cell"><span class="check">✓</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CENA 7 — TRAÇÃO (ANIMADA - SEQUENCIAL) -->
+  <section class="slide-wrapper" id="cena-7">
+    <div class="slide-label">
+      <span>Cena 7 · Tração e roadmap — animação 30s em loop</span>
+      <span class="timing">4:10 — 4:40</span>
+    </div>
+    <div class="slide cena-7" id="cena7-slide">
+
+      <div class="cena-7-controls">
+        <span class="beat-indicator" id="cena7-beat">BEAT 1/3</span>
+        <button onclick="cena7Restart()">↻ REINICIAR</button>
+        <button onclick="cena7TogglePause()" id="cena7-pause-btn">⏸ PAUSAR</button>
+      </div>
+
+      <!-- Bloco 1: Parceiros tecnológicos (0-8s) -->
+      <div class="bloco bloco-parceiros">
+        <div class="label-secao">PARCEIROS TECNOLÓGICOS</div>
+        <div class="parceiros-grandes">
+          <div class="parceiro-grande">
+            <div class="label-tipo">INFRAESTRUTURA</div>
+            <div class="nome">Microsoft Azure</div>
+          </div>
+          <div class="parceiro-grande">
+            <div class="label-tipo">PILOTO</div>
+            <div class="nome">Tatuadores &amp; Estúdios</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bloco 2: Go-to-market 3 frentes (8-16s) -->
+      <div class="bloco bloco-gtm">
+        <div class="label-secao">GO-TO-MARKET · 3 FRENTES</div>
+        <div class="frentes-grandes">
+          <div class="frente-grande">
+            <div class="num">01</div>
+            <h4>INSTAGRAM</h4>
+            <p>Contato direto com testes promocionais e divulgação de artistas que usam.</p>
+          </div>
+          <div class="frente-grande">
+            <div class="num">02</div>
+            <h4>PARCERIAS</h4>
+            <p>Estúdios para onboarding assistido e validação durante o piloto.</p>
+          </div>
+          <div class="frente-grande">
+            <div class="num">03</div>
+            <h4>EVENTOS</h4>
+            <p>Presença em eventos do setor para captação e exposição.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bloco 3: Roadmap + métricas (16-30s) -->
+      <div class="bloco bloco-roadmap">
+        <div class="label-secao">ROADMAP COMERCIAL</div>
+        <div class="timeline-grande">
+          <div class="marco-grande">
+            <div class="ponto"></div>
+            <div class="data">2026</div>
+            <div class="desc">Projeto piloto<br>com parceiros</div>
+          </div>
+          <div class="marco-grande destaque-marco">
+            <div class="ponto"></div>
+            <div class="data">NOV 2027</div>
+            <div class="desc">Tattoo Week SP<br>entrada em escala</div>
+          </div>
+          <div class="marco-grande">
+            <div class="ponto"></div>
+            <div class="data">DEZ 2028</div>
+            <div class="desc">84 estúdios pagantes<br>em São Paulo</div>
+          </div>
+        </div>
+        <div class="numeros-grandes">
+          <div class="num-grupo-grande">
+            <div class="num">21 MESES</div>
+            <div class="label">BREAKEVEN</div>
+          </div>
+          <div class="num-grupo-grande">
+            <div class="num">37 MESES</div>
+            <div class="label">PAYBACK</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function() {
+        const slide = document.getElementById('cena7-slide');
+        const beatIndicator = document.getElementById('cena7-beat');
+        const pauseBtn = document.getElementById('cena7-pause-btn');
+        let isPaused = false;
+
+        function getBeat(percentage) {
+          if (percentage < 27) return { num: 1, name: 'PARCEIROS' };
+          if (percentage < 55) return { num: 2, name: 'GO-TO-MARKET' };
+          return { num: 3, name: 'ROADMAP' };
+        }
+
+        function trackBeat() {
+          if (isPaused) return;
+          const anims = slide.getAnimations();
+          if (anims.length > 0) {
+            const anim = anims[0];
+            const ct = anim.currentTime || 0;
+            const pct = (ct / 30000) * 100;
+            const beat = getBeat(pct);
+            beatIndicator.textContent = `BEAT ${beat.num}/3 · ${beat.name}`;
+          }
+        }
+
+        if ('getAnimations' in slide) {
+          setInterval(trackBeat, 200);
+        }
+
+        window.cena7TogglePause = function() {
+          isPaused = !isPaused;
+          if (isPaused) {
+            slide.classList.add('paused');
+            pauseBtn.textContent = '▶ CONTINUAR';
+          } else {
+            slide.classList.remove('paused');
+            pauseBtn.textContent = '⏸ PAUSAR';
+          }
+        };
+
+        window.cena7Restart = function() {
+          const els = slide.querySelectorAll('.bloco, .parceiro-grande, .frente-grande, .timeline-grande, .marco-grande, .numeros-grandes');
+          els.forEach(el => {
+            el.style.animation = 'none';
+            void el.offsetWidth;
+            el.style.animation = '';
+          });
+          if (isPaused) {
+            isPaused = false;
+            slide.classList.remove('paused');
+            pauseBtn.textContent = '⏸ PAUSAR';
+          }
+        };
+      })();
+    </script>
+  </section>
+
+  <!-- CENA 8 — TIME + ASK -->
+  <section class="slide-wrapper" id="cena-8">
+    <div class="slide-label">
+      <span>Cena 8 · Time, operação e ask</span>
+      <span class="timing">4:40 — 5:05</span>
+    </div>
+    <div class="slide cena-8">
+      <div class="ask">
+        <div class="num">R$ 112.000</div>
+        <div class="label">INVESTIMENTO INICIAL</div>
+      </div>
+      <div class="time">
+        <div class="pessoa">
+          <div class="avatar">BD</div>
+          <div class="role">Product Owner<br>Back-end</div>
+        </div>
+        <div class="pessoa">
+          <div class="avatar">VT</div>
+          <div class="role">Scrum Master<br>Back-end</div>
+        </div>
+        <div class="pessoa">
+          <div class="avatar">JB</div>
+          <div class="role">UX<br>Front-end</div>
+        </div>
+        <div class="pessoa">
+          <div class="avatar">VB</div>
+          <div class="role">Back-end<br>Tests</div>
+        </div>
+        <div class="pessoa">
+          <div class="avatar">FM</div>
+          <div class="role">UX<br>Front-end</div>
+        </div>
+        <div class="pessoa">
+          <div class="avatar">AS</div>
+          <div class="role">Front-end</div>
+        </div>
+      </div>
+      <div class="fecap">Ciência da Computação — FECAP · Suporte direto no app desde o dia 1</div>
+    </div>
+  </section>
+
+  <!-- CENA 9 — FECHAMENTO (ANIMADA) -->
+  <section class="slide-wrapper" id="cena-9">
+    <div class="slide-label">
+      <span>Cena 9 · Fechamento — animação 15s em loop</span>
+      <span class="timing">5:05 — 5:20</span>
+    </div>
+    <div class="slide cena-9" id="cena9-slide">
+
+      <div class="cena-9-controls">
+        <span class="beat-indicator" id="cena9-beat">BEAT 1/3</span>
+        <button onclick="cena9Restart()">↻ REINICIAR</button>
+        <button onclick="cena9TogglePause()" id="cena9-pause-btn">⏸ PAUSAR</button>
+      </div>
+
+      <!-- Beat 1 e 2: frase em duas linhas (bg muda de preto → violeta) -->
+      <div class="frase-top">
+        <div class="linha-1">A TATUAGEM MOVE BILHÕES.</div>
+        <div class="linha-2">A GENTE MOVE A TATUAGEM.</div>
+      </div>
+
+      <!-- Beat 3: logo grande + marca + slogan -->
+      <div class="logo-final">
+        <div class="logo-grupo">
+          <div class="polvo"></div>
+          <div class="marca">RABISKO</div>
+        </div>
+        <div class="slogan">COM APENAS UM RABISKO.</div>
+      </div>
+    </div>
+
+    <script>
+      (function() {
+        const slide = document.getElementById('cena9-slide');
+        const beatIndicator = document.getElementById('cena9-beat');
+        const pauseBtn = document.getElementById('cena9-pause-btn');
+        let isPaused = false;
+
+        function getBeat(percentage) {
+          if (percentage < 33) return { num: 1, name: 'BILHÕES' };
+          if (percentage < 70) return { num: 2, name: 'TATUAGEM' };
+          return { num: 3, name: 'LOGO + SLOGAN' };
+        }
+
+        function trackBeat() {
+          if (isPaused) return;
+          const anims = slide.getAnimations();
+          if (anims.length > 0) {
+            const anim = anims[0];
+            const ct = anim.currentTime || 0;
+            const pct = (ct / 15000) * 100;
+            const beat = getBeat(pct);
+            beatIndicator.textContent = `BEAT ${beat.num}/3 · ${beat.name}`;
+          }
+        }
+
+        if ('getAnimations' in slide) {
+          setInterval(trackBeat, 200);
+        }
+
+        window.cena9TogglePause = function() {
+          isPaused = !isPaused;
+          if (isPaused) {
+            slide.classList.add('paused');
+            pauseBtn.textContent = '▶ CONTINUAR';
+          } else {
+            slide.classList.remove('paused');
+            pauseBtn.textContent = '⏸ PAUSAR';
+          }
+        };
+
+        window.cena9Restart = function() {
+          const els = slide.querySelectorAll('.frase-top, .frase-top .linha-2, .logo-final, .logo-final .slogan');
+          els.forEach(el => {
+            el.style.animation = 'none';
+            void el.offsetWidth;
+            el.style.animation = '';
+          });
+          // Reinicia também o background do slide
+          slide.style.animation = 'none';
+          void slide.offsetWidth;
+          slide.style.animation = '';
+          if (isPaused) {
+            isPaused = false;
+            slide.classList.remove('paused');
+            pauseBtn.textContent = '⏸ PAUSAR';
+          }
+        };
+      })();
+    </script>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p><strong>Como usar:</strong> abra este arquivo no Chrome, Firefox ou Safari em tela cheia.</p>
+  <p>Cada slide está em proporção 16:9 (mesma do vídeo final em 1920x1080).</p>
+  <p>Use a navegação fixa no topo para pular entre cenas, ou role normalmente.</p>
+  <p style="margin-top: 16px;">Salve este HTML em <strong>references/slides-preview.html</strong> dentro do projeto do Claude Code.</p>
+  <p>Adicione no PROMPT.md: <em>"O arquivo references/slides-preview.html contém o frame de pico de cada cena. Use como guia visual de layout, hierarquia e estilo."</em></p>
+</footer>
+
+</body>
+</html>

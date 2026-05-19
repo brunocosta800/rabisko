@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(tasklist)",
+      "Bash(tasklist /FI \"IMAGENAME eq node.exe\" /FI \"IMAGENAME eq npm.exe\")",
+      "PowerShell(Get-Process *)",
+      "Bash(mkdir -p \"D:/GitHub/rabisko/video/rabisko-pitch-video/public/assets/logos\")",
+      "Bash(curl -sL -o instagram.svg \"https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/instagram.svg\")",
+      "Bash(curl -sL -o whatsapp.svg \"https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/whatsapp.svg\")",
+      "Bash(curl -sL -o googlecalendar.svg \"https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/googlecalendar.svg\")",
+      "Bash(curl -sL -o excel.svg \"https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/microsoftexcel.svg\")",
+      "Bash(curl -sL -o \"D:/GitHub/rabisko/video/rabisko-pitch-video/public/assets/user.svg\" \"https://api.iconify.design/lucide:user-round.svg\")",
+      "Bash(mkdir -p \"D:/GitHub/rabisko/video/rabisko-pitch-video/out\")",
+      "Bash(npx remotion *)",
+      "Bash(NODE_OPTIONS=\"--use-system-ca\" npx remotion render src/index.ts Rabisko out/rabisko-pitch.mp4 --codec=h264 --crf=18 --log=info)",
+      "Bash(mkdir -p \"D:/temp/remotion\")",
+      "Bash(TEMP=\"D:/temp/remotion\" TMP=\"D:/temp/remotion\" TMPDIR=\"D:/temp/remotion\" NODE_OPTIONS=\"--use-system-ca\" npx remotion render src/index.ts Rabisko out/rabisko-pitch.mp4 --codec=h264 --crf=18 --log=info)",
+      "Bash(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 'D:\\\\GitHub\\\\rabisko\\\\video\\\\references\\\\video_cena_1.mp4')",
+      "PowerShell(\\(Get-Item 'D:\\\\GitHub\\\\rabisko\\\\video\\\\references\\\\video_cena_1.mp4'\\).Length; $shell = New-Object -ComObject Shell.Application; $folder = $shell.Namespace\\('D:\\\\GitHub\\\\rabisko\\\\video\\\\references'\\); $file = $folder.ParseName\\('video_cena_1.mp4'\\); 0..300 | ForEach-Object { $val = $folder.GetDetailsOf\\($file, $_\\); if \\($val\\) { \"$_`: $\\($folder.GetDetailsOf\\($null, $_\\)\\) = $val\" } } | Select-String -Pattern 'duration|length|frame|bit|width|height' -SimpleMatch)",
+      "PowerShell($shell = New-Object -ComObject Shell.Application; $folder = $shell.Namespace\\('D:\\\\GitHub\\\\rabisko\\\\video\\\\references'\\); $file = $folder.ParseName\\('video_cena_1.mp4'\\); 0..320 | ForEach-Object { $name = $folder.GetDetailsOf\\($null, $_\\); $val = $folder.GetDetailsOf\\($file, $_\\); if \\($val -and \\($name -match 'Length|Duration|Frame|Width|Height|Bit rate|Total bitrate'\\)\\) { \"$_ | $name = $val\" } })",
+      "PowerShell($shell = New-Object -ComObject Shell.Application; $folder = $shell.Namespace\\('D:\\\\GitHub\\\\rabisko\\\\video\\\\references'\\); $file = $folder.ParseName\\('video_cena_1.mp4'\\); 0..320 | ForEach-Object { $name = $folder.GetDetailsOf\\($null, $_\\); $val = $folder.GetDetailsOf\\($file, $_\\); if \\($val\\) { \"$_ | $name = $val\" } })",
+      "Bash(npx tsc *)",
+      "PowerShell($shell = New-Object -ComObject Shell.Application; $folder = $shell.Namespace\\('D:\\\\GitHub\\\\rabisko\\\\video\\\\references'\\); $file = $folder.ParseName\\('video_cena_1.mp4'\\); 27, 28, 320, 321 | ForEach-Object { $name = $folder.GetDetailsOf\\($null, $_\\); $val = $folder.GetDetailsOf\\($file, $_\\); \"$_ | $name = $val\" })",
+      "Bash(ffprobe *)",
+      "Bash(node -e \"const {getVideoMetadata} = require\\('@remotion/renderer'\\); getVideoMetadata\\('public/assets/remocao_tatuagem.mp4'\\).then\\(m => console.log\\(JSON.stringify\\(m, null, 2\\)\\)\\).catch\\(e => console.error\\(e.message\\)\\)\")",
+      "Bash(node -e \"const {getVideoMetadata} = require\\('@remotion/renderer'\\); Promise.all\\(['instagram', 'parceria', 'eventos'].map\\(n => getVideoMetadata\\('public/assets/'+n+'.mp4'\\).then\\(m => \\({n, dur:m.durationInSeconds, fps:m.fps, w:m.width, h:m.height}\\)\\)\\)\\).then\\(r => console.log\\(JSON.stringify\\(r, null, 2\\)\\)\\)\")",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(node -e \"const {getVideoMetadata} = require\\('@remotion/renderer'\\); getVideoMetadata\\('public/assets/tatuador.mp4'\\).then\\(m => console.log\\(JSON.stringify\\(m, null, 2\\)\\)\\).catch\\(e => console.error\\(e.message\\)\\)\")",
+      "Bash(cp \"D:\\\\GitHub\\\\rabisko\\\\video\\\\references\\\\tattoo_week.mp4\" \"D:\\\\GitHub\\\\rabisko\\\\video\\\\rabisko-pitch-video\\\\public\\\\assets\\\\tattoo_week.mp4\")",
+      "Bash(node -e \"const {getVideoMetadata} = require\\('@remotion/renderer'\\); getVideoMetadata\\('public/assets/tattoo_week.mp4'\\).then\\(m => console.log\\(JSON.stringify\\({dur:m.durationInSeconds, fps:m.fps, w:m.width, h:m.height}\\)\\)\\)\")",
+      "Bash(node -e \"const {getAudioDurationInSeconds} = require\\('@remotion/media-utils'\\); getAudioDurationInSeconds\\('../references/sound/audio_cena_1.mp3'\\).then\\(d => console.log\\('duration:', d, 's'\\)\\).catch\\(e => console.error\\(e.message\\)\\)\")",
+      "Bash(node -e \"const {parseMedia} = require\\('@remotion/media-parser'\\); const {nodeReader} = require\\('@remotion/media-parser/node'\\); parseMedia\\({src:'../references/sound/audio_cena_1.mp3', reader:nodeReader, fields:{durationInSeconds:true}}\\).then\\(r => console.log\\(JSON.stringify\\(r\\)\\)\\).catch\\(e=>console.error\\(e.message\\)\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(node --input-type=module -e ' *)",
+      "Bash(cp \"D:\\\\GitHub\\\\rabisko\\\\video\\\\references\\\\sozinho.mp4\" \"D:\\\\GitHub\\\\rabisko\\\\video\\\\rabisko-pitch-video\\\\public\\\\assets\\\\sozinho.mp4\")",
+      "Bash(node -e \"const {getVideoMetadata} = require\\('@remotion/renderer'\\); getVideoMetadata\\('public/assets/sozinho.mp4'\\).then\\(m => console.log\\(JSON.stringify\\({dur:m.durationInSeconds, fps:m.fps, w:m.width, h:m.height}\\)\\)\\)\")"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(NODE_OPTIONS=\"--use-system-ca\" npm install --no-audit --no-fund --loglevel=error)",
+      "Bash(NODE_OPTIONS=\"--use-system-ca\" npx remotion render PitchInvestidores out/pitch.mp4 --concurrency=1 --log=info)"
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+- [Backend usa Postgres/JPA, não Mongo](project_backend_persistence.md) — CLAUDE.md está defasado; usar `@Entity` + `JpaRepository`, não `@Document`.
