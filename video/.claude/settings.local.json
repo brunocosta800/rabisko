@@ -37,7 +37,10 @@
       "Bash(node -e \"const {getVideoMetadata} = require\\('@remotion/renderer'\\); getVideoMetadata\\('public/assets/sozinho.mp4'\\).then\\(m => console.log\\(JSON.stringify\\({dur:m.durationInSeconds, fps:m.fps, w:m.width, h:m.height}\\)\\)\\)\")",
       "Bash(cp \"D:\\\\GitHub\\\\rabisko\\\\video\\\\references\\\\mensalidade.mp4\" \"D:\\\\GitHub\\\\rabisko\\\\video\\\\rabisko-pitch-video\\\\public\\\\assets\\\\mensalidade.mp4\")",
       "Bash(cp \"D:\\\\GitHub\\\\rabisko\\\\video\\\\references\\\\impulso_perfil.mp4\" \"D:\\\\GitHub\\\\rabisko\\\\video\\\\rabisko-pitch-video\\\\public\\\\assets\\\\impulso_perfil.mp4\")",
-      "Bash(node -e \"const {getVideoMetadata} = require\\('@remotion/renderer'\\); Promise.all\\(['mensalidade','impulso_perfil'].map\\(n => getVideoMetadata\\('public/assets/'+n+'.mp4'\\).then\\(m => \\({n, dur:m.durationInSeconds, fps:m.fps, w:m.width, h:m.height}\\)\\)\\)\\).then\\(r => console.log\\(JSON.stringify\\(r,null,2\\)\\)\\)\")"
+      "Bash(node -e \"const {getVideoMetadata} = require\\('@remotion/renderer'\\); Promise.all\\(['mensalidade','impulso_perfil'].map\\(n => getVideoMetadata\\('public/assets/'+n+'.mp4'\\).then\\(m => \\({n, dur:m.durationInSeconds, fps:m.fps, w:m.width, h:m.height}\\)\\)\\)\\).then\\(r => console.log\\(JSON.stringify\\(r,null,2\\)\\)\\)\")",
+      "Bash(identify \"D:/GitHub/rabisko/video/rabisko-pitch-video/public/assets/integrantes.png\")",
+      "Bash(cp \"D:/GitHub/rabisko/video/references/speak/Parcerias.m4a\" \"D:/GitHub/rabisko/video/rabisko-pitch-video/public/assets/audio/Parcerias.m4a\")",
+      "Bash(cp \"D:/GitHub/rabisko/video/references/speak/Equipe.m4a\" \"D:/GitHub/rabisko/video/rabisko-pitch-video/public/assets/audio/Equipe.m4a\")"
     ]
   }
 }

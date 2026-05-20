@@ -10,11 +10,12 @@ loadBebas();
 loadInter();
 loadDM();
 
-// Cena 9 ocupa frames 18300-19200 (900 frames). useCurrentFrame() devolve 0-900.
+// Cena 9 ocupa 660 frames (11s). useCurrentFrame() devolve 0-660.
+// Áudio Fechamento.m4a ≈ 10.4s.
 // 3 beats:
-//   Beat 1 BILHÕES   0-300    bg preto→violeta + "A TATUAGEM MOVE BILHÕES."
-//   Beat 2 TATUAGEM  300-600  segunda linha "A GENTE MOVE A TATUAGEM."
-//   Beat 3 LOGO      600-900  linhas sobem/encolhem + polvo + RABISKO + slogan
+//   Beat 1 BILHÕES   0-220    bg preto→violeta + "A TATUAGEM MOVE BILHÕES."
+//   Beat 2 TATUAGEM  220-440  segunda linha "A GENTE MOVE A TATUAGEM."
+//   Beat 3 LOGO      440-660  linhas sobem/encolhem + polvo + RABISKO + slogan
 
 // Interpola entre 2 cores hex no espaço sRGB linear via mix simples.
 const mixColor = (hex1: string, hex2: string, t: number) => {
@@ -35,15 +36,15 @@ const mixColor = (hex1: string, hex2: string, t: number) => {
 export const Scene09Fechamento: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // ---- Background: preto → violeta nos primeiros 180 frames ----
-  const bgT = interpolate(frame, [0, 180], [0, 1], {
+  // ---- Background: preto → violeta nos primeiros 132 frames (2.2s) ----
+  const bgT = interpolate(frame, [0, 132], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
   const bgColor = mixColor(colors.preto, colors.violeta, bgT);
 
-  // ---- Linha 1: entra Beat 1 ----
+  // ---- Linha 1: entra 0-60 (Beat 1, 0s) ----
   const linha1OpacityIn = interpolate(frame, [0, 60], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -55,52 +56,49 @@ export const Scene09Fechamento: React.FC = () => {
     easing: easeIn,
   });
 
-  // ---- Linha 2: entra Beat 2 ----
-  const linha2OpacityIn = interpolate(frame, [300, 360], [0, 1], {
+  // ---- Linha 2: entra 150-210 ----
+  const linha2OpacityIn = interpolate(frame, [150, 210], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  const linha2Y = interpolate(frame, [300, 360], [18, 0], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeIn,
-  });
-
-  // ---- Beat 3: linhas sobem + encolhem para 0.55, indo para o topo ----
-  // Durante frames 600-720 o conjunto das linhas:
-  //   - scale: 1 → 0.55
-  //   - translateY: 0 → -380px (sobe para a parte superior)
-  const frasesScale = interpolate(frame, [600, 720], [1, 0.55], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeIn,
-  });
-  const frasesTranslateY = interpolate(frame, [600, 720], [0, -380], {
+  const linha2Y = interpolate(frame, [150, 210], [18, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
 
-  // ---- Logo (polvo + marca) entra Beat 3 ----
-  const logoOpacity = interpolate(frame, [660, 780], [0, 1], {
+  // ---- Beat 3: linhas sobem + encolhem (240-320) ----
+  const frasesScale = interpolate(frame, [240, 320], [1, 0.55], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  const logoScale = interpolate(frame, [660, 780], [0.92, 1], {
+  const frasesTranslateY = interpolate(frame, [240, 320], [0, -380], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
 
-  // ---- Slogan: letter-spacing 0.05em → 0.25em em 60 frames ----
-  const sloganOpacity = interpolate(frame, [780, 840], [0, 1], {
+  // ---- Logo (polvo + marca) entra 280-340 ----
+  const logoOpacity = interpolate(frame, [280, 340], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  const sloganTracking = interpolate(frame, [780, 840], [0.05, 0.25], {
+  const logoScale = interpolate(frame, [280, 340], [0.92, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easeIn,
+  });
+
+  // ---- Slogan "VEM MUDAR A VIDA COM APENAS UM RABISKO" — sync em 5:15 (frame 390) ----
+  const sloganOpacity = interpolate(frame, [330, 390], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easeIn,
+  });
+  const sloganTracking = interpolate(frame, [330, 390], [0.05, 0.25], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
@@ -192,7 +190,7 @@ export const Scene09Fechamento: React.FC = () => {
               marginTop: 8,
             }}
           >
-            COM APENAS UM RABISKO.
+            VEM MUDAR A VIDA COM APENAS UM RABISKO.
           </div>
         </div>
       </AbsoluteFill>

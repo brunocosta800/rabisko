@@ -1,4 +1,4 @@
-import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame } from 'remotion';
 import { loadFont as loadBebas } from '@remotion/google-fonts/BebasNeue';
 import { loadFont as loadInter } from '@remotion/google-fonts/Inter';
 import { loadFont as loadDM } from '@remotion/google-fonts/DMSans';
@@ -9,48 +9,49 @@ loadBebas();
 loadInter();
 loadDM();
 
-// Cena 8 ocupa frames 16800-18300 (1500 frames). useCurrentFrame() devolve 0-1500.
+// Cena 8 ocupa 1560 frames (26s). useCurrentFrame() devolve 0-1560.
+// Áudio Equipe.m4a ≈ 26s, investimento sincroniza em 16.5s.
 // Blocos:
-//   A 0-900    6 avatares + caption FECAP
-//   B 900-1500 R$ 112.000 INVESTIMENTO INICIAL
+//   A 0-990     Slide integrantes (título à esquerda + grid 3x2 dos 6 membros)
+//   B 990-1560  R$ 106.000 INVESTIMENTO PARA DESENVOLVIMENTO
 
 const TEAM = [
-  { iniciais: 'BD', papel: 'Product Owner / Back-end' },
-  { iniciais: 'VT', papel: 'Scrum Master / Back-end' },
-  { iniciais: 'JB', papel: 'UX / Front-end' },
-  { iniciais: 'VB', papel: 'Back-end / Tests' },
-  { iniciais: 'FM', papel: 'UX / Front-end' },
-  { iniciais: 'AS', papel: 'Front-end' },
-];
+  { iniciais: 'VT', nome: 'VITOR TOKUNAGA',    papel: 'Scrum Master & Desenvolvedor Back End' },
+  { iniciais: 'VB', nome: 'VINICIUS BINDA',    papel: 'Desenvolvedor Back End' },
+  { iniciais: 'AD', nome: 'ALESSANDER DUGARO', papel: 'Desenvolvedor Front End' },
+  { iniciais: 'FM', nome: 'FELIPE MARTINS',    papel: 'Desenvolvedor UX & Front End' },
+  { iniciais: 'JB', nome: 'JOÃO BARBOSA',      papel: 'Desenvolvedor UX & Front End' },
+  { iniciais: 'BC', nome: 'BRUNO COSTA',       papel: 'Desenvolvedor Back End & Front End' },
+] as const;
 
 export const Scene08Time: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // ---- Bloco A: avatares ----
-  const blocoAOpacityOut = interpolate(frame, [840, 920], [1, 0], {
+  // ---- Bloco A: slide integrantes ----
+  const blocoAOpacityIn = interpolate(frame, [0, 30], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easeIn,
+  });
+  const blocoAOpacityOut = interpolate(frame, [930, 990], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeOut,
   });
+  const blocoAOpacity = Math.min(blocoAOpacityIn, blocoAOpacityOut);
 
-  const captionOpacity = interpolate(frame, [240, 300], [0, 1], {
+  // ---- Bloco B: ask (entra em 16.5s = frame 990) ----
+  const askOpacityIn = interpolate(frame, [990, 1080], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-
-  // ---- Bloco B: ask ----
-  const askOpacityIn = interpolate(frame, [940, 1040], [0, 1], {
+  const askScale = interpolate(frame, [990, 1110], [0.92, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  const askScale = interpolate(frame, [940, 1080], [0.92, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeIn,
-  });
-  const askLabelOpacity = interpolate(frame, [1040, 1140], [0, 1], {
+  const askLabelOpacity = interpolate(frame, [1080, 1170], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
@@ -58,118 +59,182 @@ export const Scene08Time: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.preto }}>
-      {/* ---- Bloco A ---- */}
-      <AbsoluteFill
+      {/* Rodapé preto no fundo — some quando o investimento (Bloco B) entra */}
+      <div
         style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-          opacity: blocoAOpacityOut,
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          opacity: 1 - askOpacityIn,
+          pointerEvents: 'none',
         }}
       >
+        <Img
+          src={staticFile('assets/rodape_preto.svg')}
+          style={{ width: '100%', display: 'block' }}
+        />
+      </div>
+
+      {/* Polvo Bisko à direita — só durante o Bloco B (ask) */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          right: 0,
+          transform: 'translate(50%, -50%)',
+          width: 1500,
+          height: 1500,
+          opacity: askOpacityIn * 0.18,
+          pointerEvents: 'none',
+        }}
+      >
+        <Img
+          src={staticFile('assets/bisko_branco.svg')}
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+        />
+      </div>
+
+      {/* ---- Bloco A: Slide integrantes (título à esquerda + grid 3x2) ---- */}
+      <AbsoluteFill
+        style={{
+          opacity: blocoAOpacity,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: '6% 6%',
+          gap: 80,
+        }}
+      >
+        {/* Lado esquerdo: título + subtítulo */}
         <div
           style={{
+            flex: '0 0 38%',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            gap: 80,
-            width: '92%',
+            justifyContent: 'center',
+            gap: 36,
           }}
         >
-          {/* Avatares */}
           <div
             style={{
-              display: 'flex',
-              gap: 56,
-              alignItems: 'flex-start',
-              justifyContent: 'center',
-              width: '100%',
+              fontFamily: fonts.bebas,
+              fontSize: 110,
+              color: colors.gelo,
+              lineHeight: 0.95,
+              letterSpacing: '0.01em',
             }}
           >
-            {TEAM.map((member, i) => {
-              const start = 30 + i * 12;
-              const opacity = interpolate(
-                frame,
-                [start, start + 30],
-                [0, 1],
-                {
-                  extrapolateLeft: 'clamp',
-                  extrapolateRight: 'clamp',
-                  easing: easeIn,
-                }
-              );
-              const ty = interpolate(frame, [start, start + 30], [16, 0], {
-                extrapolateLeft: 'clamp',
-                extrapolateRight: 'clamp',
-                easing: easeIn,
-              });
-              return (
-                <div
-                  key={member.iniciais + i}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 24,
-                    opacity,
-                    transform: `translateY(${ty}px)`,
-                    maxWidth: 200,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 130,
-                      height: 130,
-                      borderRadius: '50%',
-                      background: colors.violeta,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontFamily: fonts.bebas,
-                      fontSize: 56,
-                      color: colors.gelo,
-                      letterSpacing: '0.04em',
-                      boxShadow: '0 4px 24px rgba(96,44,102,0.35)',
-                    }}
-                  >
-                    {member.iniciais}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: fonts.dm,
-                      fontSize: 18,
-                      color: colors.gelo,
-                      opacity: 0.7,
-                      textAlign: 'center',
-                      lineHeight: 1.4,
-                      letterSpacing: '0.02em',
-                    }}
-                  >
-                    {member.papel}
-                  </div>
-                </div>
-              );
-            })}
+            PESSOAS QUE
+            <br />
+            MOVIMENTAM
+            <br />
+            <span style={{ color: colors.violeta }}>O ECOSSISTEMA</span>
           </div>
-
-          {/* Caption FECAP */}
           <div
             style={{
               fontFamily: fonts.inter,
               fontWeight: 300,
-              fontSize: 28,
+              fontSize: 26,
               color: colors.gelo,
-              opacity: captionOpacity * 0.85,
-              textAlign: 'center',
-              letterSpacing: '0.04em',
+              opacity: 0.75,
               lineHeight: 1.5,
+              maxWidth: 540,
             }}
           >
-            Ciência da Computação — FECAP · Suporte direto no app desde o dia 1
+            Uma equipe unida por propósito, experiência e compromisso.
           </div>
+        </div>
+
+        {/* Lado direito: grid 3x2 dos 6 integrantes */}
+        <div
+          style={{
+            flex: 1,
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gridTemplateRows: 'repeat(2, 1fr)',
+            gap: 48,
+            alignContent: 'center',
+            justifyItems: 'center',
+          }}
+        >
+          {TEAM.map((member, i) => {
+            const start = 30 + i * 15;
+            const opacity = interpolate(frame, [start, start + 30], [0, 1], {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: easeIn,
+            });
+            const ty = interpolate(frame, [start, start + 30], [20, 0], {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: easeIn,
+            });
+            return (
+              <div
+                key={member.iniciais}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 18,
+                  opacity,
+                  transform: `translateY(${ty}px)`,
+                  maxWidth: 240,
+                }}
+              >
+                <div
+                  style={{
+                    width: 150,
+                    height: 150,
+                    borderRadius: '50%',
+                    background: colors.violeta,
+                    border: `3px solid rgba(248,249,250,0.15)`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: fonts.bebas,
+                    fontSize: 64,
+                    color: colors.gelo,
+                    letterSpacing: '0.04em',
+                    boxShadow: '0 6px 28px rgba(96,44,102,0.4)',
+                  }}
+                >
+                  {member.iniciais}
+                </div>
+                <div
+                  style={{
+                    fontFamily: fonts.bebas,
+                    fontSize: 28,
+                    color: colors.gelo,
+                    letterSpacing: '0.05em',
+                    textAlign: 'center',
+                    lineHeight: 1.1,
+                  }}
+                >
+                  {member.nome}
+                </div>
+                <div
+                  style={{
+                    fontFamily: fonts.inter,
+                    fontWeight: 300,
+                    fontSize: 16,
+                    color: colors.gelo,
+                    opacity: 0.65,
+                    textAlign: 'center',
+                    lineHeight: 1.4,
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  {member.papel}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </AbsoluteFill>
 
-      {/* ---- Bloco B: Ask R$ 112.000 ---- */}
+      {/* ---- Bloco B: Ask R$ 84.000 ---- */}
       <AbsoluteFill
         style={{
           alignItems: 'center',
@@ -196,7 +261,7 @@ export const Scene08Time: React.FC = () => {
               letterSpacing: '0.01em',
             }}
           >
-            R$ 112.000
+            R$ 106.000
           </div>
           <div
             style={{
@@ -208,7 +273,7 @@ export const Scene08Time: React.FC = () => {
               opacity: askLabelOpacity * 0.9,
             }}
           >
-            INVESTIMENTO INICIAL
+            INVESTIMENTO PARA DESENVOLVIMENTO
           </div>
         </div>
       </AbsoluteFill>

@@ -1,23 +1,28 @@
-import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
+import {
+  AbsoluteFill,
+  Img,
+  OffthreadVideo,
+  Sequence,
+  interpolate,
+  staticFile,
+  useCurrentFrame,
+} from 'remotion';
 import { loadFont as loadBebas } from '@remotion/google-fonts/BebasNeue';
 import { loadFont as loadInter } from '@remotion/google-fonts/Inter';
 import { loadFont as loadDM } from '@remotion/google-fonts/DMSans';
 import { colors, fonts } from '../tokens';
 import { easeIn, easeOut } from '../styles/easings';
 import { BrazilMap } from '../components/BrazilMap';
-import { FonteCitation } from '../components/FonteCitation';
 
 loadBebas();
 loadInter();
 loadDM();
 
-// Cena 4 ocupa frames 7200-9900 (absolutos). useCurrentFrame() devolve 0-2700.
-// 5 Beats:
-//   Beat 1 ABERTURA       0-480    label + mapa centrado + pontos com stagger
-//   Beat 2 +150 MIL       480-1080  mapa desliza p/ esquerda + painel direito
-//   Beat 3 R$ 2,5 BI      1080-1680 "+150 MIL" encolhe pro topo + R$ 2,5 BI + pill
-//   Beat 4 ZOOM SP        1680-2400 zoom 2.4x em SP + "2.219" + Fonte: Sebrae
-//   Beat 5 TIMING         2400-2700 mapa some + frase "SEIS ABAS ABERTAS"
+// Cena 4 ocupa frames 6870-8850 (absolutos, 1980 frames / 33s).
+// Beats:
+//   0-1020       mapa + dots + +150 MIL + R$ 2,5 BI
+//   1050-1290    foto mexendo_celular (filtro escuro) — 2:12-2:16
+//   1290-1980    vídeo gerenciando_celular (filtro preto) + frase "O TATUADOR DE 2026..."
 
 // Pontos posicionados em % do container do mapa.
 // region: 'N' = norte, 'NE' = nordeste, 'CW' = centro-oeste,
@@ -88,32 +93,14 @@ const Dot: React.FC<{
     [0, 1],
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: easeIn }
   );
-  // Periféricos (não-SP) fade para 0.2 durante Beat 3
-  const peripheralFade =
-    region === 'SP'
-      ? 1
-      : interpolate(frame, [1140, 1260], [1, 0.2], {
-          extrapolateLeft: 'clamp',
-          extrapolateRight: 'clamp',
-          easing: easeOut,
-        });
-  // SP intensifica durante Beat 4 (escala e brilho)
-  const spIntensify =
-    region === 'SP'
-      ? interpolate(frame, [1700, 1820], [1, 1.5], {
-          extrapolateLeft: 'clamp',
-          extrapolateRight: 'clamp',
-          easing: easeIn,
-        })
-      : 1;
-  // Tudo desaparece no Beat 5
-  const beat5Fade = interpolate(frame, [2400, 2460], [1, 0], {
+  // Some em 2:11.5 (local 1020), antes da foto entrar
+  const fadeOut = interpolate(frame, [1020, 1110], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeOut,
   });
 
-  const opacity = opacityIn * peripheralFade * beat5Fade;
+  const opacity = opacityIn * fadeOut;
   const size = region === 'SP' ? 12 : 8;
 
   return (
@@ -129,7 +116,7 @@ const Dot: React.FC<{
         background: colors.violeta,
         borderRadius: '50%',
         opacity,
-        transform: `scale(${scaleIn * spIntensify})`,
+        transform: `scale(${scaleIn})`,
         boxShadow: `0 0 ${region === 'SP' ? 14 : 6}px rgba(96, 44, 102, ${
           region === 'SP' ? 0.9 : 0.6
         })`,
@@ -141,127 +128,145 @@ const Dot: React.FC<{
 export const Scene04Mercado: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // ===== MAPA — translate e scale por beat =====
-  // Beat 1 (0-480): centralizado, scale 1
-  // Beat 2 (480-600): desliza esquerda translateX -22%
-  // Beat 4 (1680-1820): zoom 2.4x com origem em SP
-  // Beat 5 (2400-2520): fade-out
-
+  // ===== MAPA — desliza levemente p/ esquerda no início, some em 2:11.5 =====
   const mapaTranslateX = interpolate(
     frame,
-    [480, 600],
-    [0, -22],
+    [0, 120],
+    [0, -8],
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: easeIn }
   );
 
-  const mapaScale = interpolate(
-    frame,
-    [1680, 1820],
-    [1, 2.4],
-    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: easeIn }
-  );
-
-  // No zoom, queremos focar em SP que está a ~58%, 73% do container.
-  // Para deslocar o foco para o quadrante esquerdo da viewport (já que o
-  // painel à direita está visível), aplicamos translate adicional.
-  const mapaZoomTranslateX = interpolate(
-    frame,
-    [1680, 1820],
-    [0, -15],
-    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: easeIn }
-  );
-  const mapaZoomTranslateY = interpolate(
-    frame,
-    [1680, 1820],
-    [0, -18],
-    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: easeIn }
-  );
-
-  const mapaOpacity = interpolate(frame, [2400, 2520], [1, 0], {
+  const mapaOpacity = interpolate(frame, [1020, 1110], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeOut,
   });
 
-  // ===== BLOCO +150 MIL — entra Beat 2, encolhe no Beat 3 =====
-  const bloco150OpacityIn = interpolate(frame, [540, 640], [0, 1], {
+  // ===== BLOCO +150 MIL — entra desde o início, encolhe quando R$ 2,5 BI entra =====
+  const bloco150OpacityIn = interpolate(frame, [0, 100], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  // Some quando o Beat 4 (São Paulo) inicia
-  const bloco150OpacityOut = interpolate(frame, [1680, 1800], [1, 0], {
+  // Some em 2:11.5 (local 1020) — antes da foto mexendo_celular entrar
+  const bloco150OpacityOut = interpolate(frame, [1020, 1110], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeOut,
   });
   const bloco150Opacity = Math.min(bloco150OpacityIn, bloco150OpacityOut);
-  const bloco150TranslateX = interpolate(frame, [540, 660], [40, 0], {
+  const bloco150TranslateX = interpolate(frame, [0, 120], [40, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  // No Beat 3 encolhe para 0.55 e sobe pra parte superior do painel
-  const bloco150Scale = interpolate(frame, [1080, 1200], [1, 0.55], {
+  // Encolhe pra dar espaço ao R$ 2,5 BI (entra em 1:59 = local frame 270)
+  const bloco150Scale = interpolate(frame, [210, 330], [1, 0.55], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  const bloco150ShiftY = interpolate(frame, [1080, 1200], [0, -220], {
+  const bloco150ShiftY = interpolate(frame, [210, 330], [0, -220], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
 
-  // ===== BLOCO R$ 2,5 BI — entra Beat 3 =====
-  const blocoBiOpacityIn = interpolate(frame, [1140, 1260], [0, 1], {
+  // ===== BLOCO R$ 2,5 BI — entra em 1:59 (local frame 270) =====
+  const blocoBiOpacityIn = interpolate(frame, [270, 390], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  // Some quando o Beat 4 (São Paulo) inicia
-  const blocoBiOpacityOut = interpolate(frame, [1680, 1800], [1, 0], {
+  // Some em 2:11.5 (local 1020)
+  const blocoBiOpacityOut = interpolate(frame, [1020, 1110], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeOut,
   });
   const blocoBiOpacity = Math.min(blocoBiOpacityIn, blocoBiOpacityOut);
-  const blocoBiTranslateX = interpolate(frame, [1140, 1260], [40, 0], {
+  const blocoBiTranslateX = interpolate(frame, [270, 390], [40, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  const pillOpacity = interpolate(frame, [1240, 1320], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeIn,
-  });
-
-  // ===== BLOCO SP — entra Beat 4 =====
-  const blocoSpOpacityIn = interpolate(frame, [1820, 1940], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeIn,
-  });
-  const blocoSpOpacityOut = interpolate(frame, [2380, 2460], [1, 0], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeOut,
-  });
-  const blocoSpOpacity = Math.min(blocoSpOpacityIn, blocoSpOpacityOut);
-  const blocoSpTranslateY = interpolate(frame, [1820, 1940], [30, 0], {
+  const pillOpacity = interpolate(frame, [370, 450], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
 
-  // ===== FRASE TIMING (Beat 5) =====
-  const fraseTimingOpacity = interpolate(frame, [2460, 2560], [0, 1], {
+  // R$ 2,5 BI encolhe quando o 48% entra (600 → 720)
+  const biFontSize = interpolate(frame, [600, 720], [240, 150], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  const fraseTimingY = interpolate(frame, [2460, 2560], [20, 0], {
+  const biPrefixSize = interpolate(frame, [600, 720], [120, 75], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easeIn,
+  });
+  const biSuffixSize = interpolate(frame, [600, 720], [100, 60], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easeIn,
+  });
+
+  // ===== BLOCO 48% CNPJ — entra em 2:05.5 (mesmo padrão do R$ 2,5 BI) =====
+  const cnpjOpacity = Math.min(
+    interpolate(frame, [660, 780], [0, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeIn,
+    }),
+    interpolate(frame, [1020, 1110], [1, 0], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeOut,
+    })
+  );
+  const cnpjTranslateX = interpolate(frame, [660, 780], [40, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easeIn,
+  });
+
+  // ===== FOTO mexendo_celular (2:12-2:16, local 1050-1290) =====
+  const mexendoOpacity = Math.min(
+    interpolate(frame, [1050, 1110], [0, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeIn,
+    }),
+    interpolate(frame, [1260, 1320], [1, 0], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeOut,
+    })
+  );
+
+  // ===== VÍDEO gerenciando_celular (2:16 → fim, local 1290-1980) =====
+  const gerenciandoOpacity = interpolate(frame, [1290, 1380], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easeIn,
+  });
+
+  // ===== FRASE FINAL "O TATUADOR DE 2026..." (sobre o gerenciando) =====
+  const fraseTimingOpacity = Math.min(
+    interpolate(frame, [1440, 1560], [0, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeIn,
+    }),
+    interpolate(frame, [1920, 1980], [1, 0], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeOut,
+    })
+  );
+  const fraseTimingY = interpolate(frame, [1440, 1560], [20, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
@@ -274,11 +279,10 @@ export const Scene04Mercado: React.FC = () => {
         style={{
           position: 'absolute',
           top: '50%',
-          left: '50%',
-          width: '36%',
-          height: '70%',
-          transform: `translate(-50%, -50%) translate(${mapaTranslateX}%, 0%) translate(${mapaZoomTranslateX}%, ${mapaZoomTranslateY}%) scale(${mapaScale})`,
-          transformOrigin: '58% 73%',
+          left: '32%',
+          width: '50%',
+          height: '92%',
+          transform: `translate(-50%, -50%) translate(${mapaTranslateX}%, 0%)`,
           opacity: mapaOpacity,
         }}
       >
@@ -360,15 +364,15 @@ export const Scene04Mercado: React.FC = () => {
           <div
             style={{
               fontFamily: fonts.bebas,
-              fontSize: 240,
+              fontSize: biFontSize,
               color: colors.gelo,
               lineHeight: 0.9,
               letterSpacing: '0.01em',
             }}
           >
-            <span style={{ color: colors.bege, fontSize: 120 }}>R$ </span>
+            <span style={{ color: colors.bege, fontSize: biPrefixSize }}>R$ </span>
             2,5
-            <span style={{ color: colors.bege, fontSize: 100 }}> BI</span>
+            <span style={{ color: colors.bege, fontSize: biSuffixSize }}> BI</span>
           </div>
           <div
             style={{
@@ -408,66 +412,137 @@ export const Scene04Mercado: React.FC = () => {
           </div>
         </div>
 
-        {/* Bloco SP / 2.219 */}
+        {/* Bloco 48% CNPJ MEI — entra em 2:05.5 (local frame 660) */}
         <div
           style={{
             position: 'absolute',
-            top: '50%',
+            bottom: 90,
             left: '8%',
             right: '6%',
-            transform: `translate(0, calc(-50% + ${blocoSpTranslateY}px))`,
-            opacity: blocoSpOpacity,
+            opacity: cnpjOpacity,
+            transform: `translateX(${cnpjTranslateX}px)`,
           }}
         >
           <div
             style={{
-              fontFamily: fonts.dm,
-              fontSize: 20,
-              color: colors.bege,
-              letterSpacing: '0.3em',
-              fontWeight: 500,
-              marginBottom: 24,
-            }}
-          >
-            SÃO PAULO
-          </div>
-          <div
-            style={{
               fontFamily: fonts.bebas,
-              fontSize: 200,
+              fontSize: 240,
               color: colors.gelo,
-              lineHeight: 0.9,
-              letterSpacing: '0.01em',
+              lineHeight: 0.85,
+              letterSpacing: '-0.01em',
             }}
           >
-            2.219
+            48<span style={{ fontSize: 110 }}>%</span>
           </div>
           <div
             style={{
               fontFamily: fonts.inter,
               fontWeight: 300,
-              fontSize: 24,
+              fontSize: 28,
               color: colors.gelo,
-              opacity: 0.75,
-              marginTop: 20,
-              maxWidth: 600,
+              opacity: 0.85,
+              marginTop: -4,
+              maxWidth: 620,
               lineHeight: 1.4,
             }}
           >
-            novos estúdios abertos só na capital em 2022.
-          </div>
-          <div style={{ marginTop: 24 }}>
-            <FonteCitation
-              text="FONTE: SEBRAE"
-              color={colors.bege}
-              opacity={0.55}
-              fontSize={16}
-            />
+            dos CNPJ de São Paulo são MEI's
           </div>
         </div>
+
       </div>
 
-      {/* Frase final — Beat 5 */}
+      {/* Fundo preto cobre o azul antes/durante/entre os vídeos —
+          garante que a transição entre mexendo_celular e gerenciando_celular
+          não revele o azul de fundo. */}
+      <AbsoluteFill
+        style={{
+          backgroundColor: colors.preto,
+          opacity: interpolate(frame, [1020, 1110], [0, 1], {
+            extrapolateLeft: 'clamp',
+            extrapolateRight: 'clamp',
+            easing: easeIn,
+          }),
+        }}
+      />
+
+      {/* Foto mexendo_celular (2:12-2:16) com filtro escuro */}
+      {frame >= 1050 && frame < 1320 && (
+        <AbsoluteFill style={{ opacity: mexendoOpacity }}>
+          <Img
+            src={staticFile('assets/mexendo_celular.jpg')}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+          <AbsoluteFill style={{ backgroundColor: 'rgba(0, 0, 0, 0.78)' }} />
+
+          {/* Texto sobre a foto — "FAZENDO TUDO PELO CELULAR" */}
+          <AbsoluteFill
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              opacity: Math.min(
+                interpolate(frame, [1080, 1170], [0, 1], {
+                  extrapolateLeft: 'clamp',
+                  extrapolateRight: 'clamp',
+                  easing: easeIn,
+                }),
+                interpolate(frame, [1260, 1320], [1, 0], {
+                  extrapolateLeft: 'clamp',
+                  extrapolateRight: 'clamp',
+                  easing: easeOut,
+                })
+              ),
+              transform: `translateY(${interpolate(
+                frame,
+                [1080, 1170],
+                [24, 0],
+                {
+                  extrapolateLeft: 'clamp',
+                  extrapolateRight: 'clamp',
+                  easing: easeIn,
+                }
+              )}px)`,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: fonts.bebas,
+                fontSize: 150,
+                color: colors.gelo,
+                letterSpacing: '0.03em',
+                lineHeight: 0.95,
+                textAlign: 'center',
+                maxWidth: '82%',
+              }}
+            >
+              FAZENDO <span style={{ color: colors.violeta }}>TUDO</span>
+              <br />
+              PELO CELULAR
+            </div>
+          </AbsoluteFill>
+        </AbsoluteFill>
+      )}
+
+      {/* Vídeo gerenciando_celular (2:16 → fim) com filtro preto.
+          Vídeo nativo dura 8.1s, cena precisa de 11.5s — playbackRate 0.705
+          estica naturalmente sem loop visível. */}
+      {frame >= 1290 && (
+        <AbsoluteFill style={{ opacity: gerenciandoOpacity }}>
+          <Sequence from={1290} layout="none">
+            <AbsoluteFill>
+              <OffthreadVideo
+                src={staticFile('assets/gerenciando_celular.mp4')}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                playbackRate={0.705}
+                muted
+              />
+            </AbsoluteFill>
+          </Sequence>
+          <AbsoluteFill style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }} />
+        </AbsoluteFill>
+      )}
+
+      {/* Frase final — sobre o gerenciando_celular */}
       <AbsoluteFill
         style={{
           alignItems: 'center',

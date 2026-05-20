@@ -59,12 +59,21 @@ export const Scene01Hook: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.preto }}>
-      {/* Trilha de batimento cardíaco durante toda a Cena 1.
-          Áudio dura 24s — termina naturalmente em ~frame 1440. */}
-      <Audio
-        src={staticFile('assets/audio/cena1_heartbeat.mp3')}
-        volume={0.55}
-      />
+      {/* Trilha de batimento cardíaco — termina ~30f antes da batida final
+          (fade-out nos últimos 30f pra evitar corte abrupto). */}
+      <Sequence from={0} durationInFrames={PHRASE_FADE_OUT_START - 30}>
+        <Audio
+          src={staticFile('assets/audio/cena1_heartbeat.mp3')}
+          volume={(f) =>
+            interpolate(
+              f,
+              [PHRASE_FADE_OUT_START - 60, PHRASE_FADE_OUT_START - 30],
+              [0.55, 0],
+              { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
+            )
+          }
+        />
+      </Sequence>
       {/* Batida final mais alta — entra junto com o fade-out da frase
           ("CHEGOU A HORA … ACOMPANHAR A AGULHA"), pontuando o fim da cena. */}
       <Sequence from={PHRASE_FADE_OUT_START} durationInFrames={17}>

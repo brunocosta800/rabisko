@@ -1,5 +1,6 @@
 import {
   AbsoluteFill,
+  Img,
   OffthreadVideo,
   Sequence,
   interpolate,
@@ -16,13 +17,12 @@ loadBebas();
 loadInter();
 loadDM();
 
-// Cena 5 ocupa 1980 frames (33s, 2:27.5 → 3:00.5 absolutos).
-// Estrutura:
-//   A 0-210     título "2 FORMAS DE RECEITA" centralizado (até 2:31)
-//   B 210-690   MENSALIDADE: vídeo mensalidade.mp4 + texto à esquerda (2:31-2:39)
-//   C 690-1170  IMPULSO: vídeo impulso_perfil.mp4 + texto à direita (2:39-2:47)
-//   D 1170-1650 frase final "A GENTE CRESCE COM O MERCADO..." (2:47-2:55, 8s)
-//   resto: dwell até o fim em 3:00.5
+// Cena 5 ocupa 1710 frames (28.5s).
+// Estrutura (timestamps do Receita 2.m4a):
+//   A 0-180     título "2 FORMAS DE RECEITA" centralizado (0-3s)
+//   B 180-720   MENSALIDADE: vídeo mensalidade.mp4 + texto à esquerda (3-12s, 9s)
+//   C 720-1140  IMPULSO: vídeo impulso_perfil.mp4 + texto à direita (12-19s, 7s)
+//   D 1140-1710 frase final "MODELO QUE NOS DÁ PREVISIBILIDADE..." (19-28.5s, 9.5s)
 
 const ReceitaSubScene: React.FC<{
   num: string;
@@ -31,18 +31,21 @@ const ReceitaSubScene: React.FC<{
   valor: string;
   videoSrc: string;
   side: 'left' | 'right';
-}> = ({ num, titulo, desc, valor, videoSrc, side }) => {
+  durationInFrames: number;
+}> = ({ num, titulo, desc, valor, videoSrc, side, durationInFrames }) => {
   const localFrame = useCurrentFrame();
 
-  // Sub-beats (480 frames, 8s):
-  //   0-30    vídeo fade-in vindo da direita (translateX 80→0)
-  //   30-60   gradiente preto sobre o lado do texto
-  //   60-90   número "0X" entra (slide do lado + fade)
-  //   90-150  título entra
-  //   150-210 descrição entra
-  //   210-270 valor entra
-  //   270-420 estável
-  //   420-480 fade-out geral
+  // Sub-beats:
+  //   0-30                vídeo fade-in vindo da direita (translateX 80→0)
+  //   30-60               gradiente preto sobre o lado do texto
+  //   60-90               número "0X" entra
+  //   90-150              título entra
+  //   150-210             descrição entra
+  //   210-270             valor entra
+  //   270-(D-60)          estável
+  //   (D-60)-D            fade-out geral
+  const fadeOutStart = durationInFrames - 60;
+  const fadeOutEnd = durationInFrames;
 
   const videoOpacityIn = interpolate(localFrame, [0, 30], [0, 1], {
     extrapolateLeft: 'clamp',
@@ -55,7 +58,7 @@ const ReceitaSubScene: React.FC<{
     easing: easeIn,
   });
 
-  const fadeOutAll = interpolate(localFrame, [420, 480], [1, 0], {
+  const fadeOutAll = interpolate(localFrame, [fadeOutStart, fadeOutEnd], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeOut,
@@ -152,7 +155,7 @@ const ReceitaSubScene: React.FC<{
       <AbsoluteFill
         style={{
           opacity: gradientOpacity,
-          background: `linear-gradient(${gradientDirection}, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.65) 35%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0) 100%)`,
+          background: `linear-gradient(${gradientDirection}, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 25%, rgba(0,0,0,0.75) 50%, rgba(0,0,0,0.35) 75%, rgba(0,0,0,0) 100%)`,
         }}
       />
 
@@ -234,13 +237,13 @@ const ReceitaSubScene: React.FC<{
 export const Scene05Receita: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // ---- Bloco A: título "2 FORMAS DE RECEITA" (0-240) ----
+  // ---- Bloco A: título "2 FORMAS DE RECEITA" (0-180, 3s) ----
   const tituloAOpacityIn = interpolate(frame, [0, 60], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  const tituloAOpacityOut = interpolate(frame, [210, 270], [1, 0], {
+  const tituloAOpacityOut = interpolate(frame, [150, 210], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeOut,
@@ -252,29 +255,52 @@ export const Scene05Receita: React.FC = () => {
     easing: easeIn,
   });
 
-  // ---- Bloco D: frase final (1170-1650, 8s) ----
-  const fraseOpacityIn = interpolate(frame, [1170, 1260], [0, 1], {
+  // ---- Bloco D: frase final (1140-1710, 9.5s) ----
+  const fraseOpacityIn = interpolate(frame, [1140, 1230], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  const fraseOpacityOut = interpolate(frame, [1620, 1650], [1, 0], {
+  const fraseOpacityOut = interpolate(frame, [1680, 1710], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeOut,
   });
   const fraseOpacity = Math.min(fraseOpacityIn, fraseOpacityOut);
-  const fraseY = interpolate(frame, [1170, 1260], [24, 0], {
+  const fraseY = interpolate(frame, [1140, 1230], [24, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
 
-  const activeMensalidade = frame >= 210 && frame < 690;
-  const activeImpulso = frame >= 690 && frame < 1170;
+  const activeMensalidade = frame >= 180 && frame < 720;
+  const activeImpulso = frame >= 720 && frame < 1140;
+
+  // Bisko Preto aparece só durante os beats text-only (A e D), oculto em B/C
+  const biskoOpacity = Math.max(tituloAOpacity, fraseOpacity) * 0.2;
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.gelo }}>
+      {/* Polvo Bisko gigante à direita, polvo cortado no meio da tela.
+          Visível só durante Beats A e D (texto puro). */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          right: 0,
+          transform: 'translate(50%, -50%)',
+          width: 1500,
+          height: 1500,
+          opacity: biskoOpacity,
+          pointerEvents: 'none',
+        }}
+      >
+        <Img
+          src={staticFile('assets/bisko_preto.svg')}
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+        />
+      </div>
+
       {/* ---- Bloco A: título centralizado ---- */}
       <AbsoluteFill
         style={{
@@ -282,6 +308,7 @@ export const Scene05Receita: React.FC = () => {
           justifyContent: 'center',
           opacity: tituloAOpacity,
           transform: `translateY(${tituloAY}px)`,
+          paddingRight: '12%',
         }}
       >
         <div
@@ -299,23 +326,24 @@ export const Scene05Receita: React.FC = () => {
         </div>
       </AbsoluteFill>
 
-      {/* ---- Bloco B: MENSALIDADE (vídeo + texto à esquerda) ---- */}
+      {/* ---- Bloco B: MENSALIDADE (vídeo + texto à esquerda, 9s) ---- */}
       {activeMensalidade && (
-        <Sequence from={210} durationInFrames={480} layout="none">
+        <Sequence from={180} durationInFrames={540} layout="none">
           <ReceitaSubScene
             num="01"
             titulo="MENSALIDADE"
             desc="Tatuadores e estúdios pagam pela plataforma."
-            valor="R$ 400 a R$ 600 por mês"
+            valor="R$ 300 a R$ 500 por mês"
             videoSrc="assets/mensalidade.mp4"
             side="left"
+            durationInFrames={540}
           />
         </Sequence>
       )}
 
-      {/* ---- Bloco C: IMPULSO DE PERFIL (vídeo + texto à direita) ---- */}
+      {/* ---- Bloco C: IMPULSO DE PERFIL (vídeo + texto à direita, 7s) ---- */}
       {activeImpulso && (
-        <Sequence from={690} durationInFrames={480} layout="none">
+        <Sequence from={720} durationInFrames={420} layout="none">
           <ReceitaSubScene
             num="02"
             titulo="IMPULSO DE PERFIL"
@@ -323,6 +351,7 @@ export const Scene05Receita: React.FC = () => {
             valor="Pacotes semanais"
             videoSrc="assets/impulso_perfil.mp4"
             side="right"
+            durationInFrames={420}
           />
         </Sequence>
       )}
@@ -334,6 +363,7 @@ export const Scene05Receita: React.FC = () => {
           justifyContent: 'center',
           opacity: fraseOpacity,
           transform: `translateY(${fraseY}px)`,
+          paddingRight: '12%',
         }}
       >
         <div
@@ -346,10 +376,11 @@ export const Scene05Receita: React.FC = () => {
             textAlign: 'center',
           }}
         >
-          A GENTE CRESCE{' '}
-          <span style={{ color: colors.violeta }}>COM O MERCADO.</span>
+          MODELO QUE NOS DÁ{' '}
+          <span style={{ color: colors.violeta }}>PREVISIBILIDADE</span>
           <br />
-          NÃO SÓ COM ASSINATURA.
+          E <span style={{ color: colors.violeta }}>ESCALA</span> COM
+          ENGAJAMENTO.
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

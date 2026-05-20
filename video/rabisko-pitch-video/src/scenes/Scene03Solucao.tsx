@@ -93,21 +93,31 @@ const PilarSubScene: React.FC<{
   desc: string;
   media: Media;
   side: 'left' | 'right';
-}> = ({ num, titulo, stat, desc, media, side }) => {
+  durationInFrames?: number;
+  fastEntries?: boolean;
+}> = ({ num, titulo, stat, desc, media, side, durationInFrames = 255, fastEntries = false }) => {
   const localFrame = useCurrentFrame();
 
-  const videoOpacityIn = interpolate(localFrame, [0, 30], [0, 1], {
+  // Entradas: 30/60/90/150/210 (normal) ou 15/30/45/75/105 (fast — metade).
+  const k = fastEntries ? 0.5 : 1;
+  const t1 = 30 * k;      // fim media
+  const t2 = 60 * k;      // fim gradient
+  const t3 = 90 * k;      // fim número
+  const t4 = 150 * k;     // fim título
+  const t5 = 210 * k;     // fim descrição
+
+  const videoOpacityIn = interpolate(localFrame, [0, t1], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
-  const videoTranslateX = interpolate(localFrame, [0, 30], [80, 0], {
+  const videoTranslateX = interpolate(localFrame, [0, t1], [80, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
 
-  const fadeOutAll = interpolate(localFrame, [225, 255], [1, 0], {
+  const fadeOutAll = interpolate(localFrame, [durationInFrames - 30, durationInFrames], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeOut,
@@ -116,7 +126,7 @@ const PilarSubScene: React.FC<{
   const mediaOpacity = Math.min(videoOpacityIn, fadeOutAll);
 
   const gradientOpacity = Math.min(
-    interpolate(localFrame, [30, 60], [0, 1], {
+    interpolate(localFrame, [t1, t2], [0, 1], {
       extrapolateLeft: 'clamp',
       extrapolateRight: 'clamp',
       easing: easeIn,
@@ -127,21 +137,21 @@ const PilarSubScene: React.FC<{
   const textEnterFrom = side === 'left' ? -60 : 60;
 
   const numOpacity = Math.min(
-    interpolate(localFrame, [60, 90], [0, 1], {
+    interpolate(localFrame, [t2, t3], [0, 1], {
       extrapolateLeft: 'clamp',
       extrapolateRight: 'clamp',
       easing: easeIn,
     }),
     fadeOutAll
   );
-  const numTranslate = interpolate(localFrame, [60, 90], [textEnterFrom, 0], {
+  const numTranslate = interpolate(localFrame, [t2, t3], [textEnterFrom, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
 
   const tituloOpacity = Math.min(
-    interpolate(localFrame, [90, 150], [0, 1], {
+    interpolate(localFrame, [t3, t4], [0, 1], {
       extrapolateLeft: 'clamp',
       extrapolateRight: 'clamp',
       easing: easeIn,
@@ -150,13 +160,13 @@ const PilarSubScene: React.FC<{
   );
   const tituloTranslate = interpolate(
     localFrame,
-    [90, 150],
+    [t3, t4],
     [textEnterFrom, 0],
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: easeIn }
   );
 
   const descOpacity = Math.min(
-    interpolate(localFrame, [150, 210], [0, 1], {
+    interpolate(localFrame, [t4, t5], [0, 1], {
       extrapolateLeft: 'clamp',
       extrapolateRight: 'clamp',
       easing: easeIn,
@@ -165,7 +175,7 @@ const PilarSubScene: React.FC<{
   );
   const descTranslate = interpolate(
     localFrame,
-    [150, 210],
+    [t4, t5],
     [textEnterFrom, 0],
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: easeIn }
   );
@@ -380,6 +390,20 @@ export const Scene03Solucao: React.FC = () => {
     easing: easeOut,
   });
 
+  // Rodapé preto, visível só durante os cards (Bloco B)
+  const rodapeOpacity = Math.min(
+    interpolate(frame, [320, 420], [0, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeIn,
+    }),
+    interpolate(frame, [1500, 1560], [1, 0], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeOut,
+    })
+  );
+
   // ---- Bloco C: 3 sub-cenas de pilares (1500-2400, deslocado +5s) ----
   const blocoCActive = frame >= 1500 && frame < 2400;
 
@@ -435,6 +459,25 @@ export const Scene03Solucao: React.FC = () => {
       >
         O SISTEMA OPERACIONAL DO TATUADOR.
       </div>
+
+      {/* Rodapé preto — visível durante os cards do Bloco B */}
+      {frame >= 320 && frame < 1560 && (
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            opacity: rodapeOpacity,
+            pointerEvents: 'none',
+          }}
+        >
+          <Img
+            src={staticFile('assets/rodape_preto.svg')}
+            style={{ width: '100%', display: 'block' }}
+          />
+        </div>
+      )}
 
       {/* ---- Bloco B: 3 pilares ---- */}
       <AbsoluteFill
@@ -504,23 +547,31 @@ export const Scene03Solucao: React.FC = () => {
       {blocoCActive && (
         <Sequence from={1500} durationInFrames={900} layout="none">
           <AbsoluteFill>
-            {PILARES_MERCADO.map((p, i) => (
-              <Sequence
-                key={p.num}
-                from={i * 255}
-                durationInFrames={255}
-                layout="none"
-              >
-                <PilarSubScene
-                  num={p.num}
-                  titulo={p.titulo}
-                  stat={p.stat}
-                  desc={p.desc}
-                  media={p.media}
-                  side={p.side}
-                />
-              </Sequence>
-            ))}
+            {PILARES_MERCADO.map((p, i) => {
+              // ESTÚDIOS (i=0) dura 285 (0.5s a mais antes do Tatuadores entrar).
+              // Os outros mantêm 255.
+              const subDuration = i === 0 ? 285 : 255;
+              const start = i === 0 ? 0 : 285 + (i - 1) * 255;
+              return (
+                <Sequence
+                  key={p.num}
+                  from={start}
+                  durationInFrames={subDuration}
+                  layout="none"
+                >
+                  <PilarSubScene
+                    num={p.num}
+                    titulo={p.titulo}
+                    stat={p.stat}
+                    desc={p.desc}
+                    media={p.media}
+                    side={p.side}
+                    durationInFrames={subDuration}
+                    fastEntries={i === 2}
+                  />
+                </Sequence>
+              );
+            })}
           </AbsoluteFill>
         </Sequence>
       )}

@@ -1,5 +1,6 @@
 import {
   AbsoluteFill,
+  Img,
   OffthreadVideo,
   Sequence,
   interpolate,
@@ -16,12 +17,12 @@ loadBebas();
 loadInter();
 loadDM();
 
-// Cena 7 ocupa 1800 frames (30s). useCurrentFrame() devolve 0-1800.
+// Cena 7 ocupa 2760 frames (46s). useCurrentFrame() devolve 0-2760.
 // 4 blocos sequenciais (foco único, fade entre eles):
-//   Bloco 1 PARCEIROS    0-480     (8s)
-//   Bloco 2 GTM          480-960   (8s = 3 sub-frentes compactas de 160 frames cada)
-//   Bloco 3 ROADMAP      960-1380  (7s, versão enxuta — entradas rápidas)
-//   Bloco 4 TATTOO WEEK  1380-1800 (7s — full-bleed com vídeo + texto à esquerda)
+//   Bloco 1 PARCEIROS    0-900     (15s — Railway + Supabase, até 4:05.5)
+//   Bloco 2 GTM          900-1380  (8s = 3 sub-frentes compactas de 160 frames cada)
+//   Bloco 4 TATTOO WEEK  1440-2208 (12.8s — 4:14.5 → 4:27.3)
+//   Bloco 3 ROADMAP      2208-2760 (9.2s — 4:27.3 → 4:36.5, fim da cena)
 
 const SectionHeader: React.FC<{
   text: string;
@@ -45,6 +46,130 @@ const SectionHeader: React.FC<{
   </div>
 );
 
+// Sub-componente: metade da tela (split-screen) para um parceiro.
+// Logo centralizado, degradê preto vindo de baixo, "tipo" + "NOME" em cima do degradê.
+const ParceiroMetade: React.FC<{
+  tipo: string;
+  nome: string;
+  logoSrc: string;
+  logoMaxHeight: number;
+  startFrame: number;
+}> = ({ tipo, nome, logoSrc, logoMaxHeight, startFrame }) => {
+  const frame = useCurrentFrame();
+
+  const logoOpacity = interpolate(
+    frame,
+    [startFrame, startFrame + 45],
+    [0, 1],
+    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: easeIn }
+  );
+  const logoScale = interpolate(
+    frame,
+    [startFrame, startFrame + 45],
+    [0.9, 1],
+    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: easeIn }
+  );
+
+  const textStart = startFrame + 30;
+  const textOpacity = interpolate(
+    frame,
+    [textStart, textStart + 60],
+    [0, 1],
+    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: easeIn }
+  );
+  const textTranslateY = interpolate(
+    frame,
+    [textStart, textStart + 60],
+    [30, 0],
+    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: easeIn }
+  );
+
+  return (
+    <div
+      style={{
+        flex: 1,
+        position: 'relative',
+        backgroundColor: colors.bege,
+        overflow: 'hidden',
+      }}
+    >
+      {/* Logo centralizado */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          opacity: logoOpacity,
+          transform: `scale(${logoScale})`,
+        }}
+      >
+        <Img
+          src={staticFile(logoSrc)}
+          style={{
+            maxHeight: logoMaxHeight,
+            maxWidth: '60%',
+            objectFit: 'contain',
+          }}
+        />
+      </div>
+
+      {/* Degradê de baixo para cima (preto sólido na base, transparente no topo) */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 20%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0.3) 65%, rgba(0,0,0,0) 90%)',
+        }}
+      />
+
+      {/* Texto sobre o degradê: tipo + NOME (em roxo) */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: '8%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 6,
+          opacity: textOpacity,
+          transform: `translateY(${textTranslateY}px)`,
+        }}
+      >
+        <div
+          style={{
+            fontFamily: fonts.dm,
+            fontSize: 22,
+            color: colors.gelo,
+            letterSpacing: '0.3em',
+            fontWeight: 500,
+            opacity: 0.9,
+            textTransform: 'uppercase',
+          }}
+        >
+          {tipo}
+        </div>
+        <div
+          style={{
+            fontFamily: fonts.bebas,
+            fontSize: 130,
+            color: colors.violeta,
+            letterSpacing: '0.04em',
+            lineHeight: 1,
+            textTransform: 'uppercase',
+          }}
+        >
+          {nome}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Bloco1Parceiros: React.FC<{ active: boolean }> = ({ active }) => {
   const frame = useCurrentFrame();
   const opacity = active
@@ -54,7 +179,7 @@ const Bloco1Parceiros: React.FC<{ active: boolean }> = ({ active }) => {
           extrapolateRight: 'clamp',
           easing: easeIn,
         }),
-        interpolate(frame, [420, 480], [1, 0], {
+        interpolate(frame, [840, 900], [1, 0], {
           extrapolateLeft: 'clamp',
           extrapolateRight: 'clamp',
           easing: easeOut,
@@ -62,103 +187,29 @@ const Bloco1Parceiros: React.FC<{ active: boolean }> = ({ active }) => {
       )
     : 0;
 
-  const ty = interpolate(frame, [0, 60], [12, 0], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeIn,
-  });
-
-  const parceiros = [
-    { tipo: 'INFRAESTRUTURA', nome: 'Microsoft Azure' },
-    { tipo: 'PILOTO', nome: 'Tatuadores & Estúdios' },
-  ];
-
   return (
     <AbsoluteFill
       style={{
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: 'flex',
+        flexDirection: 'row',
         opacity,
       }}
     >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          width: '88%',
-        }}
-      >
-        <SectionHeader
-          text="PARCEIROS TECNOLÓGICOS"
-          opacity={1}
-          translateY={ty}
-        />
-        <div
-          style={{
-            display: 'flex',
-            gap: 48,
-            width: '100%',
-            justifyContent: 'center',
-          }}
-        >
-          {parceiros.map((p, i) => {
-            const start = 30 + i * 30;
-            const o = interpolate(frame, [start, start + 36], [0, 1], {
-              extrapolateLeft: 'clamp',
-              extrapolateRight: 'clamp',
-              easing: easeIn,
-            });
-            const dy = interpolate(frame, [start, start + 36], [22, 0], {
-              extrapolateLeft: 'clamp',
-              extrapolateRight: 'clamp',
-              easing: easeIn,
-            });
-            return (
-              <div
-                key={p.tipo}
-                style={{
-                  flex: 1,
-                  background: 'rgba(0,0,0,0.04)',
-                  border: '1px solid rgba(0,0,0,0.12)',
-                  padding: '64px 56px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 28,
-                  textAlign: 'left',
-                  opacity: o,
-                  transform: `translateY(${dy}px)`,
-                  minHeight: 280,
-                  justifyContent: 'space-between',
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: fonts.dm,
-                    fontSize: 18,
-                    color: colors.violeta,
-                    letterSpacing: '0.28em',
-                    fontWeight: 500,
-                  }}
-                >
-                  {p.tipo}
-                </div>
-                <div
-                  style={{
-                    fontFamily: fonts.bebas,
-                    fontSize: 76,
-                    color: colors.preto,
-                    letterSpacing: '0.03em',
-                    lineHeight: 1,
-                  }}
-                >
-                  {p.nome}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      {/* Ordem invertida — Railway à esquerda, Supabase à direita */}
+      <ParceiroMetade
+        tipo="Hospedagem"
+        nome="Railway"
+        logoSrc="assets/railway_logo.svg"
+        logoMaxHeight={360}
+        startFrame={30}
+      />
+      <ParceiroMetade
+        tipo="Banco de Dados"
+        nome="Supabase"
+        logoSrc="assets/supabase_logo.png"
+        logoMaxHeight={300}
+        startFrame={90}
+      />
     </AbsoluteFill>
   );
 };
@@ -400,29 +451,29 @@ const Bloco2Gtm: React.FC<{ active: boolean }> = ({ active }) => {
 
 const Bloco3Roadmap: React.FC<{ active: boolean }> = ({ active }) => {
   const frame = useCurrentFrame();
-  const localFrame = frame - 960;
+  const localFrame = frame - 2208;
 
-  // Versão enxuta (420 frames, 7s) — fades + stagger mais rápidos.
-  //   0-30    opacity geral fade-in
-  //   30-90   linha base desenha
-  //   90-180  3 marcos com stagger de 30f (fade-in 30f)
-  //   200-260 métricas fade-in
-  //   260-420 estável (~2.7s)
+  // Entradas aceleradas:
+  //   0-15    opacity geral fade-in
+  //   15-45   linha base desenha
+  //   45-105  3 marcos com stagger de 20f (fade-in 18f cada)
+  //   115-155 métricas fade-in
+  //   155-552 estável
   const opacity = active
-    ? interpolate(localFrame, [0, 30], [0, 1], {
+    ? interpolate(localFrame, [0, 15], [0, 1], {
         extrapolateLeft: 'clamp',
         extrapolateRight: 'clamp',
         easing: easeIn,
       })
     : 0;
 
-  const headerTy = interpolate(localFrame, [0, 30], [12, 0], {
+  const headerTy = interpolate(localFrame, [0, 15], [12, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
 
-  const lineScaleX = interpolate(localFrame, [30, 90], [0, 1], {
+  const lineScaleX = interpolate(localFrame, [15, 45], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
@@ -431,22 +482,22 @@ const Bloco3Roadmap: React.FC<{ active: boolean }> = ({ active }) => {
   const marcos = [
     { data: '2026', desc: 'Projeto piloto com parceiros', destaque: false },
     { data: 'NOV 2027', desc: 'Tattoo Week SP — entrada em escala', destaque: true },
-    { data: 'DEZ 2028', desc: '84 estúdios pagantes em São Paulo', destaque: false },
+    { data: 'DEZ 2028', desc: '96 clientes pagantes em São Paulo', destaque: false },
   ];
 
-  const marcoStart = 90;
-  const marcoStagger = 30;
+  const marcoStart = 45;
+  const marcoStagger = 20;
 
-  const metricsStart = 200;
+  const metricsStart = 115;
   const metricsOpacity = interpolate(
     localFrame,
-    [metricsStart, metricsStart + 60],
+    [metricsStart, metricsStart + 40],
     [0, 1],
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: easeIn }
   );
   const metricsY = interpolate(
     localFrame,
-    [metricsStart, metricsStart + 60],
+    [metricsStart, metricsStart + 40],
     [20, 0],
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: easeIn }
   );
@@ -511,12 +562,12 @@ const Bloco3Roadmap: React.FC<{ active: boolean }> = ({ active }) => {
           >
             {marcos.map((m, i) => {
               const start = marcoStart + i * marcoStagger;
-              const o = interpolate(localFrame, [start, start + 30], [0, 1], {
+              const o = interpolate(localFrame, [start, start + 18], [0, 1], {
                 extrapolateLeft: 'clamp',
                 extrapolateRight: 'clamp',
                 easing: easeIn,
               });
-              const s = interpolate(localFrame, [start, start + 30], [0, 1], {
+              const s = interpolate(localFrame, [start, start + 18], [0, 1], {
                 extrapolateLeft: 'clamp',
                 extrapolateRight: 'clamp',
                 easing: easeIn,
@@ -660,7 +711,7 @@ const Bloco3Roadmap: React.FC<{ active: boolean }> = ({ active }) => {
 //   360-420 fade-out global
 const Bloco4TattooWeek: React.FC<{ active: boolean }> = ({ active }) => {
   const frame = useCurrentFrame();
-  const localFrame = frame - 1380;
+  const localFrame = frame - 1440;
   if (!active) return null;
 
   const videoOpacityIn = interpolate(localFrame, [0, 30], [0, 1], {
@@ -674,7 +725,8 @@ const Bloco4TattooWeek: React.FC<{ active: boolean }> = ({ active }) => {
     easing: easeIn,
   });
 
-  const fadeOutAll = interpolate(localFrame, [360, 420], [1, 0], {
+  // Bloco dura 768 frames (1440-2208). Fade-out nos últimos 60 frames.
+  const fadeOutAll = interpolate(localFrame, [708, 768], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeOut,
@@ -850,16 +902,17 @@ const Bloco4TattooWeek: React.FC<{ active: boolean }> = ({ active }) => {
 export const Scene07Tracao: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const activeBloco1 = frame < 480;
-  const activeBloco2 = frame >= 480 && frame < 960;
-  const activeBloco3 = frame >= 960 && frame < 1380;
-  const activeBloco4 = frame >= 1380;
+  const activeBloco1 = frame < 900;
+  const activeBloco2 = frame >= 900 && frame < 1380;
+  // Ordem invertida: Tattoo Week vem antes do Roadmap.
+  const activeBloco4 = frame >= 1440 && frame < 2208;
+  const activeBloco3 = frame >= 2208;
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.bege }}>
       {activeBloco1 && <Bloco1Parceiros active={activeBloco1} />}
       {activeBloco2 && (
-        <Sequence from={480} durationInFrames={480} layout="none">
+        <Sequence from={900} durationInFrames={480} layout="none">
           <Bloco2Gtm active={activeBloco2} />
         </Sequence>
       )}

@@ -445,7 +445,7 @@ export const Scene02Problema: React.FC = () => {
             })}
           </svg>
 
-          {/* Ícone de usuário no centro */}
+          {/* Foto do tatuador no centro */}
           <div
             style={{
               position: 'absolute',
@@ -456,13 +456,20 @@ export const Scene02Problema: React.FC = () => {
               height: 180,
               borderRadius: '50%',
               border: `2px solid ${colors.preto}`,
-              background: 'rgba(0,0,0,0.04)',
+              overflow: 'hidden',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <TintedSvg assetPath="assets/user.svg" size={110} color={colors.preto} />
+            <Img
+              src={staticFile('assets/foto_tatuador.png')}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+            />
           </div>
 
           {/* Ferramentas */}

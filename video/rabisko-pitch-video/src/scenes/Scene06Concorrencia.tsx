@@ -1,4 +1,4 @@
-import { AbsoluteFill, interpolate, staticFile, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame } from 'remotion';
 import { loadFont as loadBebas } from '@remotion/google-fonts/BebasNeue';
 import { loadFont as loadInter } from '@remotion/google-fonts/Inter';
 import { loadFont as loadDM } from '@remotion/google-fonts/DMSans';
@@ -10,11 +10,13 @@ loadBebas();
 loadInter();
 loadDM();
 
-// Cena 6 ocupa frames 12600-15000 (2400 frames). useCurrentFrame() devolve 0-2400.
+// Cena 6 ocupa 3270 frames (54.5s). useCurrentFrame() devolve 0-3270.
 // Blocos:
-//   A 0-240    título "POSICIONAMENTO COMPETITIVO"
-//   B 240-1500 tabela 4 cols x (header + 6 linhas) com stagger de 36f
-//   C 1500-2400 frase "3 EIXOS QUE NENHUM CONCORRENTE OCUPA."
+//   A 0-60       título "POSICIONAMENTO COMPETITIVO" entra
+//   B 180-540    tabela 4 cols x (header + 5 linhas) com stagger
+//   título/tabela fade-out em 870-930 (3:11.5 absoluto)
+//   C 930-2610   simulacao_tatuagem.png full-bleed + "SIMULAÇÃO DE TATUAGEM"
+//   D 2610-3270  mockup.png full-bleed + "MOBILE FIRST NATIVO"
 
 type Cell = { kind: 'check' } | { kind: 'x' } | { kind: 'parcial' };
 
@@ -79,46 +81,114 @@ const renderCell = (cell: Cell) => {
 export const Scene06Concorrencia: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // ---- Bloco A: título ----
-  const tituloOpacityIn = interpolate(frame, [0, 60], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeIn,
-  });
-  const tituloOpacityOut = interpolate(frame, [720, 810], [1, 0], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeOut,
-  });
-  const tituloOpacity = Math.min(tituloOpacityIn, tituloOpacityOut);
-
-  // ---- Bloco B: tabela ----
-  const tabelaOpacityIn = interpolate(frame, [180, 280], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeIn,
-  });
-  const tabelaOpacityOut = interpolate(frame, [720, 810], [1, 0], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeOut,
-  });
-  const tabelaOpacity = Math.min(tabelaOpacityIn, tabelaOpacityOut);
-
-  // ---- Bloco C: frase final (entra em 3:13.5 = local frame 780) ----
-  const fraseOpacity = interpolate(frame, [720, 810], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: easeIn,
-  });
-  const fraseY = interpolate(frame, [720, 810], [24, 0], {
+  // ---- Bloco A: título (entra centralizado 0-60, sobe pro topo em 180-260, sai em 870-930) ----
+  const tituloOpacity = Math.min(
+    interpolate(frame, [0, 60], [0, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeIn,
+    }),
+    interpolate(frame, [870, 930], [1, 0], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeOut,
+    })
+  );
+  // Translate de 420px (centralizado vertical) → 0 (top: 100, posição final).
+  const tituloTranslateY = interpolate(frame, [180, 260], [420, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: easeIn,
   });
 
-  const HEADER_START = 240;
-  const ROW_START = 360;
+  // ---- Bloco B: tabela (entra depois do título subir, 260-360) ----
+  const tabelaOpacity = Math.min(
+    interpolate(frame, [260, 360], [0, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeIn,
+    }),
+    interpolate(frame, [870, 930], [1, 0], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeOut,
+    })
+  );
+
+  // ---- Rodapé preto (visível durante os beats text-only, some quando a foto entra) ----
+  const rodapeOpacity = Math.min(
+    interpolate(frame, [0, 60], [0, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeIn,
+    }),
+    interpolate(frame, [870, 930], [1, 0], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeOut,
+    })
+  );
+
+  // ---- Bloco C: simulação de tatuagem (3:11.5 → 3:39.5, local 930-2610) ----
+  const simulacaoOpacity = Math.min(
+    interpolate(frame, [930, 1020], [0, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeIn,
+    }),
+    interpolate(frame, [2550, 2610], [1, 0], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeOut,
+    })
+  );
+  const simulacaoTranslateY = interpolate(frame, [930, 1050], [40, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easeIn,
+  });
+  const simulacaoTextOpacity = Math.min(
+    interpolate(frame, [1020, 1140], [0, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeIn,
+    }),
+    interpolate(frame, [2550, 2610], [1, 0], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: easeOut,
+    })
+  );
+  const simulacaoTextTranslateY = interpolate(frame, [1020, 1140], [40, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easeIn,
+  });
+
+  // ---- Bloco D: mockup + "MOBILE FIRST NATIVO" (entra em 2610 = 3:39.5) ----
+  const mockupOpacity = interpolate(frame, [2610, 2700], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easeIn,
+  });
+  const mockupTranslateY = interpolate(frame, [2610, 2730], [40, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easeIn,
+  });
+  const mockupTextOpacity = interpolate(frame, [2700, 2820], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easeIn,
+  });
+  const mockupTextTranslateY = interpolate(frame, [2700, 2820], [40, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: easeIn,
+  });
+
+  const HEADER_START = 320;
+  const ROW_START = 440;
   const ROW_STAGGER = 36;
 
   const cols = '2fr 1fr 1fr 1fr';
@@ -126,7 +196,7 @@ export const Scene06Concorrencia: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: colors.preto }}>
-      {/* Título */}
+      {/* Título — entra centralizado, depois sobe pra cima da tabela */}
       <div
         style={{
           position: 'absolute',
@@ -135,6 +205,7 @@ export const Scene06Concorrencia: React.FC = () => {
           right: 0,
           textAlign: 'center',
           opacity: tituloOpacity,
+          transform: `translateY(${tituloTranslateY}px)`,
         }}
       >
         <div
@@ -325,42 +396,131 @@ export const Scene06Concorrencia: React.FC = () => {
         </div>
       </AbsoluteFill>
 
-      {/* Frase final — alinhada à esquerda */}
-      <AbsoluteFill
-        style={{
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          opacity: fraseOpacity,
-          transform: `translateY(${fraseY}px)`,
-          paddingLeft: '7%',
-          paddingRight: '7%',
-        }}
-      >
+      {/* Rodapé preto — visível durante os beats text-only, some quando a foto entra */}
+      {frame < 930 && (
         <div
           style={{
-            fontFamily: fonts.bebas,
-            fontSize: 140,
-            color: colors.gelo,
-            textAlign: 'left',
-            lineHeight: 0.95,
-            letterSpacing: '0.03em',
-            maxWidth: '85%',
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            opacity: rodapeOpacity,
+            pointerEvents: 'none',
           }}
         >
-          <span
+          <Img
+            src={staticFile('assets/rodape_preto.svg')}
+            style={{ width: '100%', display: 'block' }}
+          />
+        </div>
+      )}
+
+      {/* Bloco C: simulacao_tatuagem full-bleed + degradê + "SIMULAÇÃO DE TATUAGEM"
+          (3:11.5 → 3:39.5) */}
+      {frame >= 930 && frame < 2610 && (
+        <AbsoluteFill>
+          {/* Imagem de fundo full-bleed */}
+          <AbsoluteFill
             style={{
-              color: colors.violeta,
-              fontSize: 280,
-              display: 'block',
-              lineHeight: 1,
-              marginBottom: 12,
+              opacity: simulacaoOpacity,
+              transform: `translateY(${simulacaoTranslateY}px)`,
             }}
           >
-            3
-          </span>
-          EIXOS QUE NENHUM CONCORRENTE OCUPA.
-        </div>
-      </AbsoluteFill>
+            <Img
+              src={staticFile('assets/simulacao_tatuagem.png')}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </AbsoluteFill>
+
+          {/* Degradê de baixo para cima */}
+          <AbsoluteFill
+            style={{
+              opacity: simulacaoOpacity,
+              background:
+                'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 20%, rgba(0,0,0,0.75) 40%, rgba(0,0,0,0.4) 65%, rgba(0,0,0,0) 90%)',
+            }}
+          />
+
+          {/* Texto centralizado na parte de baixo */}
+          <AbsoluteFill
+            style={{
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              paddingBottom: '8%',
+              opacity: simulacaoTextOpacity,
+              transform: `translateY(${simulacaoTextTranslateY}px)`,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: fonts.bebas,
+                fontSize: 180,
+                color: colors.gelo,
+                lineHeight: 0.95,
+                letterSpacing: '0.03em',
+                textAlign: 'center',
+              }}
+            >
+              SIMULAÇÃO DE{' '}
+              <span style={{ color: colors.violeta }}>TATUAGEM</span>
+            </div>
+          </AbsoluteFill>
+        </AbsoluteFill>
+      )}
+
+      {/* Bloco D: mockup full-bleed + degradê + "MOBILE FIRST NATIVO"
+          (3:39.5 → fim da cena) */}
+      {frame >= 2610 && (
+        <AbsoluteFill>
+          {/* Imagem de fundo full-bleed */}
+          <AbsoluteFill
+            style={{
+              opacity: mockupOpacity,
+              transform: `translateY(${mockupTranslateY}px)`,
+            }}
+          >
+            <Img
+              src={staticFile('assets/mockup.png')}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </AbsoluteFill>
+
+          {/* Degradê de baixo para cima (preto sólido na base, transparente no topo) */}
+          <AbsoluteFill
+            style={{
+              opacity: mockupOpacity,
+              background:
+                'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 20%, rgba(0,0,0,0.75) 40%, rgba(0,0,0,0.4) 65%, rgba(0,0,0,0) 90%)',
+            }}
+          />
+
+          {/* Texto centralizado na parte de baixo */}
+          <AbsoluteFill
+            style={{
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              paddingBottom: '8%',
+              opacity: mockupTextOpacity,
+              transform: `translateY(${mockupTextTranslateY}px)`,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: fonts.bebas,
+                fontSize: 180,
+                color: colors.gelo,
+                lineHeight: 0.95,
+                letterSpacing: '0.03em',
+                textAlign: 'center',
+              }}
+            >
+              MOBILE FIRST{' '}
+              <span style={{ color: colors.violeta }}>NATIVO</span>
+            </div>
+          </AbsoluteFill>
+        </AbsoluteFill>
+      )}
+
     </AbsoluteFill>
   );
 };
