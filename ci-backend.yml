@@ -1,0 +1,271 @@
+name: CI/CD Backend
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    branches:
+      - main
+      - develop
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/ci-backend.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/ci-backend.yml'
+
+# Permissões necessárias para o CodeQL publicar resultados na aba Security
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  pull-requests: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job de controle: decide quais etapas devem rodar.
+  #
+  # Mecanismos de bypass:
+  #
+  # 1) Por BRANCH (via Variables do repositório):
+  #    - SKIP_BRANCHES         -> desliga build, sonar e codeql
+  #    - SKIP_SONAR_BRANCHES   -> desliga apenas o SonarQube Cloud
+  #    - SKIP_CODEQL_BRANCHES  -> desliga apenas o CodeQL
+  #    Valor: lista separada por vírgula, com wildcards (ex.: "hotfix/*,release/*")
+  #
+  # 2) Por LABEL na Pull Request (uso pontual):
+  #    - skip-ci       -> desliga build, sonar e codeql
+  #    - skip-sonar    -> desliga apenas o SonarQube Cloud
+  #    - skip-codeql   -> desliga apenas o CodeQL
+  #
+  # O deploy no Railway só ocorre em push na main (após merge da PR).
+  # Etapas puladas via bypass (skipped) não impedem o deploy.
+  # ---------------------------------------------------------------------------
+  setup:
+    name: Definir etapas a executar
+    runs-on: ubuntu-latest
+    outputs:
+      run_build: ${{ steps.decide.outputs.run_build }}
+      run_sonar: ${{ steps.decide.outputs.run_sonar }}
+      run_codeql: ${{ steps.decide.outputs.run_codeql }}
+    steps:
+      - name: Avaliar branch e labels
+        id: decide
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+          SKIP_BRANCHES: ${{ vars.SKIP_BRANCHES }}
+          SKIP_SONAR_BRANCHES: ${{ vars.SKIP_SONAR_BRANCHES }}
+          SKIP_CODEQL_BRANCHES: ${{ vars.SKIP_CODEQL_BRANCHES }}
+        run: |
+          set -e
+
+          matches_pattern() {
+            local branch="$1"
+            local patterns="$2"
+            [ -z "$patterns" ] && return 1
+            IFS=',' read -ra PATS <<< "$patterns"
+            for p in "${PATS[@]}"; do
+              p="$(echo "$p" | xargs)"
+              [ -z "$p" ] && continue
+              case "$branch" in
+                $p) return 0 ;;
+              esac
+            done
+            return 1
+          }
+
+          has_label() {
+            echo "$LABELS" | grep -q "\"$1\""
+          }
+
+          run_build=true
+          run_sonar=true
+          run_codeql=true
+
+          if has_label "skip-ci" || matches_pattern "$BRANCH" "$SKIP_BRANCHES"; then
+            echo "::notice::Pipeline desativada (branch ou label)."
+            run_build=false
+            run_sonar=false
+            run_codeql=false
+          fi
+
+          if has_label "skip-sonar" || matches_pattern "$BRANCH" "$SKIP_SONAR_BRANCHES"; then
+            echo "::notice::SonarQube Cloud desativado."
+            run_sonar=false
+          fi
+
+          if has_label "skip-codeql" || matches_pattern "$BRANCH" "$SKIP_CODEQL_BRANCHES"; then
+            echo "::notice::CodeQL desativado."
+            run_codeql=false
+          fi
+
+          echo "run_build=$run_build" >> "$GITHUB_OUTPUT"
+          echo "run_sonar=$run_sonar" >> "$GITHUB_OUTPUT"
+          echo "run_codeql=$run_codeql" >> "$GITHUB_OUTPUT"
+
+          echo "### Resumo da execução" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Evento: \`${{ github.event_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Branch: \`$BRANCH\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Build & Testes: \`$run_build\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- SonarQube Cloud: \`$run_sonar\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- CodeQL: \`$run_codeql\`" >> "$GITHUB_STEP_SUMMARY"
+
+  build-and-test:
+    name: Build, Test & Coverage
+    needs: setup
+    if: needs.setup.outputs.run_build == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Cache de pacotes do SonarQube
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Build e testes com cobertura (JaCoCo)
+        run: mvn -B clean verify
+
+      - name: Upload do relatório de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: Backend/target/site/jacoco/
+
+  sonarcloud:
+    name: SonarQube Cloud Analysis
+    needs: [setup, build-and-test]
+    if: needs.setup.outputs.run_sonar == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Cache do SonarQube
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Análise do SonarQube Cloud
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn -B verify sonar:sonar \
+            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} \
+            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }} \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.token=$SONAR_TOKEN \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+
+  codeql:
+    name: CodeQL Security Analysis
+    needs: [setup, build-and-test]
+    if: needs.setup.outputs.run_codeql == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Inicializar CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+          # Foco apenas no Backend
+          source-root: Backend
+          # Inclui queries de segurança e qualidade
+          queries: security-and-quality
+
+      - name: Build do projeto para o CodeQL
+        working-directory: Backend
+        run: mvn -B clean compile -DskipTests
+
+      - name: Analisar com CodeQL
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:java
+
+  # ---------------------------------------------------------------------------
+  # Deploy no Railway
+  #
+  # Só roda em push na branch main (após merge da PR).
+  # PRs e pushes em outras branches NÃO acionam o deploy.
+  # Etapas puladas via bypass (skipped) não bloqueiam o deploy.
+  # ---------------------------------------------------------------------------
+  deploy-railway:
+    name: Deploy no Railway
+    needs: [setup, build-and-test, sonarcloud, codeql]
+    if: |
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      !failure() &&
+      !cancelled() &&
+      needs.setup.result == 'success' &&
+      (needs.build-and-test.result == 'success' || needs.build-and-test.result == 'skipped')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service ${{ vars.RAILWAY_SERVICE_NAME }} --ci
+
+      - name: Resumo do deploy
+        run: |
+          echo "### 🚂 Deploy no Railway" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Serviço: \`${{ vars.RAILWAY_SERVICE_NAME }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Branch: \`${{ github.ref_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
