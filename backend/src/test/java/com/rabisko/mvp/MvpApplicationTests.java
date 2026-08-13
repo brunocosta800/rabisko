@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 // =====================================================================
-// MvpApplicationTests — teste minimo de SMOKE da aplicacao
+// MvpApplicationTests — teste minimo de SMOKE da aplicacao.
 //
 // O que esse teste valida?
 //   So uma coisa: que o "context" do Spring SOBE sem erros. Em outras
