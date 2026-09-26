@@ -277,7 +277,7 @@ export function RegisterScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-background"
     >
       <Header onBack={() => navigation.goBack()} />
@@ -360,6 +360,9 @@ export function RegisterScreen() {
           placeholder="••••••••"
           icon={Lock}
           secure
+          autoCapitalize="none"
+          autoCorrect={false}
+          textContentType="newPassword"
           value={senha}
           onChangeText={setSenha}
           editable={!loading}
