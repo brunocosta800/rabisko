@@ -107,7 +107,7 @@ export function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-background"
     >
       <Header onBack={() => navigation.goBack()} />
